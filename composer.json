@@ -3,6 +3,7 @@
         "vendor-dir": "includes/vendor"
     },
     "require": {
-        "firebase/php-jwt": "^3.0"
+        "firebase/php-jwt": "^3.0",
+        "tareq1988/wordpress-settings-api-class": "dev-master"
     }
 }
