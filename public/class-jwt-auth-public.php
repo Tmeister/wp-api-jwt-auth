@@ -67,9 +67,14 @@ class Jwt_Auth_Public
      */
     public function add_api_routes()
     {
-        register_rest_route($this->namespace, 'login', array(
+        register_rest_route($this->namespace, 'token', array(
             'methods' => 'POST',
-            'callback' => array($this, 'user_login'),
+            'callback' => array($this, 'generate_token'),
+        ));
+
+        register_rest_route($this->namespace, 'token/validate', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'validate_token'),
         ));
     }
 
@@ -80,7 +85,7 @@ class Jwt_Auth_Public
      *
      * @return [type] [description]
      */
-    public function user_login($request)
+    public function generate_token($request)
     {
         $secret_key = $this->get_option('jwt_main_options', 'secret_key', false);
         $username = $request->get_param('username');
@@ -88,11 +93,10 @@ class Jwt_Auth_Public
 
         if (!$secret_key) {
             return new WP_Error(
-                'jwt_bad_config',
-                __('Bad Configuration', 'wp-api-jwt-auth'),
+                'jwt_auth_bad_config',
+                __('JWT is not configurated properly, please contact the admin', 'wp-api-jwt-auth'),
                 array(
                     'status' => 403,
-                    'message' => 'JWT is not configurated properly, please contact the admin',
                 )
             );
         }
@@ -102,10 +106,9 @@ class Jwt_Auth_Public
         if (is_wp_error($user)) {
             return new WP_Error(
                 'jwt_auth_failed',
-                __('Wrong credentials', 'wp-api-jwt-auth'),
+                __('Your credential are invalid.', 'wp-api-jwt-auth'),
                 array(
                     'status' => 403,
-                    'message' => __('Your credential are invalid.', 'wp-api-jwt-auth'),
                 )
             );
         }
@@ -141,11 +144,44 @@ class Jwt_Auth_Public
         /*
          * Let the user modify the data before send it back
          */
-
         return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
     }
 
-    public function verify_token($user)
+    /**
+     * Check if the Authorization header exist and if is valid to change the user
+     */
+    public function determine_current_user($user)
+    {
+        /**
+         * if the request URI is for validate the token don't do anothing,
+         * this avoid double calls to the validate_token function.
+         */
+        $validate_uri = strpos($_SERVER['REQUEST_URI'], 'token/validate');
+        if( $validate_uri > 0  ){
+            return $user;
+        }
+
+        $token = $this->validate_token(false);
+
+        if( is_wp_error( $token ) ){
+            if( $token->get_error_code() != 'jwt_auth_no_auth_header' ){
+                /**
+                 * Hijack API response to return the JWT Error.
+                 * For now just return the user.
+                 */
+                return $user;
+            }else{
+                return $user;
+            }
+        }
+
+        return $token->data->user->id;
+    }
+
+    /**
+     * Validate the token in the request
+     */
+    public function validate_token($output = true)
     {
         /*
          * Looking for the HTTP_AUTHORIZATION header, if not present just
@@ -153,7 +189,13 @@ class Jwt_Auth_Public
          */
         $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
         if (!$auth) {
-            return $user;
+            return new WP_Error(
+                'jwt_auth_no_auth_header',
+                __('Authorization header not found.', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                )
+            );
         }
 
         /*
@@ -162,7 +204,13 @@ class Jwt_Auth_Public
          */
         list($token) = sscanf($auth, 'Bearer %s');
         if (!$token) {
-            return $user;
+            return new WP_Error(
+                'jwt_auth_bad_auth_header',
+                __('Authorization header malformed.', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                )
+            );
         }
 
         /*
@@ -170,7 +218,13 @@ class Jwt_Auth_Public
          */
          $secret_key = $this->get_option('jwt_main_options', 'secret_key', false);
         if (!$secret_key) {
-            return $user;
+            return new WP_Error(
+                'jwt_auth_bad_config',
+                __('JWT is not configurated properly, please contact the admin', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                )
+            );
         }
 
         /*
@@ -179,37 +233,58 @@ class Jwt_Auth_Public
          try {
              $token = JWT::decode($token, $secret_key, array('HS256'));
 
-             /**
+             /*
               * The Token is decoded now validate the iss
               */
-              if( $token->iss != get_bloginfo('url') ){
-                  /**
+              if ($token->iss != get_bloginfo('url')) {
+                  /*
                    * The iss do not match, return the user
                    */
-                  return $user;
+                   return new WP_Error(
+                       'jwt_auth_bad_iss',
+                       __('Your iss do not match with this server', 'wp-api-jwt-auth'),
+                       array(
+                           'status' => 403,
+                       )
+                   );
               }
-              /**
+              /*
                * So far so good, validate the user id in the token
                */
-               if( !isset( $token->data->user->id ) ){
-                   /**
+               if (!isset($token->data->user->id)) {
+                   /*
                     * No user id in the token, abort!!
                     */
-                    return $user;
+                    return new WP_Error(
+                        'jwt_auth_bad_request',
+                        __('User ID not found in the token', 'wp-api-jwt-auth'),
+                        array(
+                            'status' => 403,
+                        )
+                    );
                }
-               /**
-                * Everything looks good, change the user id
+               /*
+                * Everything looks good return the decoded token
                 */
-                return $token->data->user->id;
+                if( !$output ){
+                    return $token;
+                }
 
-         } catch (Exception $e) {
-             /*
-              * Something is wrong, probably the token expired
-              * I need to find the way to hijack the API response to send the
-              * error back to the user.
-              * For now just return the user and let the API validate te call.
-              */
-             return $user;
+                return array(
+                    'code' => 'jwt_auth_valid_token',
+                    'data' => array(
+                        'status' => 200
+                    )
+                );
+
+         } catch (UnexpectedValueException $e) {
+             return new WP_Error(
+                 'jwt_auth_invalid_token',
+                 $e->getMessage(),
+                 array(
+                     'status' => 403,
+                 )
+             );
          }
     }
 

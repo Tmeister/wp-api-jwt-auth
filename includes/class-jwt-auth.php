@@ -134,7 +134,6 @@ class Jwt_Auth
     {
         $plugin_i18n = new Jwt_Auth_i18n();
         $plugin_i18n->set_domain($this->get_plugin_name());
-
         $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
     }
 
@@ -147,9 +146,7 @@ class Jwt_Auth
     private function define_admin_hooks()
     {
         $plugin_admin = new Jwt_Auth_Admin($this->get_plugin_name(), $this->get_version());
-
         $this->loader->add_action('admin_menu', $plugin_admin, 'admin_menu');
-
         $this->loader->add_action('admin_init', $plugin_admin, 'add_plugin_options');
     }
 
@@ -164,14 +161,13 @@ class Jwt_Auth
         $plugin_public = new Jwt_Auth_Public($this->get_plugin_name(), $this->get_version());
 
         /*
-        * Verify the WP-API dependencies
+        * Verify the WP-API dependency
+        * if active add the hooks.
          */
-        //if ( defined( 'REST_API_VERSION' ) ){
-            //If the WP-API  is installed add all the hooks
+        if (is_plugin_active('json-rest-api/plugin.php')) {
             $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
-
-            $this->loader->add_filter('determine_current_user', $plugin_public, 'verify_token', 99);
-        //	}
+            $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 99);
+        }
     }
 
     /**
