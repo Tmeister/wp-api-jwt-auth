@@ -82,13 +82,76 @@ class Jwt_Auth_Public
      */
     public function user_login($request)
     {
+        $secret_key = $this->get_option('jwt_main_options', 'secret_key', false);
         $username = $request->get_param('username');
         $password = $request->get_param('password');
-        $user = wp_authenticate($username, $password);
-        if (is_wp_error($user)) {
-            return new WP_Error('auth-failed', __('Wrong credentials', 'wp-api-jwt-auth'));
+
+        if (!$secret_key) {
+            return new WP_Error(
+                'jwt_bad_config',
+                __('Bad Configuration', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                    'message' => 'JWT is not configurated properly, please contact the admin',
+                )
+            );
         }
 
-        return $user;
+        $user = wp_authenticate($username, $password);
+
+        if (is_wp_error($user)) {
+            return new WP_Error(
+                'jwt_auth_failed',
+                __('Wrong credentials', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                    'message' => __('Your credential are invalid.', 'wp-api-jwt-auth'),
+                )
+            );
+        }
+
+        $issuedAt = time();
+        $notBefore = apply_filters('jwt_auth_not_before', $issuedAt, $issuedAt);
+        $expire = apply_filters('jwt_auth_expire', $issuedAt + (DAY_IN_SECONDS * 7), $issuedAt);
+
+        $token = array(
+            'iss' => get_bloginfo('url'),
+            'iat' => $issuedAt,
+            'nbf' => $notBefore,
+            'exp' => $expire,
+            'data' => array(
+                'user' => array(
+                    'id' => $user->data->ID,
+                ),
+            ),
+        );
+
+        /*
+         * Let the user modify the token data before the sign.
+         */
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token), $secret_key);
+
+        $data = array(
+            'token' => $token,
+            'user_email' => $user->data->user_email,
+            'user_nicename' => $user->data->user_nicename,
+            'user_display_name' => $user->data->display_name,
+        );
+
+        /*
+         * Let the user modify the data before send it back
+         */
+
+        return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
+    }
+
+    private function get_option($section, $option, $default = '')
+    {
+        $options = get_option($section);
+        if (isset($options[$option]) && !empty($options[$option]) && $options[$option] != null) {
+            return $options[$option];
+        }
+
+        return $default;
     }
 }

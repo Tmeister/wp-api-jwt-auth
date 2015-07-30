@@ -35,6 +35,8 @@ class Jwt_Auth_Admin
      */
     private $version;
 
+    private $setting_api;
+
     /**
      * Initialize the class and set its properties.
      *
@@ -56,6 +58,49 @@ class Jwt_Auth_Admin
      */
     public function admin_menu()
     {
-        # code...
+        add_options_page(__('JWT Settings', 'wp-api-jwt-auth'), __('JWT Settings', 'wp-api-jwt-auth'), 'delete_posts', 'settings_api_test', array($this, 'plugin_settings_page'));
+    }
+
+    /**
+     * Configurate the options page sections and fields.
+     *
+     * @since 1.0.0
+     */
+    public function add_plugin_options()
+    {
+        $sections = array(
+            array(
+                'id' => 'jwt_main_options',
+                'title' => __('General', 'wp-api-jwt-auth'),
+            ),
+        );
+
+        $fields = array(
+            'jwt_main_options' => array(
+                array(
+                    'name' => 'secret_key',
+                    'label' => __('Secret Key', 'wp-api-jwt-auth'),
+                    'desc' => __('Secret value to verify the JWT signature.', 'wp-api-jwt-auth'),
+                    'type' => __('text'),
+                ),
+            ),
+        );
+        $this->settings_api = new WeDevs_Settings_API();
+        $this->settings_api->set_sections($sections);
+        $this->settings_api->set_fields($fields);
+        $this->settings_api->admin_init();
+    }
+
+    /**
+     * Generate the Options page.
+     *
+     * @since   1.0.0
+     */
+    public function plugin_settings_page()
+    {
+        echo '<div class="wrap">';
+        $this->settings_api->show_navigation();
+        $this->settings_api->show_forms();
+        echo '</div>';
     }
 }
