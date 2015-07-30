@@ -169,6 +169,8 @@ class Jwt_Auth
         //if ( defined( 'REST_API_VERSION' ) ){
             //If the WP-API  is installed add all the hooks
             $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
+
+            $this->loader->add_filter('determine_current_user', $plugin_public, 'verify_token', 99);
         //	}
     }
 

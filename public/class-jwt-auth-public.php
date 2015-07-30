@@ -145,6 +145,74 @@ class Jwt_Auth_Public
         return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
     }
 
+    public function verify_token($user)
+    {
+        /*
+         * Looking for the HTTP_AUTHORIZATION header, if not present just
+         * return the user.
+         */
+        $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
+        if (!$auth) {
+            return $user;
+        }
+
+        /*
+         * The HTTP_AUTHORIZATION is present verify the format
+         * if the format is wrong return the user.
+         */
+        list($token) = sscanf($auth, 'Bearer %s');
+        if (!$token) {
+            return $user;
+        }
+
+        /*
+         * Get the Secret Key
+         */
+         $secret_key = $this->get_option('jwt_main_options', 'secret_key', false);
+        if (!$secret_key) {
+            return $user;
+        }
+
+        /*
+         * Try to decode the token
+         */
+         try {
+             $token = JWT::decode($token, $secret_key, array('HS256'));
+
+             /**
+              * The Token is decoded now validate the iss
+              */
+              if( $token->iss != get_bloginfo('url') ){
+                  /**
+                   * The iss do not match, return the user
+                   */
+                  return $user;
+              }
+              /**
+               * So far so good, validate the user id in the token
+               */
+               if( !isset( $token->data->user->id ) ){
+                   /**
+                    * No user id in the token, abort!!
+                    */
+                    return $user;
+               }
+               /**
+                * Everything looks good, change the user id
+                */
+                return $token->data->user->id;
+
+         } catch (Exception $e) {
+             /*
+              * Something is wrong, probably the token expired
+              * I need to find the way to hijack the API response to send the
+              * error back to the user.
+              * For now just return the user and let the API validate te call.
+              */
+             return $user;
+         }
+    }
+
     private function get_option($section, $option, $default = '')
     {
         $options = get_option($section);
