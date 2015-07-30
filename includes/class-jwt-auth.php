@@ -159,15 +159,8 @@ class Jwt_Auth
     private function define_public_hooks()
     {
         $plugin_public = new Jwt_Auth_Public($this->get_plugin_name(), $this->get_version());
-
-        /*
-        * Verify the WP-API dependency
-        * if active add the hooks.
-         */
-        if (is_plugin_active('json-rest-api/plugin.php')) {
-            $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
-            $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 99);
-        }
+        $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
+        $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 99);
     }
 
     /**

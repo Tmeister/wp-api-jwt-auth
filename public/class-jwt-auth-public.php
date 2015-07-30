@@ -148,29 +148,29 @@ class Jwt_Auth_Public
     }
 
     /**
-     * Check if the Authorization header exist and if is valid to change the user
+     * Check if the Authorization header exist and if is valid to change the user.
      */
     public function determine_current_user($user)
     {
-        /**
+        /*
          * if the request URI is for validate the token don't do anothing,
          * this avoid double calls to the validate_token function.
          */
         $validate_uri = strpos($_SERVER['REQUEST_URI'], 'token/validate');
-        if( $validate_uri > 0  ){
+        if ($validate_uri > 0) {
             return $user;
         }
 
         $token = $this->validate_token(false);
 
-        if( is_wp_error( $token ) ){
-            if( $token->get_error_code() != 'jwt_auth_no_auth_header' ){
-                /**
+        if (is_wp_error($token)) {
+            if ($token->get_error_code() != 'jwt_auth_no_auth_header') {
+                /*
                  * Hijack API response to return the JWT Error.
                  * For now just return the user.
                  */
                 return $user;
-            }else{
+            } else {
                 return $user;
             }
         }
@@ -179,7 +179,7 @@ class Jwt_Auth_Public
     }
 
     /**
-     * Validate the token in the request
+     * Validate the token in the request.
      */
     public function validate_token($output = true)
     {
@@ -266,17 +266,16 @@ class Jwt_Auth_Public
                /*
                 * Everything looks good return the decoded token
                 */
-                if( !$output ){
+                if (!$output) {
                     return $token;
                 }
 
-                return array(
+             return array(
                     'code' => 'jwt_auth_valid_token',
                     'data' => array(
-                        'status' => 200
-                    )
+                        'status' => 200,
+                    ),
                 );
-
          } catch (UnexpectedValueException $e) {
              return new WP_Error(
                  'jwt_auth_invalid_token',
