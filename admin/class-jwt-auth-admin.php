@@ -81,9 +81,15 @@ class Jwt_Auth_Admin
                     'name' => 'secret_key',
                     'label' => __('Secret Key', 'wp-api-jwt-auth'),
                     'desc' => __('Secret value to verify the JWT signature.', 'wp-api-jwt-auth'),
-                    'type' => __('text'),
+                    'type' => 'text'
                 ),
-            ),
+                array(
+                    'name' => 'enable_cors',
+                    'label' => __('Enable CORs support', 'wp-api-jwt-auth'),
+                    'desc' => __('Description', 'wp-api-jwt-auth'),
+                    'type' => 'checkbox'
+                )
+            )
         );
         $this->settings_api = new WeDevs_Settings_API();
         $this->settings_api->set_sections($sections);

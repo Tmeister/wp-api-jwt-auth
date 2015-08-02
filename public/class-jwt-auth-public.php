@@ -67,15 +67,27 @@ class Jwt_Auth_Public
      */
     public function add_api_routes()
     {
-        register_rest_route($this->namespace, 'token', array(
+        register_rest_route($this->namespace, 'token', [
             'methods' => 'POST',
-            'callback' => array($this, 'generate_token'),
-        ));
+            'callback' => [$this, 'generate_token'],
+        ]);
 
         register_rest_route($this->namespace, 'token/validate', array(
             'methods' => 'POST',
             'callback' => array($this, 'validate_token'),
         ));
+    }
+
+    /**
+     *
+     */
+    public function add_cors_support()
+    {
+        $enable_cors = $this->get_option('jwt_main_options', 'enable_cors', false);
+        if ($enable_cors) {
+            $headers = apply_filters('jwt_auth_cors_allow_headers', 'Access-Control-Allow-Headers, Content-Type, Authorization');
+            header(sprintf('Access-Control-Allow-Headers: %s', $headers));
+        }
     }
 
     /**
@@ -106,7 +118,7 @@ class Jwt_Auth_Public
         if (is_wp_error($user)) {
             return new WP_Error(
                 'jwt_auth_failed',
-                __('Your credential are invalid.', 'wp-api-jwt-auth'),
+                __('Invalid Credentials.', 'wp-api-jwt-auth'),
                 array(
                     'status' => 403,
                 )
@@ -133,9 +145,10 @@ class Jwt_Auth_Public
          * Let the user modify the token data before the sign.
          */
         $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token), $secret_key);
-
+        error_log(print_r($user, true));
         $data = array(
             'token' => $token,
+            'user_login' => $user->data->user_login,
             'user_email' => $user->data->user_email,
             'user_nicename' => $user->data->user_nicename,
             'user_display_name' => $user->data->display_name,
@@ -242,7 +255,7 @@ class Jwt_Auth_Public
                    */
                    return new WP_Error(
                        'jwt_auth_bad_iss',
-                       __('Your iss do not match with this server', 'wp-api-jwt-auth'),
+                       __('The iss do not match with this server', 'wp-api-jwt-auth'),
                        array(
                            'status' => 403,
                        )
