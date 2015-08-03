@@ -39,7 +39,8 @@ To enable the CORs Support edit your wp-config.php file and add a new constant c
 
 
 ```php
-define('JWT_AUTH_CORS_ENABLE', true);```
+define('JWT_AUTH_CORS_ENABLE', true);
+```
 
 
 Finally activate the plugin within your wp-admin.
