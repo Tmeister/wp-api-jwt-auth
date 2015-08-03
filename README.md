@@ -1,4 +1,4 @@
-# JWT Authentication for the JSON-REST-API
+# JWT Authentication for the json-rest-api
 
 A simple plugin to add JSON Web Token (JWT) Authentication to the json-resp-api.
 
