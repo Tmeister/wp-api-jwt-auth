@@ -43,51 +43,5 @@
         ],
         "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
         "homepage": "https://github.com/firebase/php-jwt"
-    },
-    {
-        "name": "tareq1988/wordpress-settings-api-class",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/tareq1988/wordpress-settings-api-class.git",
-            "reference": "e5ed957cb0b54db76e25ef1ac002ae8cbbf62159"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/tareq1988/wordpress-settings-api-class/zipball/e5ed957cb0b54db76e25ef1ac002ae8cbbf62159",
-            "reference": "e5ed957cb0b54db76e25ef1ac002ae8cbbf62159",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.2.4"
-        },
-        "time": "2015-05-20 07:15:40",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "src/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPLv2"
-        ],
-        "authors": [
-            {
-                "name": "Tareq Hasan",
-                "email": "tareq@wedevs.com",
-                "homepage": "http://tareq.wedevs.com",
-                "role": "Developer"
-            }
-        ],
-        "description": "WordPress settings API Abstraction Class",
-        "homepage": "https://github.com/tareq1988/wordpress-settings-api-class",
-        "keywords": [
-            "settings-api",
-            "wordpress",
-            "wp"
-        ]
     }
 ]

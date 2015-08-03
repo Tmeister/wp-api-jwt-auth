@@ -69,7 +69,6 @@ class Jwt_Auth
 
         $this->load_dependencies();
         $this->set_locale();
-        $this->define_admin_hooks();
         $this->define_public_hooks();
     }
 
@@ -92,7 +91,7 @@ class Jwt_Auth
     {
 
         /**
-         * Load all the dependecies managed by composer.
+         * Load dependecies managed by composer.
          */
         require_once plugin_dir_path(dirname(__FILE__)).'includes/vendor/autoload.php';
 
@@ -107,11 +106,6 @@ class Jwt_Auth
          * of the plugin.
          */
         require_once plugin_dir_path(dirname(__FILE__)).'includes/class-jwt-auth-i18n.php';
-
-        /**
-         * The class responsible for defining all actions that occur in the admin area.
-         */
-        require_once plugin_dir_path(dirname(__FILE__)).'admin/class-jwt-auth-admin.php';
 
         /**
          * The class responsible for defining all actions that occur in the public-facing
@@ -136,21 +130,6 @@ class Jwt_Auth
         $plugin_i18n->set_domain($this->get_plugin_name());
         $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
     }
-
-    /**
-     * Register all of the hooks related to the admin area functionality
-     * of the plugin.
-     *
-     * @since    1.0.0
-     */
-    private function define_admin_hooks()
-    {
-        $plugin_admin = new Jwt_Auth_Admin($this->get_plugin_name(), $this->get_version());
-        $this->loader->add_action('admin_menu', $plugin_admin, 'admin_menu');
-        $this->loader->add_action('admin_init', $plugin_admin, 'add_plugin_options');
-
-    }
-
     /**
      * Register all of the hooks related to the public-facing functionality
      * of the plugin.
@@ -163,6 +142,7 @@ class Jwt_Auth
         $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
         $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 99);
+        $this->loader->add_filter( 'rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2 );
     }
 
     /**
