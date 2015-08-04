@@ -6,12 +6,27 @@ To know more about the JSON Web Tokens please visit [http://jwt.io](http://jwt.i
 
 ## Requirements
 
+### WP REST API V2
+
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
 So, in order to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
 
+### PHP
+
 **Minimum PHP version: 5.3.0**
 
+### PHP HTTP Authorization Header enable
+
+Most of the shared hosting has disabled the **HTTP Authorization Header** by default.
+
+To enable this option you'll need to edit your **.htaccess** file adding the follow
+
+```
+RewriteEngine on
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+```
 
 ## Installation & Configuration
 
