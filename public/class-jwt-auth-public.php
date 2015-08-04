@@ -74,7 +74,7 @@ class Jwt_Auth_Public
     {
         register_rest_route($this->namespace, 'token', [
             'methods' => 'POST',
-            'callback' => [$this, 'generate_token'],
+            'callback' => array($this, 'generate_token'),
         ]);
 
         register_rest_route($this->namespace, 'token/validate', array(
