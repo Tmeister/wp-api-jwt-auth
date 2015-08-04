@@ -1,8 +1,8 @@
-# JWT Authentication for the json-rest-api
+# JWT Authentication for the WP REST API
 
-A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to the json-resp-api.
+A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to WP REST API.
 
-To know more about the JSON Web Tokens please visit [http://jwt.io](http://jwt.io).
+To know more about the JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
 ## Requirements
 
@@ -10,7 +10,7 @@ To know more about the JSON Web Tokens please visit [http://jwt.io](http://jwt.i
 
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
-So, in order to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
+So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
 
 ### PHP
 
@@ -36,7 +36,7 @@ Or clone this repo into your WordPress installation under the wp-content/plugins
 
 ### Configurate the Secret Key
 
-The JWT need a **secret key** to sign the token this **secret key** must be unique and never revealed.
+The JWT needs a **secret key** to sign the token this **secret key** must be unique and never revealed.
 
 To add the **secret key** edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**
 
@@ -63,7 +63,7 @@ Finally activate the plugin within your wp-admin.
 
 ## Namespace and Endpoints
 
-When the plugin is activated a new namespace is added
+When the plugin is activated, a new namespace is added
 
 
 ```
@@ -71,7 +71,7 @@ When the plugin is activated a new namespace is added
 ```
 
 
-Also, two new endpoints are added under this namespace
+Also, two new endpoints are added to this namespace
 
 
 Endpoint | HTTP Verb
@@ -84,7 +84,7 @@ Endpoint | HTTP Verb
 
 This is the entry point for the JWT Authentication.
 
-Validates the user credentials, *username* and *password*, and returns a token to use in a future request to the API if the authentication is correct or a error if the authentication fails.
+Validates the user credentials, *username* and *password*, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.
 
 ####Sample request using AngularJS
 
@@ -140,7 +140,7 @@ Error response from the server
 }
 ```
 
-Once you get the token you must store it somewhere in your application, ex. in a **cookie** or using **localstorage**.
+Once you get the token, you must store it somewhere in your application, ex. in a **cookie** or using **localstorage**.
 
 From this point, you should pass this token to every API call
 
@@ -166,9 +166,9 @@ app.config( function( $httpProvider ) {
 } );
 ```
 
-The **wp-api-jwt-auth** will intercept every call in the server and will look for the Authorization Header, if the Authorization header is present will try to decode the token and will set the user according with the data stored in it.
+The **wp-api-jwt-auth** will intercept every call to the server and will look for the Authorization Header, if the Authorization header is present will try to decode the token and will set the user according with the data stored in it.
 
-If the token is valid the API call flow will continue as always.
+If the token is valid, the API call flow will continue as always.
 
 **Sample Headers**
 
@@ -180,7 +180,7 @@ Authorization: Bearer mF_s9.B5f-4.1JqM
 
 ###Errors
 
-If the token is invalid an error will be return, here are some samples of errors.
+If the token is invalid an error will be returned, here are some samples of errors.
 
 **Invalid Credentials**
 
@@ -226,7 +226,7 @@ If the token is invalid an error will be return, here are some samples of errors
 
 ### /wp-json/jwt-auth/v1/token/validate
 
-This is a simple helper endpoint to validate a token, you only will need to make a POST request sending the Authorization header.
+This is a simple helper endpoint to validate a token; you only will need to make a POST request sending the Authorization header.
 
 Valid Token Response
 
@@ -241,11 +241,11 @@ Valid Token Response
 
 ##Available Hooks
 
-The **wp-api-jwt-auth** is dev friendly and has 5 filters available to override the default settings.
+The **wp-api-jwt-auth** is dev friendly and has five filters available to override the default settings.
 
 ####jwt_auth_cors_allow_headers
 
-The **jwt_auth_cors_allow_headers** allows you to modify the available headers when the CORs support is enable.
+The **jwt_auth_cors_allow_headers** allows you to modify the available headers when the CORs support is enabled.
 
 Default Value:
 
