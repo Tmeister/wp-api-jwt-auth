@@ -18,6 +18,8 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 ### PHP HTTP Authorization Header enable
 
+#### Shared Hostings
+
 Most of the shared hosting has disabled the **HTTP Authorization Header** by default.
 
 To enable this option you'll need to edit your **.htaccess** file adding the follow
@@ -26,6 +28,16 @@ To enable this option you'll need to edit your **.htaccess** file adding the fol
 RewriteEngine on
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+```
+
+#### WPEngine
+
+To enable this option you'll need to edit your **.htaccess** file adding the follow
+
+See https://github.com/Tmeister/wp-api-jwt-auth/issues/1
+
+```
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 ```
 
 ## Installation & Configuration
