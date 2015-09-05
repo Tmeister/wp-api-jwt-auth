@@ -14,7 +14,7 @@
  * @wordpress-plugin
  * Plugin Name:       JWT Authentication for WP-API
  * Plugin URI:        https://enriquechavez.co
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
  * Version:           1.0.0
  * Author:            Enrique Chavez
  * Author URI:        https://enriquechavez.co
@@ -33,7 +33,7 @@ if (!defined('WPINC')) {
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path(__FILE__).'includes/class-jwt-auth.php';
+require plugin_dir_path(__FILE__) . 'includes/class-jwt-auth.php';
 
 /**
  * Begins execution of the plugin.

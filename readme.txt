@@ -9,12 +9,19 @@ Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to WP REST API.
+Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
 
 == Description ==
-## Requirements
 
-### WP REST API V2
+Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
+
+JSON Web Tokens are an open, industry standard [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties.
+
+**Support and Requests please in Github:** https://github.com/Tmeister/wp-api-jwt-auth
+
+### REQUIREMENTS
+
+#### WP REST API V2
 
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
@@ -36,18 +43,22 @@ RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 `
 
-== Installation ==
+#### WPENGINE
 
-[Download the zip file](https://github.com/Tmeister/wp-api-jwt-auth/archive/master.zip) and install it as any other WordPress plugin.
+To enable this option you'll need to edit your **.htaccess** file adding the follow
 
-Or clone this repo into your WordPress installation under the wp-content/plugins folder.
+See https://github.com/Tmeister/wp-api-jwt-auth/issues/1
 
+`
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+`
+
+### CONFIGURATION
 ### Configurate the Secret Key
 
 The JWT needs a **secret key** to sign the token this **secret key** must be unique and never revealed.
 
 To add the **secret key** edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**
-
 
 `
 define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key');
@@ -61,33 +72,27 @@ The **wp-api-jwt-auth** plugin has the option to activate [CORs](https://en.wiki
 
 To enable the CORs Support edit your wp-config.php file and add a new constant called **JWT_AUTH_CORS_ENABLE**
 
-
 `
 define('JWT_AUTH_CORS_ENABLE', true);
 `
 
-
 Finally activate the plugin within your wp-admin.
 
-## Namespace and Endpoints
+### Namespace and Endpoints
 
 When the plugin is activated, a new namespace is added
-
 
 `
 /jwt-auth/v1
 `
 
-
 Also, two new endpoints are added to this namespace
 
-
 Endpoint | HTTP Verb
---- | ---
 */wp-json/jwt-auth/v1/token* | POST
 */wp-json/jwt-auth/v1/token/validate* | POST
 
-##Usage
+###USAGE
 ### /wp-json/jwt-auth/v1/token
 
 This is the entry point for the JWT Authentication.
@@ -95,9 +100,6 @@ This is the entry point for the JWT Authentication.
 Validates the user credentials, *username* and *password*, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.
 
 ####Sample request using AngularJS
-
-sss
-
 
     ( function() {
 
@@ -187,7 +189,7 @@ Host: server.example.com
 Authorization: Bearer mF_s9.B5f-4.1JqM
 `
 
-###Errors
+###ERRORS
 
 If the token is invalid an error will be returned, here are some samples of errors.
 
@@ -248,7 +250,7 @@ Valid Token Response
 }
 `
 
-##Available Hooks
+###AVAILABLE HOOKS
 
 The **wp-api-jwt-auth** is dev friendly and has five filters available to override the default settings.
 
@@ -318,7 +320,28 @@ $data = array(
 );
 `
 
-== Changelog ==
+==Installation==
 
+= Using The WordPress Dashboard =
+
+1. Navigate to the 'Add New' in the plugins dashboard
+2. Search for 'jwt-authentication-for-wp-rest-api'
+3. Click 'Install Now'
+4. Activate the plugin on the Plugin dashboard
+
+= Uploading in WordPress Dashboard =
+
+1. Navigate to the 'Add New' in the plugins dashboard
+2. Navigate to the 'Upload' area
+3. Select `jwt-authentication-for-wp-rest-api.zip` from your computer
+4. Click 'Install Now'
+5. Activate the plugin in the Plugin dashboard
+
+###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
+
+== Changelog ==
+= 1.0.0 =
+* Initial Release.
 
 == Upgrade Notice ==
+.
