@@ -1,8 +1,8 @@
 # JWT Authentication for the WP REST API
 
-A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to WP REST API.
+A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to the WP REST API.
 
-To know more about the JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
+To know more about JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
 ## Requirements
 
@@ -16,13 +16,13 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 **Minimum PHP version: 5.3.0**
 
-### PHP HTTP Authorization Header enable
+### Eable PHP HTTP Authorization Header 
 
-#### Shared Hostings
+#### Shared Hosts
 
-Most of the shared hosting has disabled the **HTTP Authorization Header** by default.
+Most of the shared hosts have disabled the **HTTP Authorization Header** by default.
 
-To enable this option you'll need to edit your **.htaccess** file adding the follow
+To enable this option you'll need to edit your **.htaccess** file by adding the following:
 
 ```
 RewriteEngine on
@@ -32,9 +32,7 @@ RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
 #### WPEngine
 
-To enable this option you'll need to edit your **.htaccess** file adding the follow
-
-See https://github.com/Tmeister/wp-api-jwt-auth/issues/1
+To enable this option you'll need to edit your **.htaccess** file by adding the following (see https://github.com/Tmeister/wp-api-jwt-auth/issues/1):
 
 ```
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
@@ -42,15 +40,15 @@ SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 ## Installation & Configuration
 
-[Download the zip file](https://github.com/Tmeister/wp-api-jwt-auth/archive/master.zip) and install it as any other WordPress plugin.
+[Download the zip file](https://github.com/Tmeister/wp-api-jwt-auth/archive/master.zip) and install it like any other WordPress plugin.
 
-Or clone this repo into your WordPress installation under the wp-content/plugins folder.
+Or clone this repo into your WordPress installation into the wp-content/plugins folder.
 
 ### Configurate the Secret Key
 
-The JWT needs a **secret key** to sign the token this **secret key** must be unique and never revealed.
+The JWT needs a **secret key** to sign the token. This **secret key** must be unique and never revealed.
 
-To add the **secret key** edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**
+To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**.
 
 
 ```php
@@ -71,11 +69,11 @@ define('JWT_AUTH_CORS_ENABLE', true);
 ```
 
 
-Finally activate the plugin within your wp-admin.
+Finally activate the plugin within the plugin dashboard.
 
 ## Namespace and Endpoints
 
-When the plugin is activated, a new namespace is added
+When the plugin is activated, a new namespace is added.
 
 
 ```
@@ -83,7 +81,7 @@ When the plugin is activated, a new namespace is added
 ```
 
 
-Also, two new endpoints are added to this namespace
+Also, two new endpoints are added to this namespace.
 
 
 Endpoint | HTTP Verb
@@ -129,7 +127,7 @@ Validates the user credentials, *username* and *password*, and returns a token t
 
 ```
 
-Success response from the server
+Success response from the server:
 
 ```json
 {
@@ -140,7 +138,7 @@ Success response from the server
 }
 ```
 
-Error response from the server
+Error response from the server:
 
 ```json
 {
@@ -152,11 +150,11 @@ Error response from the server
 }
 ```
 
-Once you get the token, you must store it somewhere in your application, ex. in a **cookie** or using **localstorage**.
+Once you get the token, you must store it somewhere in your application, e.g. in a **cookie** or using **localstorage**.
 
-From this point, you should pass this token to every API call
+From this point, you should pass this token to every API call.
 
-Sample call using the Authorization header using AngularJS
+Sample call using the Authorization header using AngularJS:
 
 ```javascript
 app.config( function( $httpProvider ) {
@@ -178,7 +176,7 @@ app.config( function( $httpProvider ) {
 } );
 ```
 
-The **wp-api-jwt-auth** will intercept every call to the server and will look for the Authorization Header, if the Authorization header is present will try to decode the token and will set the user according with the data stored in it.
+The **wp-api-jwt-auth** will intercept every call to the server and will look for the authorization header, if the authorization header is present, it will try to decode the token and will set the user according with the data stored in it.
 
 If the token is valid, the API call flow will continue as always.
 
@@ -192,7 +190,7 @@ Authorization: Bearer mF_s9.B5f-4.1JqM
 
 ###Errors
 
-If the token is invalid an error will be returned, here are some samples of errors.
+If the token is invalid an error will be returned. Here are some samples of errors:
 
 **Invalid Credentials**
 
@@ -240,7 +238,7 @@ If the token is invalid an error will be returned, here are some samples of erro
 
 This is a simple helper endpoint to validate a token; you only will need to make a POST request sending the Authorization header.
 
-Valid Token Response
+Valid Token Response:
 
 ```json
 {
@@ -289,7 +287,7 @@ time() + (DAY_IN_SECONDS * 7)
 
 The **jwt_auth_token_before_sign** allows you to modify all the token data before to be encoded and signed.
 
-Default Value
+Default value:
 
 ```php
 <?php
@@ -309,7 +307,7 @@ $token = array(
 ###jwt_auth_token_before_dispatch
 The **jwt_auth_token_before_dispatch** allows you to modify all the response array before to dispatch it to the client.
 
-Default Value:
+Default value:
 
 ```php
 <?php
@@ -326,5 +324,5 @@ $data = array(
 
 [PHP-JWT from firebase](https://github.com/firebase/php-jwt)
 
-##Licence
+##License
 [GPLv2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
