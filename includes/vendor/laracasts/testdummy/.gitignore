@@ -1,0 +1,5 @@
+tests/coverage
+/vendor
+composer.phar
+composer.lock
+.tags*

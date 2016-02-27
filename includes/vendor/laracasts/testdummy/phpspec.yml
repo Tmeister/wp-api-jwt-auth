@@ -1,0 +1,4 @@
+suites:
+  builder_suite:
+    src_path: src
+

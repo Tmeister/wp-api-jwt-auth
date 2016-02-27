@@ -1,0 +1,36 @@
+{
+    "name": "laracasts/testdummy",
+    "description": "Easy test stubs",
+    "keywords": ["testing", "laravel", "factorygirl", "stubs"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeffrey Way",
+            "email": "jeffrey@laracasts.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "~4.0|~5.0",
+        "fzaninotto/faker": "~1.4"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.0",
+        "illuminate/database": "~4.0|~5.0",
+        "phpunit/phpunit": "~4.7@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Laracasts\\TestDummy\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/support/models"
+        ]
+    },
+    "minimum-stability": "dev"
+}

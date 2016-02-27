@@ -6,4 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
+    'phpDocumentor' => array($vendorDir . '/phpdocumentor/reflection-docblock/src'),
+    'WebDriver' => array($vendorDir . '/instaclick/php-webdriver/lib'),
+    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
+    'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib'),
 );
