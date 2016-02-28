@@ -7,6 +7,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.2",
-        "laracasts/integrated": "^0.15.6"
+        "guzzlehttp/guzzle": "^6.1"
     }
 }
