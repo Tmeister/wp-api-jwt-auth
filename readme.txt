@@ -4,8 +4,8 @@ Contributors: tmeister
 Donate link: https://enriquechavez.co
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 4.3
-Stable tag: 1.0
+Tested up to: 4.4.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -340,8 +340,13 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.0 =
+* Tested with 4.4.2
+
 = 1.0.0 =
 * Initial Release.
+
+
 
 == Upgrade Notice ==
 .
