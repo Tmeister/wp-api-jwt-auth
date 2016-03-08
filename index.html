@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>JWT Authentication for WP REST API by Tmeister</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">JWT Authentication for WP REST API</h1>
+      <h2 class="project-tagline">A simple plugin to add JSON Web Token (JWT) Authentication to WP REST API</h2>
+      <a href="https://github.com/Tmeister/wp-api-jwt-auth" class="btn">View on GitHub</a>
+      <a href="https://github.com/Tmeister/wp-api-jwt-auth/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Tmeister/wp-api-jwt-auth/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="jwt-authentication-for-the-wp-rest-api" class="anchor" href="#jwt-authentication-for-the-wp-rest-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>JWT Authentication for the WP REST API</h1>
+
+<p>A simple plugin to add <a href="https://tools.ietf.org/html/rfc7519">JSON Web Token (JWT)</a> Authentication to the WP REST API.</p>
+
+<p>To know more about JSON Web Tokens, please visit <a href="http://jwt.io">http://jwt.io</a>.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<h3>
+<a id="wp-rest-api-v2" class="anchor" href="#wp-rest-api-v2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WP REST API V2</h3>
+
+<p>This plugin was conceived to extend the <a href="https://github.com/WP-API/WP-API">WP REST API V2</a> plugin features and, of course, was built on top of it.</p>
+
+<p>So, to use the <strong>wp-api-jwt-auth</strong> you need to install and activate <a href="https://github.com/WP-API/WP-API">WP REST API</a>.</p>
+
+<h3>
+<a id="php" class="anchor" href="#php" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PHP</h3>
+
+<p><strong>Minimum PHP version: 5.3.0</strong></p>
+
+<h3>
+<a id="eable-php-http-authorization-header" class="anchor" href="#eable-php-http-authorization-header" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Eable PHP HTTP Authorization Header</h3>
+
+<h4>
+<a id="shared-hosts" class="anchor" href="#shared-hosts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Shared Hosts</h4>
+
+<p>Most of the shared hosts have disabled the <strong>HTTP Authorization Header</strong> by default.</p>
+
+<p>To enable this option you'll need to edit your <strong>.htaccess</strong> file by adding the following:</p>
+
+<pre><code>RewriteEngine on
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+</code></pre>
+
+<h4>
+<a id="wpengine" class="anchor" href="#wpengine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WPEngine</h4>
+
+<p>To enable this option you'll need to edit your <strong>.htaccess</strong> file by adding the following (see <a href="https://github.com/Tmeister/wp-api-jwt-auth/issues/1">https://github.com/Tmeister/wp-api-jwt-auth/issues/1</a>):</p>
+
+<pre><code>SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+</code></pre>
+
+<h2>
+<a id="installation--configuration" class="anchor" href="#installation--configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation &amp; Configuration</h2>
+
+<p><a href="https://github.com/Tmeister/wp-api-jwt-auth/archive/master.zip">Download the zip file</a> and install it like any other WordPress plugin.</p>
+
+<p>Or clone this repo into your WordPress installation into the wp-content/plugins folder.</p>
+
+<h3>
+<a id="configurate-the-secret-key" class="anchor" href="#configurate-the-secret-key" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configurate the Secret Key</h3>
+
+<p>The JWT needs a <strong>secret key</strong> to sign the token. This <strong>secret key</strong> must be unique and never revealed.</p>
+
+<p>To add the <strong>secret key</strong>, edit your wp-config.php file and add a new constant called <strong>JWT_AUTH_SECRET_KEY</strong>.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c1">define</span>(<span class="pl-s"><span class="pl-pds">'</span>JWT_AUTH_SECRET_KEY<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>your-top-secrect-key<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<p>You can use a string from here <a href="https://api.wordpress.org/secret-key/1.1/salt/">https://api.wordpress.org/secret-key/1.1/salt/</a></p>
+
+<h3>
+<a id="configurate-cors-support" class="anchor" href="#configurate-cors-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configurate CORs Support</h3>
+
+<p>The <strong>wp-api-jwt-auth</strong> plugin has the option to activate <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORs</a> support.</p>
+
+<p>To enable the CORs Support edit your wp-config.php file and add a new constant called <strong>JWT_AUTH_CORS_ENABLE</strong></p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c1">define</span>(<span class="pl-s"><span class="pl-pds">'</span>JWT_AUTH_CORS_ENABLE<span class="pl-pds">'</span></span>, <span class="pl-c1">true</span>);</span></pre></div>
+
+<p>Finally activate the plugin within the plugin dashboard.</p>
+
+<h2>
+<a id="namespace-and-endpoints" class="anchor" href="#namespace-and-endpoints" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Namespace and Endpoints</h2>
+
+<p>When the plugin is activated, a new namespace is added.</p>
+
+<pre><code>/jwt-auth/v1
+</code></pre>
+
+<p>Also, two new endpoints are added to this namespace.</p>
+
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>HTTP Verb</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>/wp-json/jwt-auth/v1/token</em></td>
+<td>POST</td>
+</tr>
+<tr>
+<td><em>/wp-json/jwt-auth/v1/token/validate</em></td>
+<td>POST</td>
+</tr>
+</tbody>
+</table>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="wp-jsonjwt-authv1token" class="anchor" href="#wp-jsonjwt-authv1token" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>/wp-json/jwt-auth/v1/token</h3>
+
+<p>This is the entry point for the JWT Authentication.</p>
+
+<p>Validates the user credentials, <em>username</em> and <em>password</em>, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.</p>
+
+<h4>
+<a id="sample-request-using-angularjs" class="anchor" href="#sample-request-using-angularjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample request using AngularJS</h4>
+
+<div class="highlight highlight-source-js"><pre>
+( <span class="pl-k">function</span>() {
+  <span class="pl-k">var</span> app <span class="pl-k">=</span> <span class="pl-smi">angular</span>.<span class="pl-en">module</span>( <span class="pl-s"><span class="pl-pds">'</span>jwtAuth<span class="pl-pds">'</span></span>, [] );
+
+  <span class="pl-smi">app</span>.<span class="pl-en">controller</span>( <span class="pl-s"><span class="pl-pds">'</span>MainController<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>( <span class="pl-smi">$scope</span>, <span class="pl-smi">$http</span> ) {
+
+    <span class="pl-k">var</span> apiHost <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>http://yourdomain.com/wp-json<span class="pl-pds">'</span></span>;
+
+    <span class="pl-smi">$http</span>.<span class="pl-en">post</span>( apiHost <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>/jwt-auth/v1/token<span class="pl-pds">'</span></span>, {
+        username<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>admin<span class="pl-pds">'</span></span>,
+        password<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span>
+      } )
+
+      .<span class="pl-en">then</span>( <span class="pl-k">function</span>( <span class="pl-smi">response</span> ) {
+        <span class="pl-en">console</span>.<span class="pl-c1">log</span>( <span class="pl-smi">response</span>.<span class="pl-c1">data</span> )
+      } )
+
+      .<span class="pl-en">catch</span>( <span class="pl-k">function</span>( <span class="pl-smi">error</span> ) {
+        <span class="pl-en">console</span>.<span class="pl-c1">error</span>( <span class="pl-s"><span class="pl-pds">'</span>Error<span class="pl-pds">'</span></span>, <span class="pl-smi">error</span>.<span class="pl-c1">data</span>[<span class="pl-c1">0</span>] );
+      } );
+
+  } );
+
+} )();
+
+</pre></div>
+
+<p>Success response from the server:</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>token<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9qd3QuZGV2IiwiaWF0IjoxNDM4NTcxMDUwLCJuYmYiOjE0Mzg1NzEwNTAsImV4cCI6MTQzOTE3NTg1MCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.YNe6AyWW4B7ZwfFE5wJ0O6qQ8QFcYizimDmBy6hCH_8<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>user_display_name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>user_email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>admin@localhost.dev<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>user_nicename<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>
+}</pre></div>
+
+<p>Error response from the server:</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>code<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>jwt_auth_failed<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>data<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-c1">403</span>
+    },
+    <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Invalid Credentials.<span class="pl-pds">"</span></span>
+}</pre></div>
+
+<p>Once you get the token, you must store it somewhere in your application, e.g. in a <strong>cookie</strong> or using <strong>localstorage</strong>.</p>
+
+<p>From this point, you should pass this token to every API call.</p>
+
+<p>Sample call using the Authorization header using AngularJS:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">app</span>.<span class="pl-en">config</span>( <span class="pl-k">function</span>( <span class="pl-smi">$httpProvider</span> ) {
+  <span class="pl-smi">$httpProvider</span>.<span class="pl-smi">interceptors</span>.<span class="pl-c1">push</span>( [ <span class="pl-s"><span class="pl-pds">'</span>$q<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>$location<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>$cookies<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>( <span class="pl-smi">$q</span>, <span class="pl-smi">$location</span>, <span class="pl-smi">$cookies</span> ) {
+    <span class="pl-k">return</span> {
+      <span class="pl-s"><span class="pl-pds">'</span><span class="pl-en">request</span><span class="pl-pds">'</span></span><span class="pl-k">:</span> <span class="pl-k">function</span>( <span class="pl-smi">config</span> ) {
+        <span class="pl-smi">config</span>.<span class="pl-c1">headers</span> <span class="pl-k">=</span> <span class="pl-smi">config</span>.<span class="pl-c1">headers</span> <span class="pl-k">||</span> {};
+        <span class="pl-c">//Assume that you store the token in a cookie.</span>
+        <span class="pl-k">var</span> globals <span class="pl-k">=</span> <span class="pl-smi">$cookies</span>.<span class="pl-en">getObject</span>( <span class="pl-s"><span class="pl-pds">'</span>globals<span class="pl-pds">'</span></span> ) <span class="pl-k">||</span> {};
+        <span class="pl-c">//If the cookie has the CurrentUser and the token</span>
+        <span class="pl-c">//add the Authorization header in each request</span>
+        <span class="pl-k">if</span> ( <span class="pl-smi">globals</span>.<span class="pl-smi">currentUser</span> <span class="pl-k">&amp;&amp;</span> <span class="pl-smi">globals</span>.<span class="pl-smi">currentUser</span>.<span class="pl-smi">token</span> ) {
+          <span class="pl-smi">config</span>.<span class="pl-c1">headers</span>.<span class="pl-smi">Authorization</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Bearer <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">globals</span>.<span class="pl-smi">currentUser</span>.<span class="pl-smi">token</span>;
+        }
+        <span class="pl-k">return</span> config;
+      }
+    };
+  } ] );
+} );</pre></div>
+
+<p>The <strong>wp-api-jwt-auth</strong> will intercept every call to the server and will look for the authorization header, if the authorization header is present, it will try to decode the token and will set the user according with the data stored in it.</p>
+
+<p>If the token is valid, the API call flow will continue as always.</p>
+
+<p><strong>Sample Headers</strong></p>
+
+<pre><code>POST /resource HTTP/1.1
+Host: server.example.com
+Authorization: Bearer mF_s9.B5f-4.1JqM
+</code></pre>
+
+<h3>
+<a id="errors" class="anchor" href="#errors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Errors</h3>
+
+<p>If the token is invalid an error will be returned. Here are some samples of errors:</p>
+
+<p><strong>Invalid Credentials</strong></p>
+
+<div class="highlight highlight-source-json"><pre>[
+  {
+    <span class="pl-s"><span class="pl-pds">"</span>code<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>jwt_auth_failed<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Invalid Credentials.<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>data<span class="pl-pds">"</span></span>: {
+      <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-c1">403</span>
+    }
+  }
+]</pre></div>
+
+<p><strong>Invalid Signature</strong></p>
+
+<div class="highlight highlight-source-json"><pre>[
+  {
+    <span class="pl-s"><span class="pl-pds">"</span>code<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>jwt_auth_invalid_token<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Signature verification failed<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>data<span class="pl-pds">"</span></span>: {
+      <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-c1">403</span>
+    }
+  }
+]</pre></div>
+
+<p><strong>Expired Token</strong></p>
+
+<div class="highlight highlight-source-json"><pre>[
+  {
+    <span class="pl-s"><span class="pl-pds">"</span>code<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>jwt_auth_invalid_token<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>message<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Expired token<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>data<span class="pl-pds">"</span></span>: {
+      <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-c1">403</span>
+    }
+  }
+]</pre></div>
+
+<h3>
+<a id="wp-jsonjwt-authv1tokenvalidate" class="anchor" href="#wp-jsonjwt-authv1tokenvalidate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>/wp-json/jwt-auth/v1/token/validate</h3>
+
+<p>This is a simple helper endpoint to validate a token; you only will need to make a POST request sending the Authorization header.</p>
+
+<p>Valid Token Response:</p>
+
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>code<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>jwt_auth_valid_token<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>data<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-c1">200</span>
+  }
+}</pre></div>
+
+<h2>
+<a id="available-hooks" class="anchor" href="#available-hooks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Available Hooks</h2>
+
+<p>The <strong>wp-api-jwt-auth</strong> is dev friendly and has five filters available to override the default settings.</p>
+
+<h4>
+<a id="jwt_auth_cors_allow_headers" class="anchor" href="#jwt_auth_cors_allow_headers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>jwt_auth_cors_allow_headers</h4>
+
+<p>The <strong>jwt_auth_cors_allow_headers</strong> allows you to modify the available headers when the CORs support is enabled.</p>
+
+<p>Default Value:</p>
+
+<pre><code>'Access-Control-Allow-Headers, Content-Type, Authorization'
+</code></pre>
+
+<h3>
+<a id="jwt_auth_not_before" class="anchor" href="#jwt_auth_not_before" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>jwt_auth_not_before</h3>
+
+<p>The <strong>jwt_auth_not_before</strong> allows you to change the <a href="https://tools.ietf.org/html/rfc7519#section-4.1.5"><strong>nbf</strong></a> value before the token is created.</p>
+
+<p>Default Value:</p>
+
+<pre><code>Creation time - time()
+</code></pre>
+
+<h3>
+<a id="jwt_auth_expire" class="anchor" href="#jwt_auth_expire" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>jwt_auth_expire</h3>
+
+<p>The <strong>jwt_auth_expire</strong> allows you to change the value <a href="https://tools.ietf.org/html/rfc7519#section-4.1.4"><strong>exp</strong></a> before the token is created.</p>
+
+<p>Default Value:</p>
+
+<pre><code>time() + (DAY_IN_SECONDS * 7)
+</code></pre>
+
+<h3>
+<a id="jwt_auth_token_before_sign" class="anchor" href="#jwt_auth_token_before_sign" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>jwt_auth_token_before_sign</h3>
+
+<p>The <strong>jwt_auth_token_before_sign</strong> allows you to modify all the token data before to be encoded and signed.</p>
+
+<p>Default value:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$token</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>iss<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> get_bloginfo(<span class="pl-s"><span class="pl-pds">'</span>url<span class="pl-pds">'</span></span>),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>iat<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$issuedAt</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>nbf<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$notBefore</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>exp<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$expire</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>data<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>id<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$user</span><span class="pl-k">-&gt;</span><span class="pl-smi">data</span><span class="pl-k">-&gt;</span><span class="pl-smi">ID</span>,</span>
+<span class="pl-s1">        )</span>
+<span class="pl-s1">    )</span>
+<span class="pl-s1">);</span></pre></div>
+
+<h3>
+<a id="jwt_auth_token_before_dispatch" class="anchor" href="#jwt_auth_token_before_dispatch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>jwt_auth_token_before_dispatch</h3>
+
+<p>The <strong>jwt_auth_token_before_dispatch</strong> allows you to modify all the response array before to dispatch it to the client.</p>
+
+<p>Default value:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>token<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$token</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>user_email<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$user</span><span class="pl-k">-&gt;</span><span class="pl-smi">data</span><span class="pl-k">-&gt;</span><span class="pl-smi">user_email</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>user_nicename<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$user</span><span class="pl-k">-&gt;</span><span class="pl-smi">data</span><span class="pl-k">-&gt;</span><span class="pl-smi">user_nicename</span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>user_display_name<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-smi">$user</span><span class="pl-k">-&gt;</span><span class="pl-smi">data</span><span class="pl-k">-&gt;</span><span class="pl-smi">display_name</span>,</span>
+<span class="pl-s1">);</span></pre></div>
+
+<h2>
+<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
+
+<p>Since version <strong>1.1.0</strong> I've added a new test suite to be sure that the basic features of this plugin do what it's expected.</p>
+
+<p>You can run this test using the following command</p>
+
+<pre><code>includes/vendor/bin/phpunit tests
+</code></pre>
+
+<p><img src="https://s3.amazonaws.com/f.cl.ly/items/2o0j0a403A0N1a0r1C3H/Image%202016-02-27%20at%208.16.48%20PM.png?v=5fe1c76e" alt="Command Line Output"></p>
+
+<p>All the tests can be found at <a href="https://github.com/Tmeister/wp-api-jwt-auth/tree/develop/tests/GeneralTest.php">https://github.com/Tmeister/wp-api-jwt-auth/tree/develop/tests/GeneralTest.php</a></p>
+
+<h2>
+<a id="credits" class="anchor" href="#credits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits</h2>
+
+<p><a href="http://v2.wp-api.org/">WP REST API V2</a></p>
+
+<p><a href="https://github.com/firebase/php-jwt">PHP-JWT from firebase</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p><a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPLv2</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Tmeister/wp-api-jwt-auth">JWT Authentication for WP REST API</a> is maintained by <a href="https://github.com/Tmeister">Tmeister</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
