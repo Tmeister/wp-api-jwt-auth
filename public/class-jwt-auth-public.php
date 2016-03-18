@@ -213,6 +213,13 @@ class Jwt_Auth_Public
          * return the user.
          */
         $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
+
+
+        /* Double check for different auth header string (server dependent) */
+        if (!$auth) {
+            $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ?  $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
+        }
+        
         if (!$auth) {
             return new WP_Error(
                 'jwt_auth_no_auth_header',
