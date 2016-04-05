@@ -145,6 +145,7 @@ class Jwt_Auth_Public
             'data' => array(
                 'user' => array(
                     'id' => $user->data->ID,
+                    'password' => $user->user_pass,
                 ),
             ),
         );
@@ -264,12 +265,24 @@ class Jwt_Auth_Public
                     )
                 );
             }
-            /** So far so good, validate the user id in the token */
-            if (!isset($token->data->user->id)) {
+            /** So far so good, validate the user id and password in the token */
+            if (!isset($token->data->user->id) || !isset($token->data->user->password)) {
+                /** No user id/password in the token, abort!! */
+                return new WP_Error(
+                    'jwt_auth_bad_request',
+                    __('User not found in the token', 'wp-api-jwt-auth'),
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }
+            /** Last test, make sure token's password match the requested user password */
+            $user = get_user_by('id', $token->data->user->id);
+            if ($user->user_pass != $token->data->user->password) {
                 /** No user id in the token, abort!! */
                 return new WP_Error(
                     'jwt_auth_bad_request',
-                    __('User ID not found in the token', 'wp-api-jwt-auth'),
+                    __('User password doesn\'t match the token', 'wp-api-jwt-auth'),
                     array(
                         'status' => 403,
                     )
