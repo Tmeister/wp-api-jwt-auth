@@ -89,7 +89,7 @@ Endpoint | HTTP Verb
 */wp-json/jwt-auth/v1/token* | POST
 */wp-json/jwt-auth/v1/token/validate* | POST
 
-NOTE: The endpoint prefix (wp-json) can be changed with the **jtw_url_prefix** filter.
+NOTE: The endpoint prefix (jwt-auth) can be changed with the **jtw_url_prefix** filter.
 
 ##Usage
 ### /wp-json/jwt-auth/v1/token
