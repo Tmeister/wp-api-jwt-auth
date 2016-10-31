@@ -150,7 +150,7 @@ class Jwt_Auth_Public
         );
 
         /** Let the user modify the token data before the sign. */
-        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token), $secret_key);
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
 
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
