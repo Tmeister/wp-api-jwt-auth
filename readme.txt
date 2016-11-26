@@ -340,11 +340,18 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.1 =
+* Add an extra validation to get the Authorization header
+* Increase determine_current_user priority Fix #13
+* Add the user object as parameter in the jwt_auth_token_before_sign hook
+* Improve error message when auth fails #34
+* Tested with 4.6.1
+
+= 1.2.0 =
+* Tested with 4.4.2
+
 = 1.0.0 =
 * Initial Release.
-
-= 1.1.0 =
-* Test Suite Added
 
 == Upgrade Notice ==
 .
