@@ -326,6 +326,7 @@ Since version **1.1.0** I've added a new test suite to be sure that the basic fe
 You can run this test using the following command
 
 ```
+composer install
 includes/vendor/bin/phpunit tests
 ```
 
