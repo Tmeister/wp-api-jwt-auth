@@ -68,16 +68,26 @@ class Jwt_Auth_Public
     }
 
     /**
+     * Get the URL prefix for the API resource.
+     * 
+     * @return string Prefix.
+    */
+    
+    function get_url_prefix() {
+        return apply_filters( 'jwt_url_prefix', $this->namespace );
+    }
+    
+    /**
      * Add the endpoints to the API
      */
     public function add_api_routes()
     {
-        register_rest_route($this->namespace, 'token', [
+        register_rest_route( get_url_prefix(), 'token', [
             'methods' => 'POST',
             'callback' => array($this, 'generate_token'),
         ]);
 
-        register_rest_route($this->namespace, 'token/validate', array(
+        register_rest_route( get_url_prefix(), 'token/validate', array(
             'methods' => 'POST',
             'callback' => array($this, 'validate_token'),
         ));

@@ -89,6 +89,8 @@ Endpoint | HTTP Verb
 */wp-json/jwt-auth/v1/token* | POST
 */wp-json/jwt-auth/v1/token/validate* | POST
 
+NOTE: The endpoint prefix (jwt-auth) can be changed with the **jtw_url_prefix** filter.
+
 ##Usage
 ### /wp-json/jwt-auth/v1/token
 
@@ -317,6 +319,13 @@ $data = array(
     'user_nicename' => $user->data->user_nicename,
     'user_display_name' => $user->data->display_name,
 );
+```
+
+###jwt_url_prefix
+The **jwt_url_prefix** filter allows you to change the prefix of the endpoint.
+
+Default value:
+```$this->namespace
 ```
 
 ## Testing
