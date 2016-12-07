@@ -175,6 +175,19 @@ class Jwt_Auth_Public
      */
     public function determine_current_user($user)
     {
+        /**
+         * This hook only should run on the REST API requests to determine
+         * if the user in the Token (if any) is valid, for any other
+         * normal call ex. wp-admin/.* return the user.
+         *
+         * @since 1.2.3
+         **/
+        $rest_api_slug = rest_get_url_prefix();
+        $valid_api_uri = strpos($_SERVER['REQUEST_URI'], $rest_api_slug);
+        if(!$valid_api_uri){
+            return $user;
+        }
+
         /*
          * if the request URI is for validate the token don't do anything,
          * this avoid double calls to the validate_token function.
@@ -220,7 +233,7 @@ class Jwt_Auth_Public
         if (!$auth) {
             $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ?  $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
         }
-        
+
         if (!$auth) {
             return new WP_Error(
                 'jwt_auth_no_auth_header',

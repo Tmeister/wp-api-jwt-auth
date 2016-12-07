@@ -4,8 +4,8 @@ Contributors: tmeister
 Donate link: https://enriquechavez.co
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 4.6.1
-Stable tag: 1.2.2
+Tested up to: 4.7
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -340,7 +340,10 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
-= 1.2.1 =
+= 1.2.3 =
+* Fix Max recursion error in WordPress 4.7 #44
+
+= 1.2.2 =
 * Add an extra validation to get the Authorization header
 * Increase determine_current_user priority Fix #13
 * Add the user object as parameter in the jwt_auth_token_before_sign hook
