@@ -93,25 +93,25 @@ class Jwt_Auth
         /**
          * Load dependecies managed by composer.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/vendor/autoload.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/vendor/autoload.php';
 
         /**
          * The class responsible for orchestrating the actions and filters of the
          * core plugin.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/class-jwt-auth-loader.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-auth-loader.php';
 
         /**
          * The class responsible for defining internationalization functionality
          * of the plugin.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/class-jwt-auth-i18n.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-auth-i18n.php';
 
         /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'public/class-jwt-auth-public.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-jwt-auth-public.php';
 
         $this->loader = new Jwt_Auth_Loader();
     }
@@ -130,6 +130,7 @@ class Jwt_Auth
         $plugin_i18n->set_domain($this->get_plugin_name());
         $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
     }
+
     /**
      * Register all of the hooks related to the public-facing functionality
      * of the plugin.
@@ -142,7 +143,7 @@ class Jwt_Auth
         $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
         $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
-        $this->loader->add_filter( 'rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2 );
+        $this->loader->add_filter('rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2);
     }
 
     /**
