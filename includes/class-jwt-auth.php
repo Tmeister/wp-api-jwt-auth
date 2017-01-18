@@ -70,6 +70,7 @@ class Jwt_Auth
         $this->load_dependencies();
         $this->set_locale();
         $this->define_public_hooks();
+        $this->define_admin_hooks();
     }
 
     /**
@@ -100,6 +101,11 @@ class Jwt_Auth
          * core plugin.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-auth-loader.php';
+
+        /**
+         * The class responsible for defining all actions that occur in the admin area.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-jwt-admin.php';
 
         /**
          * The class responsible for defining internationalization functionality
@@ -144,6 +150,22 @@ class Jwt_Auth
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
         $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
         $this->loader->add_filter('rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2);
+    }
+
+    /**
+     * Register all of the hooks related to the admin-facing functionality
+     * of the plugin.
+     *
+     * @since    2.0.0
+     */
+    private function define_admin_hooks()
+    {
+        if (defined('JWT_AUTH_TOKEN_TRACKING') && JWT_AUTH_TOKEN_TRACKING === true) {
+            $plugin_admin = new Jwt_Auth_Admin($this->get_plugin_name(), $this->get_version());
+            $this->loader->add_action('init', $plugin_admin, 'add_token_custom_post');
+            $this->loader->add_action('show_user_profile', $plugin_admin, 'add_data_on_user_page');
+            $this->loader->add_action('edit_user_profile', $plugin_admin, 'add_data_on_user_page');
+        }
     }
 
     /**
