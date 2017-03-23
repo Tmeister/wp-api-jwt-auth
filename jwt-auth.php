@@ -25,7 +25,7 @@
  */
 
 // If this file is called directly, abort.
-if (!defined('WPINC')) {
+if ( ! defined('WPINC')) {
     die;
 }
 
@@ -49,4 +49,5 @@ function run_jwt_auth()
     $plugin = new Jwt_Auth();
     $plugin->run();
 }
+
 run_jwt_auth();

@@ -79,7 +79,7 @@ class GeneralTest extends PHPUnit_Framework_TestCase
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $data  = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody(), true);
         $token = $data['token'];
 
         #With the token now validate it.
@@ -120,7 +120,7 @@ class GeneralTest extends PHPUnit_Framework_TestCase
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $data  = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody(), true);
         $token = $data['token'];
 
         #Create the post | Writing
@@ -128,7 +128,7 @@ class GeneralTest extends PHPUnit_Framework_TestCase
             'headers' => [
                 'Authorization' => 'Bearer ' . $token
             ],
-            'json'    => [
+            'json' => [
                 'title' => 'Created from Tests'
             ]
         ]);

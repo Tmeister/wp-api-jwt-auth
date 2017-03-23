@@ -41,7 +41,7 @@ class Jwt_Auth_i18n
         load_plugin_textdomain(
             $this->domain,
             false,
-            dirname(dirname(plugin_basename(__FILE__))).'/languages/'
+            dirname(dirname(plugin_basename(__FILE__))) . '/languages/'
         );
     }
 
