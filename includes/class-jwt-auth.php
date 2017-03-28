@@ -165,6 +165,7 @@ class Jwt_Auth
             $this->loader->add_action('init', $plugin_admin, 'add_token_custom_post');
             $this->loader->add_action('show_user_profile', $plugin_admin, 'add_data_on_user_page');
             $this->loader->add_action('edit_user_profile', $plugin_admin, 'add_data_on_user_page');
+            $this->loader->add_action('wp_ajax_deltoken', $plugin_admin, 'deltoken');
         }
     }
 

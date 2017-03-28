@@ -91,7 +91,7 @@ class Jwt_Auth_Admin
             'has_archive' => false,
             'hierarchical' => false,
             'menu_position' => null,
-            'supports' => array('title')
+            'supports' => array('title','custom-fields')
         );
 
         $custom_post_name = apply_filters('jwt_auth_token_custom_post_name', 'jwt_token');
@@ -137,4 +137,23 @@ class Jwt_Auth_Admin
         require dirname(__FILE__) . '/partials/user-page-token-list.php';
         echo ob_get_clean();
     }
+    
+    
+ 
+	public function deltoken() {
+ 		try {
+    	check_ajax_referer( 'deltoken', 'security' );
+    	$tokenpostid = $_REQUEST['tokenpostid'];
+		if ($tokenpostid) {
+    		if (wp_delete_post( $tokenpostid, TRUE )) {
+    		echo json_encode($tokenpostid);
+			}
+    	} 
+    	die();
+    	} catch (Exception $e){
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+	}  
+    
+    
 }
