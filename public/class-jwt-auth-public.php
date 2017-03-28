@@ -240,7 +240,15 @@ class Jwt_Auth_Public
         $uid = $token->data->user->id;
         $prevexpire = $token->exp;
         } else {
-        error_log("can't get user id nor exp");
+        $error_code = "can't get user id nor exp";
+
+        return new WP_Error(
+                '[jwt_auth] ' . $error_code,
+                "error",
+                array(
+                    'status' => 403,
+                )
+            );
         }
         $issuedAt = $token->iat;
         $notBefore = apply_filters('jwt_auth_not_before', $token->nbf, $token->nbf);

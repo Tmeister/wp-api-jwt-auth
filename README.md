@@ -81,13 +81,14 @@ When the plugin is activated, a new namespace is added.
 ```
 
 
-Also, two new endpoints are added to this namespace.
+Also, three new endpoints are added to this namespace.
 
 
 Endpoint | HTTP Verb
 --- | ---
 */wp-json/jwt-auth/v1/token* | POST
 */wp-json/jwt-auth/v1/token/validate* | POST
+*/wp-json/jwt-auth/v1/token/regen* | POST
 
 ##Usage
 ### /wp-json/jwt-auth/v1/token
@@ -248,6 +249,14 @@ Valid Token Response:
   }
 }
 ```
+
+
+### /wp-json/jwt-auth/v1/token/regen
+
+This is the entry point for extending token validity without re-authorization.
+
+Validates the previously issued token, and if still within validity date, returns a new token to use in a future request to the API.
+
 
 ##Available Hooks
 
