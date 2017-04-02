@@ -133,7 +133,7 @@ class Jwt_Auth_Public
 
             return new WP_Error(
                 '[jwt_auth] ' . $error_code,
-                $user->get_error_message($error_code),
+                'Bad username or password.',
                 array(
                     'status' => 403,
                 )
@@ -181,8 +181,8 @@ class Jwt_Auth_Public
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
             'token' => $token,
-            'user_email' => $user->data->user_email,
-            'user_nicename' => $user->data->user_nicename,
+            //'user_email' => $user->data->user_email,
+            //'user_nicename' => $user->data->user_nicename,
             'user_display_name' => $user->data->display_name,
             'token_expires' => $expire,
         );
@@ -250,6 +250,18 @@ class Jwt_Auth_Public
                 )
             );
         }
+        if (isset($token->data->user->uuid)) {
+                /** UUID does not exist in the db, abort!! */
+                $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
+                if (($uuidpost == null)||($uuidpost->post_status !== 'publish')) {
+                return new WP_Error(
+                    'jwt_auth_bad_request',
+                    __('Bad UUID', 'wp-api-jwt-auth'),
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }}
         $issuedAt = $token->iat;
         $notBefore = apply_filters('jwt_auth_not_before', $token->nbf, $token->nbf);
         $expire = apply_filters('jwt_auth_expire', time() + (DAY_IN_SECONDS * 28), time());
@@ -258,9 +270,9 @@ class Jwt_Auth_Public
         $data = array(
             'user' => array(
                 'id' => $uid,
-                'extended' => true,
                 'uuid' => $token->data->user->uuid,
-            )
+            ),
+            'extended' => true,
         );
 
         $token = array(
@@ -277,7 +289,7 @@ class Jwt_Auth_Public
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
             'token' => $token,
-            'token_extended' => $expire,
+            'token_expires' => $expire,
         );
 
         /** Let the user modify the data before send it back */
