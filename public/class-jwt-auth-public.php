@@ -90,8 +90,14 @@ class Jwt_Auth_Public
     {
         $enable_cors = defined('JWT_AUTH_CORS_ENABLE') ? JWT_AUTH_CORS_ENABLE : false;
         if ($enable_cors) {
-            $headers = apply_filters('jwt_auth_cors_allow_headers', 'Access-Control-Allow-Headers, Content-Type, Authorization');
-            header(sprintf('Access-Control-Allow-Headers: %s', $headers));
+            remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+		    add_filter( 'rest_pre_serve_request', function( $value ) {
+                header( 'Access-Control-Allow-Origin: *' );
+                header( 'Access-Control-Allow-Methods: GET, POST, UPDATE, DELETE' );
+                header( 'Access-Control-Allow-Headers: Authorization, Content-Type' );
+                header( 'Access-Control-Allow-Credentials: true' );
+                return $value;
+            });
         }
     }
 
