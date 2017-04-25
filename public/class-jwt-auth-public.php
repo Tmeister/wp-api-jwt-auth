@@ -86,6 +86,10 @@ class Jwt_Auth_Public
             'methods' => 'POST',
             'callback' => array($this, 'regen_token'),
         ));
+         register_rest_route($this->namespace, 'token/revoke', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'revoke_token'),
+        ));
     }
 
     /**
@@ -191,7 +195,49 @@ class Jwt_Auth_Public
         return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
     }
     
+    /**
+     * Invalidate all tokens if user changes their password.
+     */
+    public function invalidate_token_after_password_change($user_id) {
+    	if ( ! isset( $_POST['pass1'] ) || '' == $_POST['pass1'] ) {
+        return;
+    	}
+    global $wpdb;
+    $usertokens = $wpdb->get_col("SELECT post_id from wp_postmeta where meta_key ='jwt_user_id' and meta_value ='". $user_id. "'");
+    if ($usertokens) {
+     foreach ($usertokens as $usertoken) {
+     wp_delete_post($usertoken);
+     }
+     }
+}
     
+    
+    
+    
+     public function revoke_token($request)
+    {
+    $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+    		$auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
+
+            list($token) = sscanf($auth, 'Bearer %s');
+       // error_log($token);
+        $token = JWT::decode($token, $secret_key, array('HS256'));
+        
+        if (isset($token->data->user->uuid)) {
+        
+                $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
+                if ($uuidpost) {
+                if (wp_delete_post($uuidpost->ID)) {
+                            return array(
+                'code' => 'jwt_token_deleted',
+                'data' => array(
+                    'status' => 200,
+                ),
+            );
+            }
+            }}
+    
+    }
     public function regen_token($request)
     {
         $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
@@ -467,7 +513,7 @@ class Jwt_Auth_Public
             if (isset($token->data->user->uuid)) {
                 /** UUID does not exist in the db, abort!! */
                 $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
-                if($uuidpost == null) {
+                if (($uuidpost == null)||($uuidpost->post_status !== 'publish')) {
                 return new WP_Error(
                     'jwt_auth_bad_request',
                     __('Bad UUID', 'wp-api-jwt-auth'),
