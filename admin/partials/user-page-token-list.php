@@ -12,7 +12,7 @@
     <tbody id="the-list">
     <?php foreach ($user_tokens as $token): ?>
         <?php $user_agent = get_post_meta($token->ID, 'jwt_user_agent', true); ?>
-        <tr class="jwt-token-holder inactive">
+        <tr class="jwt-token-holder inactive" id="<?php echo $token->ID;?>">
             <td class="plugin-title column-primary">
                 <strong><?php echo esc_html($token->post_title); ?></strong>
             </td>
@@ -27,7 +27,7 @@
                 </div>
             </td>
             <td class="column-actions">
-                <div class="column-actions"><p>ANother actions</p></div>
+                <div class="column-actions"><p><a class="removetoken" data-tokenpostid="<?php echo $token->ID;?>" style="cursor:pointer;">Delete token</a></p></div>
             </td>
         </tr>
     <?php endforeach; ?>
@@ -35,3 +35,22 @@
 
 
 </table>
+<script>
+jQuery('.removetoken').on('click',function() {
+    var tokenpostid = jQuery(this).data( "tokenpostid" );
+        ajaxurl = "<?php echo admin_url( 'admin-ajax.php' ); ?>";
+
+        var data = {
+            'action': 'deltoken',
+            'security': '<?php echo wp_create_nonce( "deltoken" ); ?>',
+            'tokenpostid': tokenpostid,
+        };
+        jQuery.post(ajaxurl, data, function(response) {
+            json = jQuery.parseJSON(response);
+            if (json == tokenpostid) {
+            jQuery('#'+tokenpostid).remove();
+            }
+            //console.log(json);
+        });
+        });
+         </script>

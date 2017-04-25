@@ -82,6 +82,14 @@ class Jwt_Auth_Public
             'methods' => 'POST',
             'callback' => array($this, 'validate_token'),
         ));
+        register_rest_route($this->namespace, 'token/regen', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'regen_token'),
+        ));
+         register_rest_route($this->namespace, 'token/revoke', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'revoke_token'),
+        ));
     }
 
     /**
@@ -129,7 +137,7 @@ class Jwt_Auth_Public
 
             return new WP_Error(
                 '[jwt_auth] ' . $error_code,
-                $user->get_error_message($error_code),
+                'Bad username or password.',
                 array(
                     'status' => 403,
                 )
@@ -139,7 +147,7 @@ class Jwt_Auth_Public
         /* Valid credentials, the user exists create the according Token */
         $issuedAt = time();
         $notBefore = apply_filters('jwt_auth_not_before', $issuedAt, $issuedAt);
-        $expire = apply_filters('jwt_auth_expire', $issuedAt + (DAY_IN_SECONDS * 7), $issuedAt);
+        $expire = apply_filters('jwt_auth_expire', $issuedAt + (DAY_IN_SECONDS * 28), $issuedAt);
 
         /* Move the data array to add the  uuid in the tracking is activated */
         $data = array(
@@ -177,13 +185,161 @@ class Jwt_Auth_Public
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
             'token' => $token,
-            'user_email' => $user->data->user_email,
-            'user_nicename' => $user->data->user_nicename,
+            //'user_email' => $user->data->user_email,
+            //'user_nicename' => $user->data->user_nicename,
             'user_display_name' => $user->data->display_name,
+            'token_expires' => $expire,
         );
 
         /** Let the user modify the data before send it back */
         return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
+    }
+    
+    /**
+     * Invalidate all tokens if user changes their password.
+     */
+    public function invalidate_token_after_password_change($user_id) {
+    	if ( ! isset( $_POST['pass1'] ) || '' == $_POST['pass1'] ) {
+        return;
+    	}
+    global $wpdb;
+    $usertokens = $wpdb->get_col("SELECT post_id from wp_postmeta where meta_key ='jwt_user_id' and meta_value ='". $user_id. "'");
+    if ($usertokens) {
+     foreach ($usertokens as $usertoken) {
+     wp_delete_post($usertoken);
+     }
+     }
+}
+    
+    
+    
+    
+     public function revoke_token($request)
+    {
+    $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+    		$auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
+
+            list($token) = sscanf($auth, 'Bearer %s');
+       // error_log($token);
+        $token = JWT::decode($token, $secret_key, array('HS256'));
+        
+        if (isset($token->data->user->uuid)) {
+        
+                $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
+                if ($uuidpost) {
+                if (wp_delete_post($uuidpost->ID)) {
+                            return array(
+                'code' => 'jwt_token_deleted',
+                'data' => array(
+                    'status' => 200,
+                ),
+            );
+            }
+            }}
+    
+    }
+    public function regen_token($request)
+    {
+        $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+
+		$auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
+
+
+        /* Double check for different auth header string (server dependent) */
+        if ( ! $auth) {
+            $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
+        }
+
+
+        /** First thing, check the secret key if not exist return a error*/
+        if ( ! $secret_key) {
+            return new WP_Error(
+                'jwt_auth_bad_config',
+                __('JWT is not configured properly, please contact the admin', 'wp-api-jwt-auth'),
+                array(
+                    'status' => 403,
+                )
+            );
+        }
+        /** Try to authenticate the user with the passed credentials*/
+        //$user = wp_authenticate($username, $password);
+        list($token) = sscanf($auth, 'Bearer %s');
+       // error_log($token);
+        $token = JWT::decode($token, $secret_key, array('HS256'));
+		$revalidate = $this->validate_token();
+
+        /** If the authentication fails return a error*/
+        if (!$revalidate) {
+            $error_code = "can't re-auth";
+
+            return new WP_Error(
+                '[jwt_auth] ' . $error_code,
+                "error",
+                array(
+                    'status' => 403,
+                )
+            );
+        }
+
+        /* Valid credentials, the user exists create the according Token */
+        if (isset($token->data->user->id)) {
+        $uid = $token->data->user->id;
+        $prevexpire = $token->exp;
+        } else {
+        $error_code = "can't get user id nor exp";
+
+        return new WP_Error(
+                '[jwt_auth] ' . $error_code,
+                "error",
+                array(
+                    'status' => 403,
+                )
+            );
+        }
+        if (isset($token->data->user->uuid)) {
+                /** UUID does not exist in the db, abort!! */
+                $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
+                if (($uuidpost == null)||($uuidpost->post_status !== 'publish')) {
+                return new WP_Error(
+                    'jwt_auth_bad_request',
+                    __('Bad UUID', 'wp-api-jwt-auth'),
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }}
+        $issuedAt = $token->iat;
+        $notBefore = apply_filters('jwt_auth_not_before', $token->nbf, $token->nbf);
+        $expire = apply_filters('jwt_auth_expire', time() + (DAY_IN_SECONDS * 28), time());
+
+        /* Move the data array to add the  uuid in the tracking is activated */
+        $data = array(
+            'user' => array(
+                'id' => $uid,
+                'uuid' => $token->data->user->uuid,
+            ),
+            'extended' => true,
+        );
+
+        $token = array(
+            'iss' => get_bloginfo('url'),
+            'iat' => $issuedAt,
+            'nbf' => $notBefore,
+            'exp' => $expire,
+            'data' => $data,
+        );
+
+        /** Let the user modify the token data before the sign. */
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $uid), $secret_key);
+
+        /** The token is signed, now create the object with no sensible user data to the client*/
+        $data = array(
+            'token' => $token,
+            'token_expires' => $expire,
+        );
+
+        /** Let the user modify the data before send it back */
+        return apply_filters('jwt_auth_token_before_dispatch', $data, $uid);
     }
 
     /**
@@ -196,6 +352,12 @@ class Jwt_Auth_Public
      */
     public function determine_current_user($user)
     {
+        // The oauth stuff below is trying to make this play nice with coexisting oauth server, may be removed
+        $oauth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
+		$oauthreqest = isset($_REQUEST['oauth_token']) ?  $_REQUEST['oauth_token'] : false;  
+		list($oauthscan) = sscanf($oauth, 'OAuth %s');  
+            
+        
         /**
          * This hook only should run on the REST API requests to determine
          * if the user in the Token (if any) is valid, for any other
@@ -232,7 +394,9 @@ class Jwt_Auth_Public
         }
 
         /** Everything is ok, return the user ID stored in the token*/
+        if ((!$oauthscan) && (!$oauthreqest)) { //ignore if oauth
         return $token->data->user->id;
+        }
     }
 
     /**
@@ -245,6 +409,14 @@ class Jwt_Auth_Public
      */
     public function validate_token($output = true)
     {
+    // if oauth return
+
+        $oauth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
+		$oauthreqest = isset($_REQUEST['oauth_token']) ?  $_REQUEST['oauth_token'] : false;  
+		list($oauthscan) = sscanf($oauth, 'OAuth %s');  
+            if (($oauthscan) || ($oauthreqest)) {
+				return $oauthscan;
+        }
         /*
          * Looking for the HTTP_AUTHORIZATION header, if not present just
          * return the user.
@@ -271,8 +443,9 @@ class Jwt_Auth_Public
          * The HTTP_AUTHORIZATION is present verify the format
          * if the format is wrong return the user.
          */
+ 
         list($token) = sscanf($auth, 'Bearer %s');
-        if ( ! $token) {
+        if (!$token) {
             return new WP_Error(
                 'jwt_auth_bad_auth_header',
                 __('Authorization header malformed.', 'wp-api-jwt-auth'),
@@ -326,7 +499,30 @@ class Jwt_Auth_Public
              * Now, Validate if the token has been revoked
              * TODO Validate this.
              **/
-
+ 			if ( ! isset($token->data->user->uuid)) {
+                /** No UUID in the token, abort!! */
+                return new WP_Error(
+                    'jwt_auth_bad_request',
+                    __('UUID not found in the token', 'wp-api-jwt-auth'),
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }
+            
+            if (isset($token->data->user->uuid)) {
+                /** UUID does not exist in the db, abort!! */
+                $uuidpost = get_page_by_title($token->data->user->uuid,OBJECT,'jwt_token');
+                if (($uuidpost == null)||($uuidpost->post_status !== 'publish')) {
+                return new WP_Error(
+                    'jwt_auth_bad_request',
+                    __('Bad UUID', 'wp-api-jwt-auth'),
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }}
+            
 
             /* Everything looks good return the decoded token if the $output is false */
             if ( ! $output) {
@@ -387,6 +583,7 @@ class Jwt_Auth_Public
 
         if ( ! is_wp_error($new_token_id)) {
             update_post_meta($new_token_id, 'jwt_user_id', $user->id);
+            update_post_meta($new_token_id, 'jwt_username', $user->user_login);
             update_post_meta($new_token_id, 'jwt_user_agent', $user_agent);
             update_post_meta($new_token_id, 'jwt_status', 'active');
         }
