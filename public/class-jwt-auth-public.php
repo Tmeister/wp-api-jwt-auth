@@ -233,6 +233,13 @@ class Jwt_Auth_Public
         if (!$auth) {
             $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ?  $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
         }
+        
+        if (!$auth) {
+            if (function_exists('getallheaders')){
+                $headers = getallheaders();
+                $auth = isset($headers['Authorization']) ? $headers['Authorization'] : false;
+            }
+        }
 
         if (!$auth) {
             return new WP_Error(
