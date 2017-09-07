@@ -218,7 +218,7 @@ class Jwt_Auth_Public
      *
      * @param bool $output
      *
-     * @return WP_Error | Object
+     * @return WP_Error | Object | Array
      */
     public function validate_token($output = true)
     {

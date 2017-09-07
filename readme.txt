@@ -4,8 +4,9 @@ Contributors: tmeister
 Donate link: https://enriquechavez.co
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 4.7
-Stable tag: 1.2.3
+Tested up to: 4.8.1
+Requires PHP: 5.3.0
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -340,6 +341,10 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.4 =
+* Update firebase/php-jwt to v5.0.0 ( https://github.com/firebase/php-jwt )
+* Add Requires PHP Tag
+
 = 1.2.3 =
 * Fix Max recursion error in WordPress 4.7 #44
 
