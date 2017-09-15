@@ -72,10 +72,10 @@ class Jwt_Auth_Public
      */
     public function add_api_routes()
     {
-        register_rest_route($this->namespace, 'token', [
+        register_rest_route($this->namespace, 'token', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_token'),
-        ]);
+        ));
 
         register_rest_route($this->namespace, 'token/validate', array(
             'methods' => 'POST',
