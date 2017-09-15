@@ -16,7 +16,7 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 **Minimum PHP version: 5.3.0**
 
-### Enable PHP HTTP Authorization Header 
+### Enable PHP HTTP Authorization Header
 
 #### Shared Hosts
 
@@ -281,6 +281,16 @@ Default Value:
 
 ```
 time() + (DAY_IN_SECONDS * 7)
+```
+
+### jwt_auth_iss
+
+The **jwt_auth_iss** allows you to change the value [**iss**](https://tools.ietf.org/html/rfc7519#section-4.1.1) before the token is created and when it is validated.
+
+Default Value:
+
+```
+get_bloginfo( 'url' )
 ```
 
 ### jwt_auth_token_before_sign
