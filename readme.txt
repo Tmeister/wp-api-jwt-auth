@@ -62,7 +62,7 @@ The JWT needs a **secret key** to sign the token this **secret key** must be uni
 To add the **secret key** edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**
 
 `
-define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key');
+define('JWT_AUTH_SECRET_KEY', 'your-top-secret-key');
 `
 
 You can use a string from here https://api.wordpress.org/secret-key/1.1/salt/
