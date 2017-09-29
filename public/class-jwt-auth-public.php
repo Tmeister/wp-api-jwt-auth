@@ -300,12 +300,21 @@ class Jwt_Auth_Public
             if (!$output) {
                 return $token;
             }
+            /** Fetch user data and pass through filter **/
+            $user = get_userdata($token->data->user->id);
+            $user_data = array(
+                'user_email' => $user->data->user_email,
+                'user_nicename' => $user->data->user_nicename,
+                'user_display_name' => $user->data->display_name,
+            );
+            $user_data = apply_filters('jwt_auth_token_before_dispatch', $user_data, $user);
             /** If the output is true return an answer to the request to show it */
              return array(
                  'code' => 'jwt_auth_valid_token',
                  'data' => array(
                      'status' => 200,
                  ),
+                 'user' => $user_data
              );
          } catch (Exception $e) {
             /** Something is wrong trying to decode the token, send back the error */
