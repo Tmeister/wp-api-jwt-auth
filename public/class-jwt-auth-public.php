@@ -126,7 +126,7 @@ class Jwt_Auth_Public
             $error_code = $user->get_error_code();
             return new WP_Error(
                 '[jwt_auth] '.$error_code,
-                $user->get_error_message($error_code),
+                'Authentication failed: '.$error_code,
                 array(
                     'status' => 403,
                 )
