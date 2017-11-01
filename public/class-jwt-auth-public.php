@@ -105,8 +105,8 @@ class Jwt_Auth_Public
     public function generate_token($request)
     {
         $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
-        $username = $request->get_param('username');
-        $password = $request->get_param('password');
+        $username = static::base64_encode_data($request->get_param('username'));
+        $password = static::base64_encode_data($request->get_param('password'));
 
         /** First thing, check the secret key if not exist return a error*/
         if (!$secret_key) {
@@ -332,4 +332,18 @@ class Jwt_Auth_Public
         }
         return $request;
     }
+    
+    /**
+	 * @param $str
+	 *
+	 * @return bool|string
+	 */
+	public static function base64_encode_data($str)
+	{
+		if (base64_encode(base64_decode($str, true)) === $str) {
+			$str = base64_decode($str);
+		}
+
+		return $str;
+	}
 }
