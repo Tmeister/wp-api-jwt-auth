@@ -10,7 +10,7 @@ To know more about JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
-So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
+To use the **wp-api-jwt-auth** you'll need to have WordPress 4.7+ installed. If not, you'll need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
 
 ### PHP
 
