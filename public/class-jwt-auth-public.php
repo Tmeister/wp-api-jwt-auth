@@ -150,8 +150,9 @@ class Jwt_Auth_Public
             ),
         );
 
+        $alg   = $this->get_alg();
         /** Let the user modify the token data before the sign. */
-        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key, $alg);
 
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
@@ -273,7 +274,8 @@ class Jwt_Auth_Public
 
         /** Try to decode the token */
         try {
-            $token = JWT::decode($token, $secret_key, array('HS256'));
+            $alg   = $this->get_alg();
+            $token = JWT::decode($token, $secret_key, array($alg));
             /** The Token is decoded now validate the iss */
             if ($token->iss != get_bloginfo('url')) {
                 /** The iss do not match, return error */
@@ -331,5 +333,14 @@ class Jwt_Auth_Public
             return $this->jwt_error;
         }
         return $request;
+    }
+
+  /**
+    * Filter the value supported jwt auth signing algorithm.
+    *
+    * @return string $alg
+    */
+    private function get_alg(){
+      return apply_filters('jwt_auth_supported_alg', 'HS256');
     }
 }
