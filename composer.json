@@ -1,12 +1,29 @@
 {
-    "config": {
-        "vendor-dir": "includes/vendor"
-    },
-    "require": {
-        "firebase/php-jwt": "^5.0.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^5.2",
-        "guzzlehttp/guzzle": "^6.1"
-    }
+  "name": "tmeister/wp-api-jwt-auth",
+  "description": "A simple plugin to add JSON Web Token (JWT) Authentication to WP REST API.",
+  "homepage": "https://github.com/Tmeister/wp-api-jwt-auth/",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0+",
+  "authors": [
+      {
+          "name": "Enrique Chavez",
+          "homepage": "https://enriquechavez.co"
+      }
+  ],
+  "support": {
+      "issues": "https://github.com/Tmeister/wp-api-jwt-auth/issues",
+      "source": "https://github.com/Tmeister/wp-api-jwt-auth/"
+  },
+  "config": {
+      "vendor-dir": "includes/vendor"
+  },
+  "require": {
+      "php": ">=5.3",
+      "composer/installers": "~1.0",
+      "firebase/php-jwt": "^5.0.0"
+  },
+  "require-dev": {
+      "phpunit/phpunit": "^5.2",
+      "guzzlehttp/guzzle": "^6.1"
+  }
 }
