@@ -295,7 +295,18 @@ class Jwt_Auth_Public
                         'status' => 403,
                     )
                 );
-            }
+            } else {
+      				$user = get_user_by( 'id', $token->data->user->id );
+      				if ( ! $user ) {
+      					return new WP_Error(
+      						'jwt_auth_user_not_found',
+      						__( 'Unable to find user', 'wp-api-jwt-auth' ),
+                  array(
+                      'status' => 403,
+                  )
+      					);
+      				}
+      			}
             /** Everything looks good return the decoded token if the $output is false */
             if (!$output) {
                 return $token;
