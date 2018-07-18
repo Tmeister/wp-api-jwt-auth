@@ -151,7 +151,8 @@ class Jwt_Auth_Public
         );
 
         /** Let the user modify the token data before the sign. */
-        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
+        $alg = defined('JWT_AUTH_ALG') ? JWT_AUTH_ALG : 'HS256';
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key, $alg);
 
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
@@ -259,8 +260,13 @@ class Jwt_Auth_Public
             );
         }
 
+        $alg = defined('JWT_AUTH_ALG') ? JWT_AUTH_ALG : 'HS256';
+
         /** Get the Secret Key */
         $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+        if ($alg == 'RS256') {
+              $secret_key = JWT_AUTH_PUBLIC_KEY;
+        }
         if (!$secret_key) {
             return new WP_Error(
                 'jwt_auth_bad_config',
@@ -273,9 +279,10 @@ class Jwt_Auth_Public
 
         /** Try to decode the token */
         try {
-            $token = JWT::decode($token, $secret_key, array('HS256'));
+            $token = JWT::decode($token, $secret_key, array($alg));
             /** The Token is decoded now validate the iss */
-            if ($token->iss != get_bloginfo('url')) {
+            $issuer = defined('JWT_AUTH_ISSUER') ? JWT_AUTH_ISSUER : get_bloginfo('url');
+            if ($token->iss != $issuer) {
                 /** The iss do not match, return error */
                 return new WP_Error(
                     'jwt_auth_bad_iss',
