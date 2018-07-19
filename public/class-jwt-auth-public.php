@@ -265,7 +265,7 @@ class Jwt_Auth_Public
         /** Get the Secret Key */
         $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
         if ($alg == 'RS256') {
-              $secret_key = JWT_AUTH_PUBLIC_KEY;
+              $secret_key = defined('JWT_AUTH_PUBLIC_KEY') ? JWT_AUTH_PUBLIC_KEY : false;
         }
         if (!$secret_key) {
             return new WP_Error(
