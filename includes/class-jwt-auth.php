@@ -65,7 +65,7 @@ class Jwt_Auth
     public function __construct()
     {
         $this->plugin_name = 'jwt-auth';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
 
         $this->load_dependencies();
         $this->set_locale();
@@ -141,7 +141,7 @@ class Jwt_Auth
         $plugin_public = new Jwt_Auth_Public($this->get_plugin_name(), $this->get_version());
         $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
-        $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 99);
+        $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
         $this->loader->add_filter( 'rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2 );
     }
 

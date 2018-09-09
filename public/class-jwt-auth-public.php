@@ -123,9 +123,10 @@ class Jwt_Auth_Public
 
         /** If the authentication fails return a error*/
         if (is_wp_error($user)) {
+            $error_code = $user->get_error_code();
             return new WP_Error(
-                'jwt_auth_failed',
-                __('Invalid Credentials.', 'wp-api-jwt-auth'),
+                '[jwt_auth] '.$error_code,
+                $user->get_error_message($error_code),
                 array(
                     'status' => 403,
                 )
@@ -150,7 +151,7 @@ class Jwt_Auth_Public
         );
 
         /** Let the user modify the token data before the sign. */
-        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token), $secret_key);
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
 
         /** The token is signed, now create the object with no sensible user data to the client*/
         $data = array(
@@ -174,6 +175,19 @@ class Jwt_Auth_Public
      */
     public function determine_current_user($user)
     {
+        /**
+         * This hook only should run on the REST API requests to determine
+         * if the user in the Token (if any) is valid, for any other
+         * normal call ex. wp-admin/.* return the user.
+         *
+         * @since 1.2.3
+         **/
+        $rest_api_slug = rest_get_url_prefix();
+        $valid_api_uri = strpos($_SERVER['REQUEST_URI'], $rest_api_slug);
+        if(!$valid_api_uri){
+            return $user;
+        }
+
         /*
          * if the request URI is for validate the token don't do anything,
          * this avoid double calls to the validate_token function.
@@ -204,7 +218,7 @@ class Jwt_Auth_Public
      *
      * @param bool $output
      *
-     * @return WP_Error | Object
+     * @return WP_Error | Object | Array
      */
     public function validate_token($output = true)
     {
@@ -213,6 +227,13 @@ class Jwt_Auth_Public
          * return the user.
          */
         $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
+
+
+        /* Double check for different auth header string (server dependent) */
+        if (!$auth) {
+            $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ?  $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
+        }
+
         if (!$auth) {
             return new WP_Error(
                 'jwt_auth_no_auth_header',

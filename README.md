@@ -319,6 +319,21 @@ $data = array(
 );
 ```
 
+## Testing
+
+Since version **1.1.0** I've added a new test suite to be sure that the basic features of this plugin do what it's expected.
+
+You can run this test using the following command
+
+```
+composer install
+includes/vendor/bin/phpunit tests
+```
+
+![Command Line Output](https://s3.amazonaws.com/f.cl.ly/items/2o0j0a403A0N1a0r1C3H/Image%202016-02-27%20at%208.16.48%20PM.png?v=5fe1c76e)
+
+All the tests can be found at https://github.com/Tmeister/wp-api-jwt-auth/tree/develop/tests/GeneralTest.php
+
 ##Credits
 [WP REST API V2](http://v2.wp-api.org/)
 
