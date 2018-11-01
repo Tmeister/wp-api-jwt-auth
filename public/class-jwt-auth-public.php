@@ -227,8 +227,9 @@ class Jwt_Auth_Public
          * Looking for the HTTP_AUTHORIZATION header, if not present just
          * return the user.
          */
-        $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
-	$auth = isset($_COOKIE['JWT_TOKEN']) ? $_COOKIE['JWT_TOKEN'] : $auth;
+        $auth = isset($_COOKIE['JWT_TOKEN']) ? $_COOKIE['JWT_TOKEN'] : false;
+        $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : $auth;
+	    
 
         /* Double check for different auth header string (server dependent) */
         if (!$auth) {
