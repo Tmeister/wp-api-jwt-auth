@@ -341,6 +341,10 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.5 =
+* Add Gutenberg Compatibility
+* More info (https://github.com/Tmeister/wp-api-jwt-auth/issues/126)
+
 = 1.2.4 =
 * Update firebase/php-jwt to v5.0.0 ( https://github.com/firebase/php-jwt )
 * Add Requires PHP Tag
