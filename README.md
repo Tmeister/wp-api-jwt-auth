@@ -16,7 +16,7 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 **Minimum PHP version: 5.3.0**
 
-### Enable PHP HTTP Authorization Header 
+### Enable PHP HTTP Authorization Header
 
 #### Shared Hosts
 
@@ -84,10 +84,10 @@ When the plugin is activated, a new namespace is added.
 Also, two new endpoints are added to this namespace.
 
 
-Endpoint | HTTP Verb
---- | ---
-*/wp-json/jwt-auth/v1/token* | POST
-*/wp-json/jwt-auth/v1/token/validate* | POST
+| Endpoint                              | HTTP Verb |
+| ------------------------------------- | --------- |
+| */wp-json/jwt-auth/v1/token*          | POST      |
+| */wp-json/jwt-auth/v1/token/validate* | POST      |
 
 ## Usage
 ### /wp-json/jwt-auth/v1/token

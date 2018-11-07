@@ -64,7 +64,7 @@ class Jwt_Auth_Public
     {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
-        $this->namespace = $this->plugin_name.'/v'.intval($this->version);
+        $this->namespace = $this->plugin_name . '/v' . intval($this->version);
     }
 
     /**
@@ -125,7 +125,7 @@ class Jwt_Auth_Public
         if (is_wp_error($user)) {
             $error_code = $user->get_error_code();
             return new WP_Error(
-                '[jwt_auth] '.$error_code,
+                '[jwt_auth] ' . $error_code,
                 $user->get_error_message($error_code),
                 array(
                     'status' => 403,
@@ -184,7 +184,7 @@ class Jwt_Auth_Public
          **/
         $rest_api_slug = rest_get_url_prefix();
         $valid_api_uri = strpos($_SERVER['REQUEST_URI'], $rest_api_slug);
-        if(!$valid_api_uri){
+        if (!$valid_api_uri) {
             return $user;
         }
 
@@ -226,12 +226,11 @@ class Jwt_Auth_Public
          * Looking for the HTTP_AUTHORIZATION header, if not present just
          * return the user.
          */
-        $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ?  $_SERVER['HTTP_AUTHORIZATION'] : false;
-
+        $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
 
         /* Double check for different auth header string (server dependent) */
         if (!$auth) {
-            $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ?  $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
+            $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
         }
 
         if (!$auth) {
@@ -301,22 +300,22 @@ class Jwt_Auth_Public
                 return $token;
             }
             /** If the output is true return an answer to the request to show it */
-             return array(
-                 'code' => 'jwt_auth_valid_token',
-                 'data' => array(
-                     'status' => 200,
-                 ),
-             );
-         } catch (Exception $e) {
+            return array(
+                'code' => 'jwt_auth_valid_token',
+                'data' => array(
+                    'status' => 200,
+                ),
+            );
+        } catch (Exception $e) {
             /** Something is wrong trying to decode the token, send back the error */
-             return new WP_Error(
-                 'jwt_auth_invalid_token',
-                 $e->getMessage(),
-                 array(
-                     'status' => 403,
-                 )
-             );
-         }
+            return new WP_Error(
+                'jwt_auth_invalid_token',
+                $e->getMessage(),
+                array(
+                    'status' => 403,
+                )
+            );
+        }
     }
 
     /**

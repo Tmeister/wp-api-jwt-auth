@@ -93,25 +93,25 @@ class Jwt_Auth
         /**
          * Load dependecies managed by composer.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/vendor/autoload.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/vendor/autoload.php';
 
         /**
          * The class responsible for orchestrating the actions and filters of the
          * core plugin.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/class-jwt-auth-loader.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-auth-loader.php';
 
         /**
          * The class responsible for defining internationalization functionality
          * of the plugin.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'includes/class-jwt-auth-i18n.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-auth-i18n.php';
 
         /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */
-        require_once plugin_dir_path(dirname(__FILE__)).'public/class-jwt-auth-public.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-jwt-auth-public.php';
 
         $this->loader = new Jwt_Auth_Loader();
     }
@@ -141,8 +141,27 @@ class Jwt_Auth
         $plugin_public = new Jwt_Auth_Public($this->get_plugin_name(), $this->get_version());
         $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
-        $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
-        $this->loader->add_filter( 'rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2 );
+        $this->loader->add_filter('rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2);
+        /**
+         * Gutenberg fix
+         * Now with Gutenberg the WP API usage is masive and most of the call are in the admin.
+         * The JWT token should be used only when the user is not logged in, aka remote calls.
+         * This validation search for the WordPress logged in cookie if exists the filter on
+         * the determine_current_user hook is not applied.
+         *
+         * @since 1.2.5
+         */
+        $is_user_logged_in = false;
+        foreach ($_COOKIE as $name => $value) {
+            if (strpos($name, 'wordpress_logged_in_') === 0) {
+                $is_user_logged_in = true;
+                break;
+            }
+        }
+        if (!$is_user_logged_in) {
+            $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
+
+        }
     }
 
     /**
