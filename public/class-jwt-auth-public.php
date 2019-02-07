@@ -236,7 +236,7 @@ class Jwt_Auth_Public
         if (!$auth) {
             return new WP_Error(
                 'jwt_auth_no_auth_header',
-                __('Authorization header not found.', 'wp-api-jwt-auth'),
+                'Authorization header not found.',
                 array(
                     'status' => 403,
                 )
@@ -251,7 +251,7 @@ class Jwt_Auth_Public
         if (!$token) {
             return new WP_Error(
                 'jwt_auth_bad_auth_header',
-                __('Authorization header malformed.', 'wp-api-jwt-auth'),
+                'Authorization header malformed.',
                 array(
                     'status' => 403,
                 )
@@ -263,7 +263,7 @@ class Jwt_Auth_Public
         if (!$secret_key) {
             return new WP_Error(
                 'jwt_auth_bad_config',
-                __('JWT is not configurated properly, please contact the admin', 'wp-api-jwt-auth'),
+                'JWT is not configurated properly, please contact the admin',
                 array(
                     'status' => 403,
                 )
@@ -278,7 +278,7 @@ class Jwt_Auth_Public
                 /** The iss do not match, return error */
                 return new WP_Error(
                     'jwt_auth_bad_iss',
-                    __('The iss do not match with this server', 'wp-api-jwt-auth'),
+                    'The iss do not match with this server',
                     array(
                         'status' => 403,
                     )
@@ -289,7 +289,7 @@ class Jwt_Auth_Public
                 /** No user id in the token, abort!! */
                 return new WP_Error(
                     'jwt_auth_bad_request',
-                    __('User ID not found in the token', 'wp-api-jwt-auth'),
+                    'User ID not found in the token',
                     array(
                         'status' => 403,
                     )
