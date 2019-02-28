@@ -8,6 +8,8 @@ To know more about JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
 ### WP REST API V2
 
+**Since [WordPress 4.7](https://codex.wordpress.org/Version_4.7_) this step is not needed anymore, the WP REST API was merged into the core in that version.**
+
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
 So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
@@ -19,6 +21,8 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 ### Enable PHP HTTP Authorization Header
 
 #### Shared Hosts
+
+**Since version 1.3 the plugin add and remove this headers into the .htaccess file automatically on the plugin activate and deactivate process. (thanks @rvola)**
 
 Most shared hosts have disabled the **HTTP Authorization Header** by default.
 
@@ -50,7 +54,6 @@ The JWT needs a **secret key** to sign the token. This **secret key** must be un
 
 To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**.
 
-
 ```php
 define('JWT_AUTH_SECRET_KEY', 'your-top-secret-key');
 ```
@@ -63,11 +66,9 @@ The **wp-api-jwt-auth** plugin has the option to activate [CORs](https://en.wiki
 
 To enable the CORs Support edit your wp-config.php file and add a new constant called **JWT_AUTH_CORS_ENABLE**
 
-
 ```php
 define('JWT_AUTH_CORS_ENABLE', true);
 ```
-
 
 Finally activate the plugin within the plugin dashboard.
 
@@ -75,66 +76,59 @@ Finally activate the plugin within the plugin dashboard.
 
 When the plugin is activated, a new namespace is added.
 
-
 ```
 /jwt-auth/v1
 ```
 
-
 Also, two new endpoints are added to this namespace.
-
 
 | Endpoint                              | HTTP Verb |
 | ------------------------------------- | --------- |
-| */wp-json/jwt-auth/v1/token*          | POST      |
-| */wp-json/jwt-auth/v1/token/validate* | POST      |
+| _/wp-json/jwt-auth/v1/token_          | POST      |
+| _/wp-json/jwt-auth/v1/token/validate_ | POST      |
 
 ## Usage
+
 ### /wp-json/jwt-auth/v1/token
 
 This is the entry point for the JWT Authentication.
 
-Validates the user credentials, *username* and *password*, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.
+Validates the user credentials, _username_ and _password_, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.
 
 #### Sample request using AngularJS
 
 ```javascript
+(function() {
+  var app = angular.module("jwtAuth", []);
 
-( function() {
-  var app = angular.module( 'jwtAuth', [] );
+  app.controller("MainController", function($scope, $http) {
+    var apiHost = "http://yourdomain.com/wp-json";
 
-  app.controller( 'MainController', function( $scope, $http ) {
+    $http
+      .post(apiHost + "/jwt-auth/v1/token", {
+        username: "admin",
+        password: "password"
+      })
 
-    var apiHost = 'http://yourdomain.com/wp-json';
+      .then(function(response) {
+        console.log(response.data);
+      })
 
-    $http.post( apiHost + '/jwt-auth/v1/token', {
-        username: 'admin',
-        password: 'password'
-      } )
-
-      .then( function( response ) {
-        console.log( response.data )
-      } )
-
-      .catch( function( error ) {
-        console.error( 'Error', error.data[0] );
-      } );
-
-  } );
-
-} )();
-
-
+      .catch(function(error) {
+        console.error("Error", error.data[0]);
+      });
+  });
+})();
 ```
 
 Success response from the server:
 
 ```json
 {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9qd3QuZGV2IiwiaWF0IjoxNDM4NTcxMDUwLCJuYmYiOjE0Mzg1NzEwNTAsImV4cCI6MTQzOTE3NTg1MCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.YNe6AyWW4B7ZwfFE5wJ0O6qQ8QFcYizimDmBy6hCH_8",
-    "user_display_name": "admin",
-    "user_email": "admin@localhost.dev",
-    "user_nicename": "admin"
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9qd3QuZGV2IiwiaWF0IjoxNDM4NTcxMDUwLCJuYmYiOjE0Mzg1NzEwNTAsImV4cCI6MTQzOTE3NTg1MCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.YNe6AyWW4B7ZwfFE5wJ0O6qQ8QFcYizimDmBy6hCH_8",
+  "user_display_name": "admin",
+  "user_email": "admin@localhost.dev",
+  "user_nicename": "admin"
 }
 ```
 
@@ -142,11 +136,11 @@ Error response from the server:
 
 ```json
 {
-    "code": "jwt_auth_failed",
-    "data": {
-        "status": 403
-    },
-    "message": "Invalid Credentials."
+  "code": "jwt_auth_failed",
+  "data": {
+    "status": 403
+  },
+  "message": "Invalid Credentials."
 }
 ```
 
@@ -157,23 +151,29 @@ From this point, you should pass this token to every API call.
 Sample call using the Authorization header using AngularJS:
 
 ```javascript
-app.config( function( $httpProvider ) {
-  $httpProvider.interceptors.push( [ '$q', '$location', '$cookies', function( $q, $location, $cookies ) {
-    return {
-      'request': function( config ) {
-        config.headers = config.headers || {};
-        //Assume that you store the token in a cookie.
-        var globals = $cookies.getObject( 'globals' ) || {};
-        //If the cookie has the CurrentUser and the token
-        //add the Authorization header in each request
-        if ( globals.currentUser && globals.currentUser.token ) {
-          config.headers.Authorization = 'Bearer ' + globals.currentUser.token;
+app.config(function($httpProvider) {
+  $httpProvider.interceptors.push([
+    "$q",
+    "$location",
+    "$cookies",
+    function($q, $location, $cookies) {
+      return {
+        request: function(config) {
+          config.headers = config.headers || {};
+          //Assume that you store the token in a cookie.
+          var globals = $cookies.getObject("globals") || {};
+          //If the cookie has the CurrentUser and the token
+          //add the Authorization header in each request
+          if (globals.currentUser && globals.currentUser.token) {
+            config.headers.Authorization =
+              "Bearer " + globals.currentUser.token;
+          }
+          return config;
         }
-        return config;
-      }
-    };
-  } ] );
-} );
+      };
+    }
+  ]);
+});
 ```
 
 The **wp-api-jwt-auth** will intercept every call to the server and will look for the authorization header, if the authorization header is present, it will try to decode the token and will set the user according with the data stored in it.
@@ -305,6 +305,7 @@ $token = array(
 ```
 
 ### jwt_auth_token_before_dispatch
+
 The **jwt_auth_token_before_dispatch** allows you to modify all the response array before to dispatch it to the client.
 
 Default value:

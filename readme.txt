@@ -23,6 +23,7 @@ JSON Web Tokens are an open, industry standard [RFC 7519](https://tools.ietf.org
 ### REQUIREMENTS
 
 #### WP REST API V2
+Since [WordPress 4.7](https://codex.wordpress.org/Version_4.7_) this step is not needed anymore, the WP REST API was merged into the core in that version.
 
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
@@ -32,7 +33,10 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 **Minimum PHP version: 5.3.0**
 
-### PHP HTTP Authorization Header enable
+### Enable PHP HTTP Authorization Header
+
+#### Shared Hosts
+Since version 1.3 the plugin add and remove this headers into the .htaccess file automatically on the plugin activate and deactivate process. (thanks @rvola)
 
 Most of the shared hosting has disabled the **HTTP Authorization Header** by default.
 
