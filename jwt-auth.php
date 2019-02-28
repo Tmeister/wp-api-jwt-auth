@@ -35,6 +35,13 @@ if (!defined('WPINC')) {
  */
 require plugin_dir_path(__FILE__) . 'includes/class-jwt-auth.php';
 
+/*
+ * Service rule for plugin activation and deactivation
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-jwt-auth-register.php';
+register_activation_hook( __FILE__, array( 'Jwt_Auth_Register', 'activation' ) );
+register_deactivation_hook( __FILE__, array( 'Jwt_Auth_Register', 'desactivation' ) );
+
 /**
  * Begins execution of the plugin.
  *
