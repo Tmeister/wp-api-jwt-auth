@@ -142,26 +142,7 @@ class Jwt_Auth
         $this->loader->add_action('rest_api_init', $plugin_public, 'add_api_routes');
         $this->loader->add_filter('rest_api_init', $plugin_public, 'add_cors_support');
         $this->loader->add_filter('rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2);
-        /**
-         * Gutenberg fix
-         * Now with Gutenberg the WP API usage is masive and most of the call are in the admin.
-         * The JWT token should be used only when the user is not logged in, aka remote calls.
-         * This validation search for the WordPress logged in cookie if exists the filter on
-         * the determine_current_user hook is not applied.
-         *
-         * @since 1.2.5
-         */
-        $is_user_logged_in = false;
-        foreach ($_COOKIE as $name => $value) {
-            if (strpos($name, 'wordpress_logged_in_') === 0) {
-                $is_user_logged_in = true;
-                break;
-            }
-        }
-        if (!$is_user_logged_in) {
-            $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
-
-        }
+        $this->loader->add_filter('determine_current_user', $plugin_public, 'determine_current_user', 10);
     }
 
     /**

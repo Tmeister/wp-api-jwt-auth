@@ -1,12 +1,12 @@
 === JWT Authentication for WP REST API ===
 
 Contributors: tmeister
-Donate link: https://enriquechavez.co
+Donate link: https://www.paypal.me/wpchavez
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 5.0
+Tested up to: 5.1
 Requires PHP: 5.3.0
-Stable tag: 1.2.5
+Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -345,6 +345,13 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.6 =
+* Cookies && Token compatibility
+* Fix the root problem with gutenberg infinite loops and allow the token validation/generation if the WP cookie exists.
+* More info (https://github.com/Tmeister/wp-api-jwt-auth/pull/138)
+* Props: https://github.com/andrzejpiotrowski
+
+
 = 1.2.5 =
 * Add Gutenberg Compatibility
 * More info (https://github.com/Tmeister/wp-api-jwt-auth/issues/126)
