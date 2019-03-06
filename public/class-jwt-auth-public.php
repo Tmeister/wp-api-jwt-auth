@@ -105,8 +105,10 @@ class Jwt_Auth_Public
     public function generate_token($request)
     {
         $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
-        $username = $request->get_param('username');
-        $password = $request->get_param('password');
+
+        /** wp_authenticate() expect arguments to be slashed, WP REST arguments are unslashed. */
+        $username = wp_slash( $request->get_param('username') );
+        $password = wp_slash( $request->get_param('password') );
 
         /** First thing, check the secret key if not exist return a error*/
         if (!$secret_key) {
