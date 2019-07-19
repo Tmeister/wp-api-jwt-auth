@@ -182,7 +182,7 @@ class Jwt_Auth_Public
          *
          * @since 1.2.3
          **/
-        $rest_api_slug = rest_get_url_prefix();
+        $rest_api_slug = get_option('permalink_structure') ? rest_get_url_prefix() : '?rest_route=/';
         $valid_api_uri = strpos($_SERVER['REQUEST_URI'], $rest_api_slug);
         if (!$valid_api_uri) {
             return $user;
