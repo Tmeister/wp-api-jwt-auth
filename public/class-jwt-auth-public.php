@@ -295,10 +295,24 @@ class Jwt_Auth_Public
                     )
                 );
             }
+
+       
             /** Everything looks good return the decoded token if the $output is false */
             if (!$output) {
                 return $token;
             }
+
+            /** Check if user exist */
+            if(! get_user_by('id', $token->data->user->id)){
+                 return new WP_Error(
+                    'jwt_auth_bad_request',
+                    'User ID not found in database',
+                    array(
+                        'status' => 403,
+                    )
+                );
+            }
+
             /** If the output is true return an answer to the request to show it */
             return array(
                 'code' => 'jwt_auth_valid_token',
