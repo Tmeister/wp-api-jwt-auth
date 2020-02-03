@@ -319,6 +319,10 @@ $data = array(
 );
 ```
 
+### jwt_auth_valid_token
+
+The **jwt_auth_valid_token** allows you to add data to the array returned by the token/validate endpoint.
+
 ## Testing
 
 Since version **1.1.0** I've added a new test suite to be sure that the basic features of this plugin do what it's expected.
