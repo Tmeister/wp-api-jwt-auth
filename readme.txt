@@ -4,9 +4,9 @@ Contributors: tmeister
 Donate link: https://www.paypal.me/wpchavez
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 5.1
+Tested up to: 5.4
 Requires PHP: 5.3.0
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -341,6 +341,25 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.7 =
+* Bugfix: make CORS work #65
+* Allow for other Authorization header schemes #72
+* Add filter for JWT issuer (iss). #83
+* Token validate response now includes User data, allowing manipulation… #84
+* 'Authentication failed' message converted in plain text #85
+* Update README.md #95
+* Add filter to control the signing algorithm. #110
+* Check to see if the user exists before returning. #112
+* Split generate_token in 2 functions. #115
+* Add firebase custom token capability implement #117
+* Added the rest url for non-pretty permalinks #168
+* Update README.md #176
+* Slash password before authenticating #177
+* #99 fix deleted users still count as valid user #181
+* Adding a new filter `jwt_auth_valid_token`. #183
+* Format README.md #185
+
+
 = 1.2.6 =
 * Cookies && Token compatibility
 * Fix the root problem with gutenberg infinite loops and allow the token validation/generation if the WP cookie exists.
