@@ -10,7 +10,7 @@ To know more about JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
 This plugin was conceived to extend the [WP REST API V2](https://github.com/WP-API/WP-API) plugin features and, of course, was built on top of it.
 
-So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
+To use the **wp-api-jwt-auth** you'll need to have WordPress 4.7+ installed. If not, you'll need to install and activate [WP REST API](https://github.com/WP-API/WP-API).
 
 ### PHP
 
@@ -48,7 +48,7 @@ Or clone this repo into your WordPress installation into the wp-content/plugins 
 
 The JWT needs a **secret key** to sign the token. This **secret key** must be unique and never revealed.
 
-To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**.
+To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**. Make sure to put this constant in the "Authentication Unique Keys and Salts" otherwise authentication will not work.
 
 
 ```php
@@ -81,13 +81,14 @@ When the plugin is activated, a new namespace is added.
 ```
 
 
-Also, two new endpoints are added to this namespace.
+Also, three  new endpoints are added to this namespace.
 
 
 | Endpoint                              | HTTP Verb |
 | ------------------------------------- | --------- |
 | */wp-json/jwt-auth/v1/token*          | POST      |
 | */wp-json/jwt-auth/v1/token/validate* | POST      |
+
 
 ## Usage
 ### /wp-json/jwt-auth/v1/token
@@ -249,6 +250,7 @@ Valid Token Response:
 }
 ```
 
+
 ## Available Hooks
 
 The **wp-api-jwt-auth** is dev friendly and has five filters available to override the default settings.
@@ -281,6 +283,16 @@ Default Value:
 
 ```
 time() + (DAY_IN_SECONDS * 7)
+```
+
+### jwt_auth_iss
+
+The **jwt_auth_iss** allows you to change the value [**iss**](https://tools.ietf.org/html/rfc7519#section-4.1.1) before the token is created and when it is validated.
+
+Default Value:
+
+```
+get_bloginfo( 'url' )
 ```
 
 ### jwt_auth_token_before_sign
@@ -319,6 +331,10 @@ $data = array(
 );
 ```
 
+### jwt_auth_valid_token
+
+The **jwt_auth_valid_token** allows you to add data to the array returned by the token/validate endpoint.
+
 ## Testing
 
 Since version **1.1.0** I've added a new test suite to be sure that the basic features of this plugin do what it's expected.
@@ -334,10 +350,10 @@ includes/vendor/bin/phpunit tests
 
 All the tests can be found at https://github.com/Tmeister/wp-api-jwt-auth/tree/develop/tests/GeneralTest.php
 
-##Credits
-[WP REST API V2](http://v2.wp-api.org/)
+## Credits
 
-[PHP-JWT from firebase](https://github.com/firebase/php-jwt)
+* [WP REST API V2](http://v2.wp-api.org/)
+* [PHP-JWT from firebase](https://github.com/firebase/php-jwt)
 
-##License
+## License
 [GPLv2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
