@@ -1,6 +1,7 @@
 <?php
 
 /** Requiere the JWT library. */
+
 use \Firebase\JWT\JWT;
 
 /**
@@ -75,11 +76,17 @@ class Jwt_Auth_Public
         register_rest_route($this->namespace, 'token', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_token'),
+            'permission_callback' => function () {
+                return true;
+            },
         ));
 
         register_rest_route($this->namespace, 'token/validate', array(
             'methods' => 'POST',
             'callback' => array($this, 'validate_token'),
+            'permission_callback' => function () {
+                return true;
+            },
         ));
     }
 
