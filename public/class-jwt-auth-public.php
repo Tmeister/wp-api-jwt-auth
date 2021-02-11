@@ -104,20 +104,9 @@ class Jwt_Auth_Public
      */
     public function generate_token($request)
     {
-        $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
         $username = $request->get_param('username');
         $password = $request->get_param('password');
 
-        /** First thing, check the secret key if not exist return a error*/
-        if (!$secret_key) {
-            return new WP_Error(
-                'jwt_auth_bad_config',
-                __('JWT is not configurated properly, please contact the admin', 'wp-api-jwt-auth'),
-                array(
-                    'status' => 403,
-                )
-            );
-        }
         /** Try to authenticate the user with the passed credentials*/
         $user = wp_authenticate($username, $password);
 
@@ -127,6 +116,38 @@ class Jwt_Auth_Public
             return new WP_Error(
                 '[jwt_auth] ' . $error_code,
                 $user->get_error_message($error_code),
+                array(
+                    'status' => 403,
+                )
+            );
+        }
+
+        $token = $this->generate_token_for_user($user);
+
+        if (is_wp_error($token)) {
+            return $token;
+        }
+
+        /** The token is signed, now create the object with no sensible user data to the client*/
+        $data = array(
+            'token' => $token,
+            'user_email' => $user->data->user_email,
+            'user_nicename' => $user->data->user_nicename,
+            'user_display_name' => $user->data->display_name,
+        );
+
+        /** Let the user modify the data before send it back */
+        return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
+    }
+
+    public function generate_token_for_user($user) {
+        $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+
+        /** First thing, check the secret key if not exist return a error*/
+        if (! $secret_key) {
+            return new WP_Error(
+                'jwt_auth_bad_config',
+                __('JWT is not configurated properly, please contact the admin', 'wp-api-jwt-auth'),
                 array(
                     'status' => 403,
                 )
@@ -151,18 +172,7 @@ class Jwt_Auth_Public
         );
 
         /** Let the user modify the token data before the sign. */
-        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
-
-        /** The token is signed, now create the object with no sensible user data to the client*/
-        $data = array(
-            'token' => $token,
-            'user_email' => $user->data->user_email,
-            'user_nicename' => $user->data->user_nicename,
-            'user_display_name' => $user->data->display_name,
-        );
-
-        /** Let the user modify the data before send it back */
-        return apply_filters('jwt_auth_token_before_dispatch', $data, $user);
+        return JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
     }
 
     /**
