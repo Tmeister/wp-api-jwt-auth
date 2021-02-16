@@ -300,12 +300,14 @@ class Jwt_Auth_Public
                 return $token;
             }
             /** If the output is true return an answer to the request to show it */
-            return array(
+            $array = array(
                 'code' => 'jwt_auth_valid_token',
                 'data' => array(
                     'status' => 200,
                 ),
             );
+
+           return apply_filters('jwt_auth_valid_token',$array,$token);
         } catch (Exception $e) {
             /** Something is wrong trying to decode the token, send back the error */
             return new WP_Error(
