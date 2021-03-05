@@ -119,7 +119,7 @@ class Jwt_Auth_Public
             );
         }
         /** Try to authenticate the user with the passed credentials*/
-        $user = wp_authenticate($username, $password);
+        $user = wp_authenticate($username, wp_slash($password));
 
         /** If the authentication fails return a error*/
         if (is_wp_error($user)) {
