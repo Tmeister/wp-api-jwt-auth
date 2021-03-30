@@ -334,10 +334,10 @@ includes/vendor/bin/phpunit tests
 
 All the tests can be found at https://github.com/Tmeister/wp-api-jwt-auth/tree/develop/tests/GeneralTest.php
 
-##Credits
-[WP REST API V2](http://v2.wp-api.org/)
+## Credits
 
-[PHP-JWT from firebase](https://github.com/firebase/php-jwt)
+* [WP REST API V2](http://v2.wp-api.org/)
+* [PHP-JWT from firebase](https://github.com/firebase/php-jwt)
 
-##License
+## License
 [GPLv2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
