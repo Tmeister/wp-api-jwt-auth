@@ -48,7 +48,7 @@ Or clone this repo into your WordPress installation into the wp-content/plugins 
 
 The JWT needs a **secret key** to sign the token. This **secret key** must be unique and never revealed.
 
-To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**.
+To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**. Make sure to put this constant in the "Authentication Unique Keys and Salts" otherwise authentication will not work.
 
 
 ```php
