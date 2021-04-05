@@ -253,6 +253,9 @@ class Jwt_Auth_Public {
 
 		/**
 		 * added snippet to load bearer token (my customization)
+		 * In wp-config.php add:
+		 *      define( 'JWT_AUTH_SECRET_KEY', 'your-top-secrect-key' ); //for wp-api-JWT auth plugin
+		 *      define( 'JWT_AUTH_CORS_ENABLE', true ); //enable JWT CORS Support
 		 *
 		 * @var string
 		 */
