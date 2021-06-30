@@ -6,7 +6,7 @@ Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
 Tested up to: 5.6.1
 Requires PHP: 5.3.0
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -341,6 +341,10 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.2.7 =
+* Fix when request contains basic auth.
+
+
 = 1.2.6 =
 * Cookies && Token compatibility
 * Fix the root problem with gutenberg infinite loops and allow the token validation/generation if the WP cookie exists.

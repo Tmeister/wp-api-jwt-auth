@@ -1,1 +1,3 @@
 .vscode
+includes/vendor
+includes/vendor/composer
