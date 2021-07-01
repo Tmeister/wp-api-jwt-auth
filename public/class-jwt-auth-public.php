@@ -75,11 +75,13 @@ class Jwt_Auth_Public
         register_rest_route($this->namespace, 'token', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_token'),
+            'permission_callback' => '__return_true'
         ));
 
         register_rest_route($this->namespace, 'token/validate', array(
             'methods' => 'POST',
             'callback' => array($this, 'validate_token'),
+            'permission_callback' => '__return_true'
         ));
     }
 
@@ -235,6 +237,21 @@ class Jwt_Auth_Public
 
         if (!$auth) {
             return new WP_Error(
+                'jwt_auth_no_auth_header',
+                'Authorization header not found.',
+                array(
+                    'status' => 403,
+                )
+            );
+        }
+
+        /*
+         * The HTTP_AUTHORIZATION is present; check if request contains Basic auth header.
+         * Return false.
+         */
+        list($token) = sscanf($auth, 'Basic %s');
+        if ( $token ) {
+             return new WP_Error(
                 'jwt_auth_no_auth_header',
                 'Authorization header not found.',
                 array(
