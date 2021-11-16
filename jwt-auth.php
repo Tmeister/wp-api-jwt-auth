@@ -29,6 +29,16 @@ if (!defined('WPINC')) {
     die;
 }
 
+// Register JWT constants from environment variables
+$jwt_env_vars = array(
+    'JWT_AUTH_SECRET_KEY' => '',
+    'JWT_AUTH_CORS_ENABLE' => false
+);
+
+foreach($jwt_env_vars as $key => $default) {
+    defined($key) or define($key, getenv($key) ?? $default);
+}
+
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
