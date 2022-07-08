@@ -4,7 +4,7 @@ Contributors: tmeister
 Donate link: https://www.paypal.me/wpchavez
 Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
-Tested up to: 5.6.1
+Tested up to: 6.0
 Requires PHP: 5.3.0
 Stable tag: 1.2.6
 License: GPLv2 or later
