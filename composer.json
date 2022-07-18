@@ -20,7 +20,7 @@
   "require": {
       "php": ">=5.3",
       "composer/installers": "~1.0",
-      "firebase/php-jwt": "^5.0.0"
+      "firebase/php-jwt": "^6.3.0"
   },
   "require-dev": {
       "phpunit/phpunit": "^5.2",
