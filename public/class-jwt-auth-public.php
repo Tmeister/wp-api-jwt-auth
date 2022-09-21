@@ -189,7 +189,8 @@ class Jwt_Auth_Public
          **/
         $rest_api_slug = rest_get_url_prefix();
         $valid_api_uri = strpos($_SERVER['REQUEST_URI'], $rest_api_slug);
-        if (!$valid_api_uri) {
+        // if already valid user or invalid url, don't attempt to validate token
+        if ( !$valid_api_uri || $user ) {
             return $user;
         }
 
