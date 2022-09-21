@@ -321,6 +321,27 @@ $data = array(
 );
 `
 
+### jwt_auth_algorithm
+The **jwt_auth_algorithm** allows you to modify the signing algorithm.
+
+Default value:
+
+`
+<?php
+$token = JWT::encode(
+    apply_filters('jwt_auth_token_before_sign', $token, $user),
+    $secret_key,
+    apply_filters('jwt_auth_algorithm', 'HS256')
+);
+
+// ...
+
+$token = JWT::decode(
+    $token,
+    new Key($secret_key, apply_filters('jwt_auth_algorithm', 'HS256'))
+);
+`
+
 ==Installation==
 
 = Using The WordPress Dashboard =
@@ -341,6 +362,13 @@ $data = array(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.3.0 =
+* Update firebase/php-jwt to 6.3
+* Fix warning, register_rest_route was called incorrectly
+* Allow for Basic Auth, by not attempting to validate Authentication Headers if a valid user has already been determined (see: https://github.com/Tmeister/wp-api-jwt-auth/issues/241)
+* Added a new filter (jwt_auth_algorithm) to allow for customizing the algorithm used for signing the token
+* Props: https://github.com/bradmkjr
+
 = 1.2.6 =
 * Cookies && Token compatibility
 * Fix the root problem with gutenberg infinite loops and allow the token validation/generation if the WP cookie exists.
