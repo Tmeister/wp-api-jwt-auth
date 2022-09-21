@@ -1,7 +1,7 @@
 <?php
 
 /** Require the JWT library. */
-use \Firebase\JWT\JWT;
+use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 /**
@@ -85,7 +85,7 @@ class Jwt_Auth_Public
     }
 
     /**
-     * Add CORs suppot to the request.
+     * Add CORs support to the request.
      */
     public function add_cors_support()
     {
