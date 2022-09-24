@@ -54,6 +54,15 @@ class Jwt_Auth_Public {
 	private ?WP_Error $jwt_error = null;
 
 	/**
+	 * List of supported algorithms to sign the token.
+	 *
+	 * @var array|string[]
+	 * @since 1.3.1
+	 * @see https://www.rfc-editor.org/rfc/rfc7518#section-3
+	 */
+	private array $supported_algorithms = [ 'HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512' ];
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @param string $plugin_name The name of the plugin.
@@ -99,11 +108,11 @@ class Jwt_Auth_Public {
 	/**
 	 * Get the user and password in the request body and generate a JWT
 	 *
-	 * @param [type] $request [description]
+	 * @param WP_REST_Request $request
 	 *
-	 * @return mixed|WP_Error|null [type] [description]
+	 * @return mixed|WP_Error|null
 	 */
-	public function generate_token( $request ) {
+	public function generate_token( WP_REST_Request $request ) {
 		$secret_key = defined( 'JWT_AUTH_SECRET_KEY' ) ? JWT_AUTH_SECRET_KEY : false;
 		$username   = $request->get_param( 'username' );
 		$password   = $request->get_param( 'password' );
@@ -152,10 +161,22 @@ class Jwt_Auth_Public {
 		];
 
 		/** Let the user modify the token data before the sign. */
+		$algorithm = $this->get_algorithm();
+
+		if ( $algorithm === false ) {
+			return new WP_Error(
+				'jwt_auth_unsupported_algorithm',
+				__( 'Algorithm not supported, see https://www.rfc-editor.org/rfc/rfc7518#section-3', 'wp-api-jwt-auth' ),
+				[
+					'status' => 403,
+				]
+			);
+		}
+
 		$token = JWT::encode(
 			apply_filters( 'jwt_auth_token_before_sign', $token, $user ),
 			$secret_key,
-			apply_filters( 'jwt_auth_algorithm', 'HS256' )
+			$algorithm
 		);
 
 		/** The token is signed, now create the object with no sensible user data to the client*/
@@ -187,7 +208,8 @@ class Jwt_Auth_Public {
 		 * @since 1.2.3
 		 **/
 		$rest_api_slug = rest_get_url_prefix();
-		$valid_api_uri = strpos( $_SERVER['REQUEST_URI'], $rest_api_slug );
+		$requested_url = sanitize_url( $_SERVER['REQUEST_URI'] );
+		$valid_api_uri = strpos( $requested_url, $rest_api_slug );
 		// if already valid user or invalid url, don't attempt to validate token
 		if ( ! $valid_api_uri || $user ) {
 			return $user;
@@ -197,7 +219,7 @@ class Jwt_Auth_Public {
 		 * if the request URI is for validate the token don't do anything,
 		 * this avoids double calls to the validate_token function.
 		 */
-		$validate_uri = strpos( $_SERVER['REQUEST_URI'], 'token/validate' );
+		$validate_uri = strpos( $requested_url, 'token/validate' );
 		if ( $validate_uri > 0 ) {
 			return $user;
 		}
@@ -276,12 +298,24 @@ class Jwt_Auth_Public {
 
 		/** Try to decode the token */
 		try {
+			$algorithm = $this->get_algorithm();
+			if ( $algorithm === false ) {
+				return new WP_Error(
+					'jwt_auth_unsupported_algorithm',
+					__( 'Algorithm not supported, see https://www.rfc-editor.org/rfc/rfc7518#section-3', 'wp-api-jwt-auth' ),
+					[
+						'status' => 403,
+					]
+				);
+			}
+
 			$token = JWT::decode(
 				$token,
-				new Key( $secret_key, apply_filters( 'jwt_auth_algorithm', 'HS256' ) )
+				new Key( $secret_key, $algorithm )
 			);
+
 			/** The Token is decoded now validate the iss */
-			if ( $token->iss != get_bloginfo( 'url' ) ) {
+			if ( $token->iss !== get_bloginfo( 'url' ) ) {
 				/** The iss do not match, return error */
 				return new WP_Error(
 					'jwt_auth_bad_iss',
@@ -291,6 +325,7 @@ class Jwt_Auth_Public {
 					]
 				);
 			}
+
 			/** So far so good, validate the user id in the token */
 			if ( ! isset( $token->data->user->id ) ) {
 				/** No user id in the token, abort!! */
@@ -302,6 +337,7 @@ class Jwt_Auth_Public {
 					]
 				);
 			}
+
 			/** Everything looks good return the decoded token if the $output is false */
 			if ( ! $output ) {
 				return $token;
@@ -340,5 +376,20 @@ class Jwt_Auth_Public {
 		}
 
 		return $request;
+	}
+
+	/**
+	 * Get the algorithm used to sign the token via the filter jwt_auth_algorithm.
+	 * and validate that the algorithm is in the supported list.
+	 *
+	 * @return false|mixed|null
+	 */
+	private function get_algorithm() {
+		$algorithm = apply_filters( 'jwt_auth_algorithm', 'HS256' );
+		if ( ! in_array( $algorithm, $this->supported_algorithms ) ) {
+			return false;
+		}
+
+		return $algorithm;
 	}
 }
