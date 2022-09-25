@@ -256,11 +256,11 @@ class Jwt_Auth_Public {
 	 * The function take the token and try to decode it and validated it.
 	 *
 	 * @param WP_REST_Request $request
-	 * @param bool $custom_token
+	 * @param bool|string $custom_token
 	 *
 	 * @return WP_Error | Object | Array
 	 */
-	public function validate_token( WP_REST_Request $request, bool $custom_token = false ) {
+	public function validate_token( WP_REST_Request $request, $custom_token = false ) {
 		/*
 		 * Looking for the Authorization header
 		 *
