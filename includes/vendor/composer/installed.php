@@ -3,7 +3,7 @@
         'name' => 'tmeister/wp-api-jwt-auth',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '472b0df1f4674d348f1bcfb9aac68c63b11ce9f7',
+        'reference' => 'bbd8a29a9e8d14e0e25d659c1630d8c639c1f4cc',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -61,7 +61,7 @@
         'tmeister/wp-api-jwt-auth' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '472b0df1f4674d348f1bcfb9aac68c63b11ce9f7',
+            'reference' => 'bbd8a29a9e8d14e0e25d659c1630d8c639c1f4cc',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

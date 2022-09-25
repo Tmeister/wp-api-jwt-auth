@@ -1,16 +1,8 @@
 <?php
 
 /** Require the JWT library. */
-
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-
-/**
- * The public-facing functionality of the plugin.
- *
- * @link       https://enriquechavez.co
- * @since      1.0.0
- */
 
 /**
  * The public-facing functionality of the plugin.
@@ -19,6 +11,7 @@ use Firebase\JWT\Key;
  * enqueue the admin-specific stylesheet and JavaScript.
  *
  * @author     Enrique Chavez <noone@tmeister.net>
+ * @since      1.0.0
  */
 class Jwt_Auth_Public {
 	/**
@@ -54,7 +47,7 @@ class Jwt_Auth_Public {
 	private ?WP_Error $jwt_error = null;
 
 	/**
-	 * List of supported algorithms to sign the token.
+	 * Supported algorithms to sign the token.
 	 *
 	 * @var array|string[]
 	 * @since 1.3.1
@@ -209,22 +202,37 @@ class Jwt_Auth_Public {
 		 **/
 		$rest_api_slug = rest_get_url_prefix();
 		$requested_url = sanitize_url( $_SERVER['REQUEST_URI'] );
-		$valid_api_uri = strpos( $requested_url, $rest_api_slug );
-		// if already valid user or invalid url, don't attempt to validate token
-		if ( ! $valid_api_uri || $user ) {
+		// if we already have a valid user, or we have an invalid url, don't attempt to validate token
+		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST || strpos( $requested_url, $rest_api_slug ) === false || $user ) {
 			return $user;
 		}
 
 		/*
 		 * if the request URI is for validate the token don't do anything,
-		 * this avoids double calls to the validate_token function.
+		 * this avoids double calls.
 		 */
 		$validate_uri = strpos( $requested_url, 'token/validate' );
 		if ( $validate_uri > 0 ) {
 			return $user;
 		}
 
-		$token = $this->validate_token( false );
+		/**
+		 * We still need to get the Authorization header and check for the token.
+		 */
+		$auth_header = $_SERVER['HTTP_AUTHORIZATION'] ? sanitize_text_field( $_SERVER['HTTP_AUTHORIZATION'] ) : false;
+		/* Double check for different auth header string (server dependent) */
+		if ( ! $auth_header ) {
+			$auth_header = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ? sanitize_text_field( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) : false;
+		}
+
+		if ( ! $auth_header ) {
+			return $user;
+		}
+
+		/*
+		 * Check the token from the headers.
+		 */
+		$token = $this->validate_token( new WP_REST_Request(), $auth_header );
 
 		if ( is_wp_error( $token ) ) {
 			if ( $token->get_error_code() != 'jwt_auth_no_auth_header' ) {
@@ -240,26 +248,36 @@ class Jwt_Auth_Public {
 	}
 
 	/**
-	 * Main validation function, this function try to get the Authentication
-	 * headers and decoded.
+	 * Main validation function
 	 *
-	 * @param bool $output
+	 * This function is used by the /token/validate endpoint and
+	 * by our middleware.
+	 *
+	 * The function take the token and try to decode it and validated it.
+	 *
+	 * @param WP_REST_Request $request
+	 * @param bool $custom_token
 	 *
 	 * @return WP_Error | Object | Array
 	 */
-	public function validate_token( bool $output = true ) {
+	public function validate_token( WP_REST_Request $request, bool $custom_token = false ) {
 		/*
-		 * Looking for the HTTP_AUTHORIZATION header, if not present just
-		 * return the user.
+		 * Looking for the Authorization header
+		 *
+		 * There is two ways to get the authorization token
+		 *  1. via WP_REST_Request
+		 *  2. via custom_token, we get this for all the other API requests
+		 *
+		 * The get_header( 'Authorization' ) checks for the header in the following order:
+		 * 1. HTTP_AUTHORIZATION
+		 * 2. REDIRECT_HTTP_AUTHORIZATION
+		 *
+		 * @see https://core.trac.wordpress.org/ticket/47077
 		 */
-		$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? false;
 
-		/* Double check for different auth header string (server dependent) */
-		if ( ! $auth ) {
-			$auth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? false;
-		}
+		$auth_header = $custom_token ?: $request->get_header( 'Authorization' );
 
-		if ( ! $auth ) {
+		if ( ! $auth_header ) {
 			return new WP_Error(
 				'jwt_auth_no_auth_header',
 				'Authorization header not found.',
@@ -270,10 +288,13 @@ class Jwt_Auth_Public {
 		}
 
 		/*
-		 * The HTTP_AUTHORIZATION is present verify the format
-		 * if the format is wrong return the user.
+		 * Extract the authorization header
 		 */
-		[ $token ] = sscanf( $auth, 'Bearer %s' );
+		[ $token ] = sscanf( $auth_header, 'Bearer %s' );
+
+		/**
+		 * if the format is not valid return an error.
+		 */
 		if ( ! $token ) {
 			return new WP_Error(
 				'jwt_auth_bad_auth_header',
@@ -309,10 +330,7 @@ class Jwt_Auth_Public {
 				);
 			}
 
-			$token = JWT::decode(
-				$token,
-				new Key( $secret_key, $algorithm )
-			);
+			$token = JWT::decode( $token, new Key( $secret_key, $algorithm ) );
 
 			/** The Token is decoded now validate the iss */
 			if ( $token->iss !== get_bloginfo( 'url' ) ) {
@@ -338,12 +356,12 @@ class Jwt_Auth_Public {
 				);
 			}
 
-			/** Everything looks good return the decoded token if the $output is false */
-			if ( ! $output ) {
+			/** Everything looks good return the decoded token if we are using the custom_token */
+			if ( $custom_token ) {
 				return $token;
 			}
 
-			/** If the output is true return an answer to the request to show it */
+			/** This is for the /toke/validate endpoint*/
 			return [
 				'code' => 'jwt_auth_valid_token',
 				'data' => [
@@ -351,7 +369,7 @@ class Jwt_Auth_Public {
 				],
 			];
 		} catch ( Exception $e ) {
-			/** Something is wrong trying to decode the token, send back the error */
+			/** Something were wrong trying to decode the token, send back the error */
 			return new WP_Error(
 				'jwt_auth_invalid_token',
 				$e->getMessage(),
