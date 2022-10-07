@@ -5,24 +5,30 @@
   "type": "wordpress-plugin",
   "license": "GPL-2.0+",
   "authors": [
-      {
-          "name": "Enrique Chavez",
-          "homepage": "https://enriquechavez.co"
-      }
+    {
+      "name": "Enrique Chavez",
+      "homepage": "https://enriquechavez.co"
+    }
   ],
   "support": {
-      "issues": "https://github.com/Tmeister/wp-api-jwt-auth/issues",
-      "source": "https://github.com/Tmeister/wp-api-jwt-auth/"
+    "issues": "https://github.com/Tmeister/wp-api-jwt-auth/issues",
+    "source": "https://github.com/Tmeister/wp-api-jwt-auth/"
   },
   "config": {
-      "vendor-dir": "includes/vendor",
+    "vendor-dir": "includes/vendor",
     "allow-plugins": {
-      "composer/installers": true
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
   "require": {
-      "php": ">=5.3",
-      "composer/installers": "~1.0",
-      "firebase/php-jwt": "^6.3"
+    "php": ">=7.4",
+    "composer/installers": "~1.0",
+    "firebase/php-jwt": "^6.3"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "squizlabs/php_codesniffer": "3.*",
+    "wp-coding-standards/wpcs": "*"
   }
 }

@@ -1,2 +1,6 @@
 .vscode
 .DS_Store
+includes/vendor/bin
+includes/vendor/dealerdirect
+includes/vendor/squizlabs
+includes/vendor/wp-coding-standards
