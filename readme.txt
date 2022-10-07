@@ -342,6 +342,9 @@ $token = JWT::decode(
 );
 `
 
+## Testing
+I've created a small app to test the basic functionality of the plugin; you can get the app and read all the details on the [JWT-Client Repo](https://github.com/Tmeister/jwt-client)
+
 ==Installation==
 
 = Using The WordPress Dashboard =
@@ -362,6 +365,14 @@ $token = JWT::decode(
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.3.1 =
+* Updating the minimum version of PHP to 7.4
+* Validate the signing algorithm against the supported algorithms @see https://www.rfc-editor.org/rfc/rfc7518#section-3
+* Sanitize the REQUEST_URI and HTTP_AUTHORIZATION values before to use them
+* Use get_header() instead of $_SERVER to get the Authorization header when possible
+* Added typed properties to the JWT_Auth class where possible
+* Along with this release, I release a new simple JWT Client App for testing purposes @see https://github.com/Tmeister/jwt-client
+
 = 1.3.0 =
 * Update firebase/php-jwt to 6.3
 * Fix warning, register_rest_route was called incorrectly
