@@ -340,7 +340,10 @@ $token = JWT::decode(
 );
 ```
 
-##Credits
+## Testing
+I've created a small app to test the basic functionality of the plugin; you can get the app and read all the details on the [JWT-Client Repo](https://github.com/Tmeister/jwt-client)
+
+## Credits
 [WP REST API V2](http://v2.wp-api.org/)
 
 [PHP-JWT from firebase](https://github.com/firebase/php-jwt)
