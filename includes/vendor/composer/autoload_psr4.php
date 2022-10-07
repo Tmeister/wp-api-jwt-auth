@@ -7,6 +7,5 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
-    'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => array($vendorDir . '/dealerdirect/phpcodesniffer-composer-installer/src'),
     'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src/Composer/Installers'),
 );
