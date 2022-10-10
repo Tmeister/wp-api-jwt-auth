@@ -23,7 +23,7 @@
   },
   "require": {
     "php": ">=7.4",
-    "composer/installers": "~1.0",
+    "composer/installers": "~2.2",
     "firebase/php-jwt": "^6.3"
   },
   "require-dev": {
