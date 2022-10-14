@@ -105,6 +105,12 @@ class Jwt_Auth {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jwt-auth-i18n.php';
 
 		/**
+		 * The class responsible for creating a unique namespace to load the JWT & Key 
+		 * classes of this plugin
+		 */
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/extend-classes.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
