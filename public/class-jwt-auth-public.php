@@ -1,8 +1,8 @@
 <?php
 
 /** Require the JWT library. */
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use Tmeister\Firebase\JWT\JWT;
+use Tmeister\Firebase\JWT\Key;
 
 /**
  * The public-facing functionality of the plugin.
