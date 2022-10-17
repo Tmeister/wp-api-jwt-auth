@@ -105,6 +105,13 @@ class Jwt_Auth {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-jwt-auth-i18n.php';
 
 		/**
+		 * Class responsible for creating a `wrapper namespace` to load the Firebase's JWT & Key
+		 * classes and prevent conflicts with other plugins using the same library
+		 * with different versions.
+		 */
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-jwt-namespace-wrapper.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
