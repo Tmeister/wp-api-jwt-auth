@@ -288,6 +288,19 @@ class Jwt_Auth_Public {
 		}
 
 		/*
+		 * Skip if authorization header is a Basic auth
+		 */
+		if ( preg_match( '%^Basic [a-z\d/+]*={0,2}$%i', $auth_header ) ) {
+			return new WP_Error(
+				'jwt_auth_no_auth_header',
+				'Authorization header not found.',
+				[
+					'status' => 403,
+				]
+			);
+		}
+
+		/*
 		 * Extract the authorization header
 		 */
 		[ $token ] = sscanf( $auth_header, 'Bearer %s' );
