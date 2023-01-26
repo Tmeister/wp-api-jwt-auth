@@ -85,6 +85,12 @@ class Jwt_Auth_Public {
 			'callback'            => [ $this, 'validate_token' ],
 			'permission_callback' => '__return_true',
 		] );
+
+		register_rest_route( $this->namespace, 'register', [
+			'methods'             => 'POST',
+			'callback'            => [ $this, 'register_user' ],
+			'permission_callback' => '__return_true',
+		] );
 	}
 
 	/**
@@ -96,6 +102,45 @@ class Jwt_Auth_Public {
 			$headers = apply_filters( 'jwt_auth_cors_allow_headers', 'Access-Control-Allow-Headers, Content-Type, Authorization' );
 			header( sprintf( 'Access-Control-Allow-Headers: %s', $headers ) );
 		}
+	}
+
+	public function register_user( WP_REST_Request $request ){
+		$secret_key = defined( 'JWT_AUTH_SECRET_KEY' ) ? JWT_AUTH_SECRET_KEY : false;
+		$username   = $request->get_param( 'username' );
+		$email   = $request->get_param( 'email' );
+		$password   = $request->get_param( 'password' );
+
+		/** First thing, check the secret key if not exist return an error*/
+		if ( ! $secret_key ) {
+			return new WP_Error(
+				'jwt_auth_bad_config',
+				__( 'JWT is not configured properly, please contact the admin', 'wp-api-jwt-auth' ),
+				[
+					'status' => 403,
+				]
+			);
+		}
+
+		$user = wp_create_user($username, $password, $email);
+
+		if ( is_wp_error( $user ) ) {
+			$error_code = $user->get_error_code();
+			return new WP_Error(
+				'[jwt_auth] ' . $error_code,
+				$user->get_error_message( $error_code ),
+				[
+					'status' => 403,
+				]
+			);
+		}
+
+
+		return [
+			'code' => 'user registeration successful',
+			'data' => [
+				'status' => 200,
+			],
+		];
 	}
 
 	/**
