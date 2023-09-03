@@ -203,7 +203,9 @@ class Jwt_Auth_Public {
 		$rest_api_slug = rest_get_url_prefix();
 		$requested_url = sanitize_url( $_SERVER['REQUEST_URI'] );
 		// if we already have a valid user, or we have an invalid url, don't attempt to validate token
-		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST || strpos( $requested_url, $rest_api_slug ) === false || $user ) {
+		$is_rest_request_constant_defined = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		$is_rest_request = $is_rest_request_constant_defined || strpos( $requested_url, $rest_api_slug );
+		if ( $is_rest_request && $user ) {
 			return $user;
 		}
 
@@ -219,10 +221,10 @@ class Jwt_Auth_Public {
 		/**
 		 * We still need to get the Authorization header and check for the token.
 		 */
-		$auth_header = $_SERVER['HTTP_AUTHORIZATION'] ? sanitize_text_field( $_SERVER['HTTP_AUTHORIZATION'] ) : false;
+		$auth_header = ! empty( $_SERVER['HTTP_AUTHORIZATION'] ) ? sanitize_text_field( $_SERVER['HTTP_AUTHORIZATION'] ) : false;
 		/* Double check for different auth header string (server dependent) */
 		if ( ! $auth_header ) {
-			$auth_header = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ? sanitize_text_field( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) : false;
+			$auth_header = ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ? sanitize_text_field( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) : false;
 		}
 
 		if ( ! $auth_header ) {
