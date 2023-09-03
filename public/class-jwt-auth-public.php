@@ -203,9 +203,9 @@ class Jwt_Auth_Public {
 		$rest_api_slug = rest_get_url_prefix();
 		$requested_url = sanitize_url( $_SERVER['REQUEST_URI'] );
 		// if we already have a valid user, or we have an invalid url, don't attempt to validate token
-		$isRestRequestConstantDefined = defined( 'REST_REQUEST' ) && REST_REQUEST;
-		$isRestRequest = $isRestRequestConstantDefined || strpos( $requested_url, $rest_api_slug );
-		if ( $isRestRequest && $user ) {
+		$is_rest_request_constant_defined = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		$is_rest_request = $is_rest_request_constant_defined || strpos( $requested_url, $rest_api_slug );
+		if ( $is_rest_request && $user ) {
 			return $user;
 		}
 
