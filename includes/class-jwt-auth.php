@@ -68,6 +68,7 @@ class Jwt_Auth {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_public_hooks();
+		$this->define_admin_hooks();
 	}
 
 	/**
@@ -117,6 +118,12 @@ class Jwt_Auth {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-jwt-auth-public.php';
 
+		/**
+		 * The class responsible for defining all actions that occur in the admin-facing
+		 * side of the site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-jwt-auth-admin.php';
+
 		$this->loader = new Jwt_Auth_Loader();
 	}
 
@@ -146,6 +153,17 @@ class Jwt_Auth {
 		$this->loader->add_filter( 'rest_api_init', $plugin_public, 'add_cors_support' );
 		$this->loader->add_filter( 'rest_pre_dispatch', $plugin_public, 'rest_pre_dispatch', 10, 2 );
 		$this->loader->add_filter( 'determine_current_user', $plugin_public, 'determine_current_user' );
+	}
+
+	/**
+	 * Register all the hooks related to the admin-facing functionality
+	 * of the plugin.
+	 *
+	 * @since    1.3.4
+	 */
+	private function define_admin_hooks() {
+		$plugin_admin = new Jwt_Auth_Admin( $this->get_plugin_name(), $this->get_version() );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'register_menu_page' );
 	}
 
 	/**
