@@ -91,6 +91,8 @@ class Jwt_Auth_Admin {
 		);
 	}
 
+
+
 	public function register_plugin_settings() {
 		register_setting( 'jwt_auth', 'jwt_auth_options', [
 			'type'         => 'object',

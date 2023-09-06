@@ -4,6 +4,12 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   position: relative;
+  background: white;
+}
+
+.jwt-auth-text-small {
+  font-size: 12px;
+  font-weight: normal;
 }
 
 .jwt-auth-settings {
@@ -35,6 +41,17 @@
         text-decoration: none;
         font-size: 1rem;
       }
+    }
+  }
+
+  .jwt-auth-toggle-holder {
+    padding: 1rem 0;
+
+    .jwt-auth-toggle-control {
+      display: flex;
+      gap: 1rem;
+      font-weight: bold;
+      margin-bottom: 4px ;
     }
   }
 }
