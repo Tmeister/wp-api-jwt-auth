@@ -1,0 +1,40 @@
+.jwt-auth-box {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  position: relative;
+}
+
+.jwt-auth-settings {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+
+  .jwt-auth-options {
+    width: 66.6%;
+  }
+
+  .jwt-auth-cta {
+    width: 33.3%;
+    max-width: 360px;
+
+
+    .jwt-auth-cta-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+
+      .jwt-auth-cta-button {
+        display: block;
+        text-align: center;
+        padding: 1rem;
+        border-radius: 4px;
+        background: #0073aa;
+        color: #fff;
+        text-decoration: none;
+        font-size: 1rem;
+      }
+    }
+  }
+}
