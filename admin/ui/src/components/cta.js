@@ -16,9 +16,16 @@ const CTA = () => {
 					help you troubleshoot any issues you're having with the
 					plugin, or even build a custom solution for your project.
 				</p>
+				<p>
+					Get in touch with me clicking the button below or you can
+					hire me directly on{ ' ' }
+					<a href="https://76.digital/codeable" target="_blank">
+						Codeable.
+					</a>
+				</p>
 				<div className={ `jwt-auth-cta-wrapper` }>
 					<a
-						href="https://www.codeable.io/developers/enrique-chavez/"
+						href="https://76.digital/contact/"
 						target="_blank"
 						className={ `jwt-auth-cta-button` }
 					>

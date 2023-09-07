@@ -51,6 +51,15 @@ const MainView = () => {
 								this helps me optimize the plugin for the most
 								common WordPress setups.
 							</li>
+							<li>
+								<strong>- WooCommerce Version:</strong> Knowing
+								this helps me to understand if I need to focus
+								more on the WooCommerce.
+							</li>
+							<li>
+								<strong>- Activated Plugins Count:</strong> This
+								helps to know the complexity of the WP installs.
+							</li>
 						</ul>
 						<p>I promise that:</p>
 						<ol>

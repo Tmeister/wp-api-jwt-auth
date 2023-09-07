@@ -14,17 +14,15 @@
 
 .jwt-auth-settings {
   margin-top: 2rem;
-  display: flex;
   gap: 2rem;
 
   .jwt-auth-options {
-    width: 66.6%;
+    width: 100%;
   }
 
   .jwt-auth-cta {
-    width: 33.3%;
-    max-width: 360px;
-
+    width: 100%;
+    margin-top: 1rem;
 
     .jwt-auth-cta-wrapper {
       position: relative;
@@ -51,7 +49,24 @@
       display: flex;
       gap: 1rem;
       font-weight: bold;
-      margin-bottom: 4px ;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+// media query
+@media screen and (min-width: 1024px) {
+  .jwt-auth-settings {
+    display: flex;
+
+    .jwt-auth-options {
+      width: 66%;
+    }
+
+    .jwt-auth-cta {
+      width: 33%;
+      max-width: 380px;
+      margin-top: 0;
     }
   }
 }
