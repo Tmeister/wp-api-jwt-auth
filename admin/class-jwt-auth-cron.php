@@ -7,16 +7,18 @@
  * @since      1.3.4
  */
 class Jwt_Auth_Cron {
+//	public static string $remote_api_url = 'https://track.wpjwt.com';
+	public static string $remote_api_url = 'http://track-wpjwt.test';
+
 	/**
 	 * If the user agrees to share data, then we will send some data.
 	 *
-	 * @since 1.3.4
 	 * @return void|null
+	 * @since 1.3.4
 	 */
-	static public function share_data() {
-		$jwt_auth_options = get_option( 'jwt_auth_options' );
-		// If the user doesn't want to share data, then we don't do anything
-		if ( ! isset( $jwt_auth_options ) || ! isset( $jwt_auth_options['share_data'] ) || ! $jwt_auth_options['share_data'] ) {
+	static public function collect() {
+		// if the user doesn't agree to share data, then we don't do anything
+		if ( ! self::allow_shared_data() ) {
 			return null;
 		}
 
@@ -42,9 +44,52 @@ class Jwt_Auth_Cron {
 			'woocommerce_version' => $woocommerce_version
 		];
 
-		$api_url = 'https://track.wpjwt.com/api/collect';
-		wp_remote_post( $api_url . '/' . $site_url_hash, [
-			'body' => $data,
-		] );
+		// Wrap the request in a try/catch to avoid fatal errors
+		// and set the timeout to 5 seconds to avoid long delays
+		try {
+			$api_url = self::$remote_api_url . '/api/collect';
+			wp_remote_post( $api_url . '/' . $site_url_hash, [
+				'body'    => $data,
+				'timeout' => 5,
+			] );
+		} catch ( Exception $e ) {
+			error_log( 'Error adding site to remote database' );
+			error_log( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * If the user agrees to share data, then we will remove the site from the remote database.
+	 *
+	 * @return void|null
+	 * @since 1.3.4
+	 */
+	static public function remove() {
+		// First we remove the scheduled event
+		wp_clear_scheduled_hook( 'jwt_auth_share_data' );
+		// Then we remove the site from the remote database
+		$site_url_hash = hash( 'sha256', get_site_url() );
+		// Wrap the request in a try/catch to avoid fatal errors
+		// and set the timeout to 5 seconds to avoid long delays
+		try {
+			$api_url = self::$remote_api_url . '/api/destroy';
+			wp_remote_post( $api_url . '/' . $site_url_hash, [
+				'timeout' => 5,
+			] );
+		} catch ( Exception $e ) {
+			error_log( 'Error removing site from remote database' );
+			error_log( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Check if the user agrees to share data.
+	 * @return bool
+	 * @since 1.3.4
+	 */
+	static public function allow_shared_data(): bool {
+		$jwt_auth_options = get_option( 'jwt_auth_options' );
+
+		return ( isset( $jwt_auth_options['share_data'] ) && $jwt_auth_options['share_data'] );
 	}
 }

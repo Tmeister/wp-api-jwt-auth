@@ -43,18 +43,38 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-jwt-auth.php';
  */
 require plugin_dir_path( __FILE__ ) . 'admin/class-jwt-auth-cron.php';
 
-// Schedule an action if it's not already scheduled
+/**
+ * Schedule an action if it's not already scheduled
+ */
 if ( ! wp_next_scheduled( 'jwt_auth_share_data' ) ) {
 	wp_schedule_event( time(), 'weekly', 'jwt_auth_share_data' );
 }
 
-// Hook into that action that'll fire every week
+/**
+ * Run the action that'll fire every week
+ *
+ * @return void
+ */
+function jwt_auth_share_data() {
+	Jwt_Auth_Cron::collect();
+}
+
+/**
+ * Hook into the action that'll fire every week
+ */
 add_action( 'jwt_auth_share_data', 'jwt_auth_share_data' );
 
-// Add it as a single function, so we can easily remove it
-function jwt_auth_share_data() {
-	Jwt_Auth_Cron::share_data();
+/**
+ * This runs during plugin deactivation.
+ */
+function deactivate_jwt_auth() {
+	Jwt_Auth_Cron::remove();
 }
+
+/**
+ * Hook into the action that'll fire during plugin deactivation
+ */
+register_deactivation_hook( __FILE__, 'deactivate_jwt_auth' );
 
 /**
  * Begins execution of the plugin.
