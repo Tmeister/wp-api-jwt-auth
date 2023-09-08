@@ -40,8 +40,13 @@ class Jwt_Auth_Admin {
 		$this->version     = $version;
 	}
 
+	/**
+	 * Register a new settings page under Settings main menu
+	 * .
+	 * @return void
+	 * @since 1.3.4
+	 */
 	public function register_menu_page() {
-		// Register a new submenu under the Settings top-level menu:
 		add_submenu_page(
 			'options-general.php',
 			__( 'JWT Authentication', 'jwt-auth' ),
@@ -52,7 +57,42 @@ class Jwt_Auth_Admin {
 		);
 	}
 
-	public function enqueue_plugin_assets( $suffix ) {
+	/**
+	 * Shows an admin notice on the admin dashboard to notify the new settings page.
+	 * This is only shown once and the message is dismissed.
+	 *
+	 * @return void
+	 * @since 1.3.4
+	 */
+	public function display_admin_notice() {
+		if ( ! get_option( 'jwt_auth_admin_notice' ) ) {
+			?>
+            <div class="notice notice-info is-dismissible">
+                <p>
+					<?php
+					printf(
+					/* translators: %s: Link to the JWT Authentication settings page */
+						__( 'Please visit the <a href="%s">JWT Authentication settings page</a> for an important message from the author.',
+							'jwt-auth' ),
+						admin_url( 'options-general.php?page=jwt_authentication' )
+					);
+					?>
+                </p>
+            </div>
+			<?php
+			update_option( 'jwt_auth_admin_notice', true );
+		}
+	}
+
+	/**
+	 * Enqueue the plugin assets only on the plugin settings page.
+	 *
+	 * @param string $suffix
+	 *
+	 * @return void|null
+	 * @since 1.3.4
+	 */
+	public function enqueue_plugin_assets( string $suffix ) {
 		if ( $suffix !== 'settings_page_jwt_authentication' ) {
 			return null;
 		}
@@ -91,8 +131,12 @@ class Jwt_Auth_Admin {
 		);
 	}
 
-
-
+	/**
+	 * Register the plugin settings.
+	 *
+	 * @return void
+	 * @since 1.3.4
+	 */
 	public function register_plugin_settings() {
 		register_setting( 'jwt_auth', 'jwt_auth_options', [
 			'type'         => 'object',
@@ -113,6 +157,13 @@ class Jwt_Auth_Admin {
 		] );
 	}
 
+    /**
+     * Render the plugin settings page.
+     * This is a React application that will be rendered on the admin page.
+     *
+     * @return void
+     * @since 1.3.4
+     */
 	public function render_admin_page() {
 		?>
         <div id="jwt-auth-holder"></div>
