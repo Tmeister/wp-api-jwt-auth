@@ -3167,7 +3167,7 @@
 
 "@wordpress/i18n@^4.41.0":
   version "4.41.0"
-  resolved "https://registry.npmjs.org/@wordpress/i18n/-/i18n-4.41.0.tgz"
+  resolved "https://registry.yarnpkg.com/@wordpress/i18n/-/i18n-4.41.0.tgz#6969ee479839ded4dfe549f17bf2705c2636c8a5"
   integrity sha512-MXA+DiVSF2CS0ZhFEBq/eJjfHuKMcu3FUuiF/Dpc1YZRD1X7N6xPlfo4xKJZVUWIAsfgpc8oA2YMLw1VTFzrRA==
   dependencies:
     "@babel/runtime" "^7.16.0"
