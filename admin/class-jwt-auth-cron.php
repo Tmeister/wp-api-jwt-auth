@@ -7,8 +7,7 @@
  * @since      1.3.4
  */
 class Jwt_Auth_Cron {
-//	public static string $remote_api_url = 'https://track.wpjwt.com';
-	public static string $remote_api_url = 'http://track-wpjwt.test';
+	public static string $remote_api_url = 'https://track.wpjwt.com';
 
 	/**
 	 * If the user agrees to share data, then we will send some data.

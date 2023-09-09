@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import Newsletter from './newsletter';
 
 const CTA = () => {
 	return (
@@ -40,6 +41,9 @@ const CTA = () => {
 						{ __( `Get in touch`, 'jwt-auth' ) }
 					</a>
 				</div>
+			</div>
+			<div className={ `jwt-auth-box jwt-auth-newsletter` }>
+				<Newsletter />
 			</div>
 		</div>
 	);

@@ -7,6 +7,34 @@
   background: white;
 }
 
+.jwt-auth-cta-button {
+  display: block;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 4px;
+  background: #0073aa;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 0 0;
+  cursor: pointer;
+
+  &:disabled {
+    background: #ddd;
+    color: black;
+    cursor: not-allowed;
+    &:hover {
+      background: #ddd;
+      color: black;
+    }
+  }
+
+  &:hover {
+    color: white;
+  }
+}
+
 .jwt-auth-text-small {
   font-size: 12px;
   font-weight: normal;
@@ -29,16 +57,7 @@
       display: inline-block;
       width: 100%;
 
-      .jwt-auth-cta-button {
-        display: block;
-        text-align: center;
-        padding: 1rem;
-        border-radius: 4px;
-        background: #0073aa;
-        color: #fff;
-        text-decoration: none;
-        font-size: 1rem;
-      }
+
     }
   }
 
@@ -50,6 +69,38 @@
       gap: 1rem;
       font-weight: bold;
       margin-bottom: 4px;
+    }
+  }
+
+  .jwt-auth-newsletter {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #353A45;
+    color: white;
+
+    h3 {
+      color: white;
+    }
+
+    .jwt-auth-newsletter-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+
+      input {
+        padding: 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+      }
+
+      .jwt-auth-thank-you {
+        font-size: 1rem;
+        margin-top: 12px;
+        color: white;
+        text-align: center;
+      }
     }
   }
 }
