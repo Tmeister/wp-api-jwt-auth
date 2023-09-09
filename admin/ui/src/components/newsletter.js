@@ -22,7 +22,7 @@ const Newsletter = () => {
 	const handleSubscribeForm = async ( e ) => {
 		e.preventDefault();
 		setLoading( true );
-		const apiUrl = `https://track.wpjwt.com/api/subscribe`;
+		const apiUrl = 'https://track.wpjwt.com/api/subscribe';
 		const response = await fetch( apiUrl, {
 			method: 'POST',
 			headers: {
