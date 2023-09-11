@@ -6,7 +6,7 @@ Tags: wp-json, jwt, json web authentication, wp-api
 Requires at least: 4.2
 Tested up to: 6.3.1
 Requires PHP: 7.4.0
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,7 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 ### PHP
 
-**Minimum PHP version: 5.3.0**
+**Minimum PHP version: 7.4.0**
 
 ### PHP HTTP Authorization Header enable
 
@@ -365,6 +365,10 @@ I've created a small app to test the basic functionality of the plugin; you can 
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.3.4 =
+* Fix: Skip any type of validation when the authorization header is not Bearer.
+* Feature: Added a setting page to share data and add information about the plugin.
+
 = 1.3.3 =
 * Update php-jwt to 6.4.0
 * Fix php warnings (https://github.com/Tmeister/wp-api-jwt-auth/pull/259)

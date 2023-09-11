@@ -1,0 +1,28 @@
+{
+	"name": "jwt-auth-admin-ui",
+	"version": "1.0.0",
+	"main": "build/index.js",
+	"license": "GPL-2.0-or-later",
+	"author": "Enrique Chavez",
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start",
+		"format": "wp-scripts format",
+		"lint:js": "wp-scripts lint-js",
+		"lint:js:fix": "wp-scripts lint-js --fix",
+		"lint:css": "wp-scripts lint-css",
+		"lint:css:fix": "wp-scripts lint-css --fix",
+		"packages-update": "wp-scripts packages-update"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^26.12.0"
+	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^6.38.0",
+		"@wordpress/components": "^25.7.0",
+		"@wordpress/core-data": "^6.18.0",
+		"@wordpress/data": "^9.11.0",
+		"@wordpress/element": "^5.18.0",
+		"@wordpress/i18n": "^4.41.0"
+	}
+}
