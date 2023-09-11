@@ -14,7 +14,7 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 ### PHP
 
-**Minimum PHP version: 5.3.0**
+**Minimum PHP version: 7.4.0**
 
 ### Enable PHP HTTP Authorization Header
 
