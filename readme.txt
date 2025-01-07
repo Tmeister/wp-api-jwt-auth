@@ -365,6 +365,9 @@ I've created a small app to test the basic functionality of the plugin; you can 
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.3.5 =
+* Notice: Add JWT Authentication Pro beta announcement notice.
+
 = 1.3.4 =
 * Fix: Skip any type of validation when the authorization header is not Bearer.
 * Feature: Added a setting page to share data and add information about the plugin.

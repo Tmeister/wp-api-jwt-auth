@@ -65,22 +65,21 @@ class Jwt_Auth_Admin {
 	 * @since 1.3.4
 	 */
 	public function display_admin_notice() {
-		if ( ! get_option( 'jwt_auth_admin_notice' ) ) {
+		if ( ! get_option( 'jwt_auth_beta_notice_01' ) ) {
 			?>
             <div class="notice notice-info is-dismissible">
                 <p>
-					<?php
-					printf(
-					/* translators: %s: Link to the JWT Authentication settings page */
-						__( 'Please visit the <a href="%s">JWT Authentication settings page</a> for an important message from the author.',
-							'jwt-auth' ),
-						admin_url( 'options-general.php?page=jwt_authentication' )
-					);
-					?>
+					<?php esc_html_e( 'Exciting News! 🚀 Sign up now for the Early Beta of JWT Authentication Pro! Be among the first to experience advanced security and seamless API integration for your WordPress REST API.',
+						'jwt-auth' ); ?>
+                    <a href="https://jwtauth.pro?utm_source=wp-admin&utm_medium=notice&utm_campaign=early-beta" target="_blank"
+                       class="button button-primary"
+                       style="margin-left: 10px;">
+						<?php esc_html_e( 'Join the Beta Now', 'jwt-auth' ); ?>
+                    </a>
                 </p>
             </div>
 			<?php
-			update_option( 'jwt_auth_admin_notice', true );
+			update_option( 'jwt_auth_beta_notice_01', true );
 		}
 	}
 
@@ -157,16 +156,36 @@ class Jwt_Auth_Admin {
 		] );
 	}
 
-    /**
-     * Render the plugin settings page.
-     * This is a React application that will be rendered on the admin page.
-     *
-     * @return void
-     * @since 1.3.4
-     */
+	/**
+	 * Render the plugin settings page.
+	 * This is a React application that will be rendered on the admin page.
+	 *
+	 * @return void
+	 * @since 1.3.4
+	 */
 	public function render_admin_page() {
 		?>
         <div id="jwt-auth-holder"></div>
 		<?php
+	}
+
+	/**
+	 * Add a link to the plugin settings page on the plugin list.
+	 *
+	 * @param array $links
+	 * @param string $file
+	 *
+	 * @return array
+	 * @since 1.3.5
+	 */
+	public function add_action_link( array $links, string $file): array {
+
+		// Check if this is the target plugin
+		if ( $file === 'jwt-authentication-for-wp-rest-api/jwt-auth.php' ) {
+			$new_link = '<a href="https://jwtauth.pro?utm_source=wpadmin&utm_medium=plugin-link&utm_campaign=early-beta" target="_blank"><b>Get Early Beta Access</b></a>';
+            $links[]  = $new_link;
+		}
+
+		return $links;
 	}
 }

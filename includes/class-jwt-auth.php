@@ -63,7 +63,7 @@ class Jwt_Auth {
 	 */
 	public function __construct() {
 		$this->plugin_name = 'jwt-auth';
-		$this->version     = '1.3.3';
+        $this->version     = '1.3.5';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -168,6 +168,7 @@ class Jwt_Auth {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_plugin_settings' );
 		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'register_plugin_settings' );
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'display_admin_notice' );
+		$this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'add_action_link', 10, 2 );
 	}
 
 	/**
