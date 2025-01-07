@@ -4,9 +4,9 @@ Contributors: tmeister
 Donate link: https://github.com/sponsors/Tmeister
 Tags: wp-json, jwt, json web authentication, wp-api, login
 Requires at least: 4.2
-Tested up to: 6.6.1
+Tested up to: 6.7.1
 Requires PHP: 7.4.0
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
