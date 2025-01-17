@@ -6,7 +6,7 @@ Tags: wp-json, jwt, json web authentication, wp-api, login
 Requires at least: 4.2
 Tested up to: 6.7.1
 Requires PHP: 7.4.0
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -365,6 +365,9 @@ I've created a small app to test the basic functionality of the plugin; you can 
 ###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
 
 == Changelog ==
+= 1.3.6 =
+* Added Safeguard in enqueue_plugin_assets to Handle Null or Empty $suffix
+
 = 1.3.5 =
 * Notice: Add JWT Authentication Pro beta announcement notice.
 
