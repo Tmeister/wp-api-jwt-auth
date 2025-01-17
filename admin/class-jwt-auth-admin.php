@@ -91,7 +91,12 @@ class Jwt_Auth_Admin {
 	 * @return void|null
 	 * @since 1.3.4
 	 */
-	public function enqueue_plugin_assets( string $suffix ) {
+	public function enqueue_plugin_assets( $suffix = '' ) {
+		// Check if $suffix is empty or null
+		if ( empty( $suffix ) ) {
+		    return; // Exit early to prevent further execution
+		}
+		
 		if ( $suffix !== 'settings_page_jwt_authentication' ) {
 			return null;
 		}
