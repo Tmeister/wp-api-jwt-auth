@@ -81,12 +81,13 @@ When the plugin is activated, a new namespace is added.
 ```
 
 
-Also, two new endpoints are added to this namespace.
+Also, three new endpoints are added to this namespace.
 
 
 | Endpoint                              | HTTP Verb |
 | ------------------------------------- | --------- |
 | */wp-json/jwt-auth/v1/token*          | POST      |
+| */wp-json/jwt-auth/v1/google_auth*    | POST      |
 | */wp-json/jwt-auth/v1/token/validate* | POST      |
 
 ## Usage
@@ -147,6 +148,68 @@ Error response from the server:
         "status": 403
     },
     "message": "Invalid Credentials."
+}
+```
+
+
+
+### /wp-json/jwt-auth/v1/google_auth
+
+This is the entry point for the JWT Authentication using **Google Access** Token or **Id Token**.
+
+Receive a Google token as `token` and `type`, where `type` is either `id_token` or `access_token`. Validate the Google token and return a JWT for future API requests if authentication is successful, or an error if authentication fails.
+
+#### Sample request using AngularJS
+
+```javascript
+
+( function() {
+  var app = angular.module( 'jwtAuth', [] );
+
+  app.controller( 'MainController', function( $scope, $http ) {
+
+    var apiHost = 'http://yourdomain.com/wp-json';
+
+    $http.post( apiHost + '/jwt-auth/v1/google_auth', {
+        type: 'id_token', // access_token or id_token
+        token: 'token' // your token response from google oauth2
+      } )
+
+      .then( function( response ) {
+        console.log( response.data )
+      } )
+
+      .catch( function( error ) {
+        console.error( 'Error', error.data[0] );
+      } );
+
+  } );
+
+} )();
+
+
+```
+
+Success response from the server:
+
+```json
+{
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L3dwMSIsImlhdCI6MTcxNjU4ODQ5NywibmJmIjoxNzE2NTg4NDk3LCJleHAiOjE3MTcxOTMyOTcsImRhdGEiOnsidXNlciI6eyJpZCI6Mn19fQ.-S9btuiTT1VKJUMIPYw_TJDM6_ExhSCsWnV7H1LEw6g",
+    "user_display_name": "someuser",
+    "user_email": "someuser@gmail.com",
+    "user_nicename": "someuser"
+}
+```
+
+Error response from the server:
+
+```json
+{
+    "code": "jwt_google_auth_error",
+    "data": {
+        "status": 403
+    },
+    "message": "Failed to authenticate. Check the `token` and `type`"
 }
 ```
 
