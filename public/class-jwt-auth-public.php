@@ -357,7 +357,8 @@ class Jwt_Auth_Public {
 				);
 			}
 
-			$token = JWT::decode( $token, new Key( $secret_key, $algorithm ) );
+			/** Here we can use jwt_auth_token_before_decode to modify the $secret_key in order to allow asymmetric encryption.**/
+			$token = JWT::decode( $token, new Key( apply_filters( 'jwt_auth_token_before_decode', $secret_key, $algorithm ), $algorithm ) );
 
 			/** The Token is decoded now validate the iss */
 			if ( $token->iss !== get_bloginfo( 'url' ) ) {
