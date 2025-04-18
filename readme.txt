@@ -2,9 +2,9 @@
 
 Contributors: tmeister
 Donate link: https://github.com/sponsors/Tmeister
-Tags: wp-json, jwt, json web authentication, wp-api, login
+Tags: wp-json, jwt, json web authentication, wp-api, login, rest api, authentication
 Requires at least: 4.2
-Tested up to: 6.7.1
+Tested up to: 6.8.0
 Requires PHP: 7.4.0
 Stable tag: 1.3.6
 License: GPLv2 or later
@@ -14,11 +14,53 @@ Extends the WP REST API using JSON Web Tokens Authentication as an authenticatio
 
 == Description ==
 
-Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
+This plugin seamlessly extends the WP REST API, enabling robust and secure authentication using JSON Web Tokens (JWT). It provides a straightforward way to authenticate users via the REST API, returning a standard JWT upon successful login.
 
-JSON Web Tokens are an open, industry standard [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties.
+### Key features of this free version include:
 
-**Support and Requests please in Github:** https://github.com/Tmeister/wp-api-jwt-auth
+*   **Standard JWT Authentication:** Implements the industry-standard [RFC 7519](https://tools.ietf.org/html/rfc7519) for secure claims representation.
+*   **Simple Endpoints:** Offers clear `/token` and `/token/validate` endpoints for generating and validating tokens.
+*   **Configurable Secret Key:** Define your unique secret key via `wp-config.php` for secure token signing.
+*   **Optional CORS Support:** Easily enable Cross-Origin Resource Sharing support via a `wp-config.php` constant.
+*   **Developer Hooks:** Provides filters (`jwt_auth_expire`, `jwt_auth_token_before_sign`, etc.) for customizing token behavior.
+
+JSON Web Tokens are an open, industry standard method for representing claims securely between two parties.
+
+For users requiring more advanced capabilities such as multiple signing algorithms (RS256, ES256), token refresh/revocation, UI-based configuration, or priority support, consider checking out **[JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_link_soft)**.
+
+**Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
+
+== JWT Authentication PRO ==
+
+Elevate your WordPress security and integration capabilities with **JWT Authentication PRO**. Building upon the solid foundation of the free version, the PRO version offers advanced features, enhanced security options, and a streamlined user experience:
+
+*   **Easy Configuration UI:** Manage all settings directly from the WordPress admin area.
+*   **Token Refresh Endpoint:** Allow users to refresh expired tokens seamlessly without requiring re-login.
+*   **Token Revocation Endpoint:** Immediately invalidate specific tokens for enhanced security control.
+*   **Customizable Token Payload:** Add custom claims to your JWT payload to suit your specific application needs.
+*   **Granular CORS Control:** Define allowed origins and headers with more precision directly in the settings.
+*   **Rate Limiting:** Protect your endpoints from abuse with configurable rate limits.
+*   **Audit Logs:** Keep track of token generation, validation, and errors.
+*   **Priority Support:** Get faster, dedicated support directly from the developer.
+
+**[Upgrade to JWT Authentication PRO Today!](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=pro_section_cta)**
+
+### Free vs. PRO Comparison
+
+Here's a quick look at the key differences:
+
+*   **Basic JWT Authentication:** Included (Free), Included (PRO)
+*   **Token Generation:** Included (Free), Included (PRO)
+*   **Token Validation:** Included (Free), Included (PRO)
+*   **Token Refresh Mechanism:** Not Included (Free), Included (PRO)
+*   **Token Revocation:** Not Included (Free), Included (PRO)
+*   **Token Management Dashboard:** Not Included (Free), Included (PRO)
+*   **Analytics & Monitoring:** Not Included (Free), Included (PRO)
+*   **Geo-IP Identification:** Not Included (Free), Included (PRO)
+*   **Rate Limiting:** Not Included (Free), Included (PRO)
+*   **Detailed Documentation:** Basic (Free), Comprehensive (PRO)
+*   **Developer Tools:** Not Included (Free), Included (PRO)
+*   **Premium Support:** Community via GitHub (Free), Priority Direct Support (PRO)
 
 ### REQUIREMENTS
 
@@ -32,11 +74,11 @@ So, to use the **wp-api-jwt-auth** you need to install and activate [WP REST API
 
 **Minimum PHP version: 7.4.0**
 
-### PHP HTTP Authorization Header enable
+### PHP HTTP Authorization Header Enable
 
-Most of the shared hosting has disabled the **HTTP Authorization Header** by default.
+Most shared hosting providers have disabled the **HTTP Authorization Header** by default.
 
-To enable this option you'll need to edit your **.htaccess** file adding the follow
+To enable this option you'll need to edit your **.htaccess** file by adding the following:
 
 `
 RewriteEngine on
@@ -46,141 +88,141 @@ RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
 #### WPENGINE
 
-To enable this option you'll need to edit your **.htaccess** file adding the follow
-
-See https://github.com/Tmeister/wp-api-jwt-auth/issues/1
+For WPEngine hosting, you'll need to edit your **.htaccess** file by adding the following:
 
 `
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 `
 
+See https://github.com/Tmeister/wp-api-jwt-auth/issues/1 for more details.
+
 ### CONFIGURATION
-### Configurate the Secret Key
 
-The JWT needs a **secret key** to sign the token this **secret key** must be unique and never revealed.
+### Configure the Secret Key
 
-To add the **secret key** edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**
+The JWT needs a **secret key** to sign the token. This **secret key** must be unique and never revealed.
+
+To add the **secret key**, edit your wp-config.php file and add a new constant called **JWT_AUTH_SECRET_KEY**:
 
 `
 define('JWT_AUTH_SECRET_KEY', 'your-top-secret-key');
 `
 
-You can use a string from here https://api.wordpress.org/secret-key/1.1/salt/
+You can generate a secure key from: https://api.wordpress.org/secret-key/1.1/salt/
 
-### Configurate CORs Support
+**Looking for easier configuration?** [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=config_secret_key_link) allows you to manage all settings through a simple admin UI.
 
-The **wp-api-jwt-auth** plugin has the option to activate [CORs](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) support.
+### Configure CORS Support
 
-To enable the CORs Support edit your wp-config.php file and add a new constant called **JWT_AUTH_CORS_ENABLE**
+The **wp-api-jwt-auth** plugin has the option to activate [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) support.
+
+To enable CORS Support, edit your wp-config.php file and add a new constant called **JWT_AUTH_CORS_ENABLE**:
 
 `
 define('JWT_AUTH_CORS_ENABLE', true);
 `
 
-Finally activate the plugin within your wp-admin.
+Finally, activate the plugin within your wp-admin.
 
 ### Namespace and Endpoints
 
-When the plugin is activated, a new namespace is added
+When the plugin is activated, a new namespace is added:
 
 `
 /jwt-auth/v1
 `
 
-Also, two new endpoints are added to this namespace
+Also, two new endpoints are added to this namespace:
 
 Endpoint | HTTP Verb
 */wp-json/jwt-auth/v1/token* | POST
 */wp-json/jwt-auth/v1/token/validate* | POST
 
-###USAGE
-### /wp-json/jwt-auth/v1/token
+**Need more functionality?** [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=endpoints_pro_note) includes additional endpoints for token refresh and revocation.
 
-This is the entry point for the JWT Authentication.
+### USAGE
 
-Validates the user credentials, *username* and *password*, and returns a token to use in a future request to the API if the authentication is correct or error if the authentication fails.
+#### /wp-json/jwt-auth/v1/token
 
-####Sample request using AngularJS
+This is the entry point for JWT Authentication.
 
-    ( function() {
+It validates the user credentials, *username* and *password*, and returns a token to use in future requests to the API if the authentication is correct, or an error if authentication fails.
 
-      var app = angular.module( 'jwtAuth', [] );
+##### Sample Request Using AngularJS
 
-      app.controller( 'MainController', function( $scope, $http ) {
+`
+(function() {
+  var app = angular.module('jwtAuth', []);
 
-        var apiHost = 'http://yourdomain.com/wp-json';
+  app.controller('MainController', function($scope, $http) {
+    var apiHost = 'http://yourdomain.com/wp-json';
 
-        $http.post( apiHost + '/jwt-auth/v1/token', {
-            username: 'admin',
-            password: 'password'
-          } )
+    $http.post(apiHost + '/jwt-auth/v1/token', {
+      username: 'admin',
+      password: 'password'
+    })
+    .then(function(response) {
+      console.log(response.data)
+    })
+    .catch(function(error) {
+      console.error('Error', error.data[0]);
+    });
+  });
+})();
+`
 
-          .then( function( response ) {
-            console.log( response.data )
-          } )
-
-          .catch( function( error ) {
-            console.error( 'Error', error.data[0] );
-          } );
-
-      } );
-
-    } )();
-
-
-
-Success response from the server
+##### Success Response From The Server
 
 `
 {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9qd3QuZGV2IiwiaWF0IjoxNDM4NTcxMDUwLCJuYmYiOjE0Mzg1NzEwNTAsImV4cCI6MTQzOTE3NTg1MCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.YNe6AyWW4B7ZwfFE5wJ0O6qQ8QFcYizimDmBy6hCH_8",
-    "user_display_name": "admin",
-    "user_email": "admin@localhost.dev",
-    "user_nicename": "admin"
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9qd3QuZGV2IiwiaWF0IjoxNDM4NTcxMDUwLCJuYmYiOjE0Mzg1NzEwNTAsImV4cCI6MTQzOTE3NTg1MCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.YNe6AyWW4B7ZwfFE5wJ0O6qQ8QFcYizimDmBy6hCH_8",
+  "user_display_name": "admin",
+  "user_email": "admin@localhost.dev",
+  "user_nicename": "admin"
 }
 `
 
-Error response from the server
+##### Error Response From The Server
 
 `
 {
-    "code": "jwt_auth_failed",
-    "data": {
-        "status": 403
-    },
-    "message": "Invalid Credentials."
+  "code": "jwt_auth_failed",
+  "data": {
+    "status": 403
+  },
+  "message": "Invalid Credentials."
 }
 `
 
-Once you get the token, you must store it somewhere in your application, ex. in a **cookie** or using **localstorage**.
+Once you get the token, you must store it somewhere in your application, e.g., in a **cookie** or using **localStorage**.
 
-From this point, you should pass this token to every API call
+From this point, you should pass this token with every API call.
 
-Sample call using the Authorization header using AngularJS
+##### Sample Call Using The Authorization Header With AngularJS
 
 `
-app.config( function( $httpProvider ) {
-  $httpProvider.interceptors.push( [ '$q', '$location', '$cookies', function( $q, $location, $cookies ) {
+app.config(function($httpProvider) {
+  $httpProvider.interceptors.push(['$q', '$location', '$cookies', function($q, $location, $cookies) {
     return {
-      'request': function( config ) {
+      'request': function(config) {
         config.headers = config.headers || {};
-        //Assume that you store the token in a cookie.
-        var globals = $cookies.getObject( 'globals' ) || {};
-        //If the cookie has the CurrentUser and the token
-        //add the Authorization header in each request
-        if ( globals.currentUser && globals.currentUser.token ) {
+        // Assume that you store the token in a cookie
+        var globals = $cookies.getObject('globals') || {};
+        // If the cookie has the CurrentUser and the token
+        // add the Authorization header in each request
+        if (globals.currentUser && globals.currentUser.token) {
           config.headers.Authorization = 'Bearer ' + globals.currentUser.token;
         }
         return config;
       }
     };
-  } ] );
-} );
+  }]);
+});
 `
 
-The **wp-api-jwt-auth** will intercept every call to the server and will look for the Authorization Header, if the Authorization header is present will try to decode the token and will set the user according with the data stored in it.
+The **wp-api-jwt-auth** plugin will intercept every call to the server and will look for the Authorization Header. If the Authorization header is present, it will try to decode the token and will set the user according to the data stored in it.
 
-If the token is valid, the API call flow will continue as always.
+If the token is valid, the API call flow will continue as normal.
 
 **Sample Headers**
 
@@ -190,9 +232,9 @@ Host: server.example.com
 Authorization: Bearer mF_s9.B5f-4.1JqM
 `
 
-###ERRORS
+### ERRORS
 
-If the token is invalid an error will be returned, here are some samples of errors.
+If the token is invalid, an error will be returned. Here are some sample errors:
 
 **Invalid Credentials**
 
@@ -236,11 +278,13 @@ If the token is invalid an error will be returned, here are some samples of erro
 ]
 `
 
-### /wp-json/jwt-auth/v1/token/validate
+**Need advanced error tracking?** [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=errors_pro_note) offers enhanced error tracking and monitoring capabilities.
 
-This is a simple helper endpoint to validate a token; you only will need to make a POST request sending the Authorization header.
+#### /wp-json/jwt-auth/v1/token/validate
 
-Valid Token Response
+This is a simple helper endpoint to validate a token. You only need to make a POST request with the Authorization header.
+
+**Valid Token Response**
 
 `
 {
@@ -251,13 +295,13 @@ Valid Token Response
 }
 `
 
-###AVAILABLE HOOKS
+### AVAILABLE HOOKS
 
-The **wp-api-jwt-auth** is dev friendly and has five filters available to override the default settings.
+The **wp-api-jwt-auth** plugin is developer-friendly and provides five filters to override the default settings.
 
-####jwt_auth_cors_allow_headers
+#### jwt_auth_cors_allow_headers
 
-The **jwt_auth_cors_allow_headers** allows you to modify the available headers when the CORs support is enabled.
+The **jwt_auth_cors_allow_headers** filter allows you to modify the available headers when CORS support is enabled.
 
 Default Value:
 
@@ -265,9 +309,9 @@ Default Value:
 'Access-Control-Allow-Headers, Content-Type, Authorization'
 `
 
-###jwt_auth_not_before
+#### jwt_auth_not_before
 
-The **jwt_auth_not_before** allows you to change the [**nbf**](https://tools.ietf.org/html/rfc7519#section-4.1.5) value before the token is created.
+The **jwt_auth_not_before** filter allows you to change the [**nbf**](https://tools.ietf.org/html/rfc7519#section-4.1.5) value before the token is created.
 
 Default Value:
 
@@ -275,9 +319,9 @@ Default Value:
 Creation time - time()
 `
 
-###jwt_auth_expire
+#### jwt_auth_expire
 
-The **jwt_auth_expire** allows you to change the value [**exp**](https://tools.ietf.org/html/rfc7519#section-4.1.4) before the token is created.
+The **jwt_auth_expire** filter allows you to change the [**exp**](https://tools.ietf.org/html/rfc7519#section-4.1.4) value before the token is created.
 
 Default Value:
 
@@ -285,14 +329,13 @@ Default Value:
 time() + (DAY_IN_SECONDS * 7)
 `
 
-###jwt_auth_token_before_sign
+#### jwt_auth_token_before_sign
 
-The **jwt_auth_token_before_sign** allows you to modify all the token data before to be encoded and signed.
+The **jwt_auth_token_before_sign** filter allows you to modify all token data before it is encoded and signed.
 
-Default Value
+Default Value:
 
 `
-<?php
 $token = array(
     'iss' => get_bloginfo('url'),
     'iat' => $issuedAt,
@@ -306,13 +349,15 @@ $token = array(
 );
 `
 
-###jwt_auth_token_before_dispatch
-The **jwt_auth_token_before_dispatch** allows you to modify all the response array before to dispatch it to the client.
+**Want easier customization?** [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=hook_payload_pro_note) allows you to add custom claims directly through the admin UI.
+
+#### jwt_auth_token_before_dispatch
+
+The **jwt_auth_token_before_dispatch** filter allows you to modify the response array before it is sent to the client.
 
 Default Value:
 
 `
-<?php
 $data = array(
     'token' => $token,
     'user_email' => $user->data->user_email,
@@ -321,13 +366,13 @@ $data = array(
 );
 `
 
-### jwt_auth_algorithm
-The **jwt_auth_algorithm** allows you to modify the signing algorithm.
+#### jwt_auth_algorithm
+
+The **jwt_auth_algorithm** filter allows you to modify the signing algorithm.
 
 Default value:
 
 `
-<?php
 $token = JWT::encode(
     apply_filters('jwt_auth_token_before_sign', $token, $user),
     $secret_key,
@@ -343,18 +388,19 @@ $token = JWT::decode(
 `
 
 ## Testing
-I've created a small app to test the basic functionality of the plugin; you can get the app and read all the details on the [JWT-Client Repo](https://github.com/Tmeister/jwt-client)
 
-==Installation==
+I've created a small app to test the basic functionality of the plugin. You can get the app and read all the details in the [JWT-Client Repo](https://github.com/Tmeister/jwt-client).
 
-= Using The WordPress Dashboard =
+## Installation
+
+### Using The WordPress Dashboard
 
 1. Navigate to the 'Add New' in the plugins dashboard
 2. Search for 'jwt-authentication-for-wp-rest-api'
 3. Click 'Install Now'
 4. Activate the plugin on the Plugin dashboard
 
-= Uploading in WordPress Dashboard =
+### Uploading in WordPress Dashboard
 
 1. Navigate to the 'Add New' in the plugins dashboard
 2. Navigate to the 'Upload' area
@@ -362,7 +408,24 @@ I've created a small app to test the basic functionality of the plugin; you can 
 4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
 
-###Please read how to configured the plugin https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
+Please read our [configuration guide](https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/) to set up the plugin properly.
+
+== Frequently Asked Questions ==
+
+= Does this plugin support algorithms other than HS256? =
+The free version only supports HS256. For support for RS256, ES256, and other algorithms, please consider [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_algorithms_link).
+
+= Can I manage settings without editing wp-config.php? =
+The free version requires editing `wp-config.php`. [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_config_link) provides a full settings UI within the WordPress admin.
+
+= Is there a way to refresh or revoke tokens? =
+Token refresh and revocation features are available in [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_refresh_revoke_link).
+
+= Where can I get faster support? =
+Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_support_link). For free support, please use the [GitHub issues tracker](https://github.com/Tmeister/wp-api-jwt-auth/issues).
+
+= How secure is JWT authentication? =
+JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
 = 1.3.6 =
@@ -430,4 +493,3 @@ I've created a small app to test the basic functionality of the plugin; you can 
 * Initial Release.
 
 == Upgrade Notice ==
-.
