@@ -261,7 +261,7 @@ class Jwt_Auth_Public {
 		$token = $this->validate_token( new WP_REST_Request(), $auth_header );
 
 		if ( is_wp_error( $token ) ) {
-			if ($token->get_error_code() != 'jwt_auth_no_auth_header' && $token->get_error_code() != 'jwt_auth_invalid_token') {
+			if ( $token->get_error_code() != 'jwt_auth_no_auth_header' && $token->get_error_code() != 'jwt_auth_invalid_token' ) {
 				/** If there is an error, store it to show it after see rest_pre_dispatch */
 				$this->jwt_error = $token;
 			}
