@@ -55,6 +55,25 @@ class Jwt_Auth_Admin {
 			'jwt_authentication',
 			[ $this, 'render_admin_page' ]
 		);
+
+        // Add Upgrade to PRO submenu item
+        $base_pro_url = 'https://jwtauth.pro';
+        $utm_params   = [
+            'utm_source'   => 'wpadmin',
+            'utm_medium'   => 'submenu',
+            'utm_campaign' => 'pro-submenu-link',
+            'utm_content'  => 'upgrade-to-pro',
+        ];
+        $pro_link_url = add_query_arg($utm_params, $base_pro_url);
+
+        add_submenu_page(
+            'options-general.php',
+            __('Upgrade to PRO', 'jwt-auth'),
+            '<span style="color: #00a32a; font-weight: 700;">' . __('&nbsp;&nbsp;&nbsp;↳ Upgrade to PRO', 'jwt-auth') . '</span>',
+            'manage_options',
+            esc_url($pro_link_url),
+            null // No callback function needed for external link
+        );
 	}
 
 	/**
