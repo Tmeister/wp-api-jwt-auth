@@ -88,17 +88,17 @@ class Jwt_Auth_Admin {
 			?>
             <div class="notice notice-info is-dismissible">
                 <p>
-					<?php esc_html_e( 'Exciting News! 🚀 Sign up now for the Early Beta of JWT Authentication Pro! Be among the first to experience advanced security and seamless API integration for your WordPress REST API.',
+					<?php esc_html_e( 'Exciting News! 🚀 Level Up Your API Authentication: JWT Authentication Pro is now available! Experience advanced features and seamless integration for your REST API.',
 						'jwt-auth' ); ?>
-                    <a href="https://jwtauth.pro?utm_source=wp-admin&utm_medium=notice&utm_campaign=early-beta" target="_blank"
+                    <a href="https://jwtauth.pro?utm_source=wp-admin&utm_medium=notice&utm_campaign=pro-upgrade-notice" target="_blank"
                        class="button button-primary"
                        style="margin-left: 10px;">
-						<?php esc_html_e( 'Join the Beta Now', 'jwt-auth' ); ?>
+						<?php esc_html_e( 'Upgrade to PRO Now', 'jwt-auth' ); ?>
                     </a>
                 </p>
             </div>
 			<?php
-			update_option( 'jwt_auth_beta_notice_01', true );
+			update_option( 'jwt_auth_pro_notice_01', true );
 		}
 	}
 
