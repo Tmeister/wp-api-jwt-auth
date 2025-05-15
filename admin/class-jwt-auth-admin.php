@@ -84,7 +84,7 @@ class Jwt_Auth_Admin {
 	 * @since 1.3.4
 	 */
 	public function display_admin_notice() {
-		if ( ! get_option( 'jwt_auth_beta_notice_01' ) ) {
+        if (! get_option('jwt_auth_pro_notice_01')) {
 			?>
             <div class="notice notice-info is-dismissible">
                 <p>

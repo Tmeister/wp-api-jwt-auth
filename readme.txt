@@ -4,9 +4,9 @@ Contributors: tmeister
 Donate link: https://github.com/sponsors/Tmeister
 Tags: wp-json, jwt, json web authentication, wp-api, login, rest api, authentication
 Requires at least: 4.2
-Tested up to: 6.8.0
+Tested up to: 6.8.1
 Requires PHP: 7.4.0
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -428,6 +428,12 @@ Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/s
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
+= 1.3.8 =
+* Fix upsell notice bug, now it is show only one time
+
+= 1.3.7 =
+* Added PRO announcement
+
 = 1.3.6 =
 * Added Safeguard in enqueue_plugin_assets to Handle Null or Empty $suffix
 
