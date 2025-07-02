@@ -64,7 +64,7 @@ class Jwt_Auth_Admin {
             'utm_campaign' => 'pro-submenu-link',
             'utm_content'  => 'upgrade-to-pro',
         ];
-        $pro_link_url = add_query_arg($utm_params, $base_pro_url);
+        $pro_link_url = (string) add_query_arg($utm_params, $base_pro_url);
 
         add_submenu_page(
             'options-general.php',
@@ -121,8 +121,8 @@ class Jwt_Auth_Admin {
 		}
 
 		$is_dev_mode = defined( 'JWT_AUTH_DEV_MODE' ) && JWT_AUTH_DEV_MODE;
-		
-		if ( $is_dev_mode ) {
+
+        if ($is_dev_mode) {
 			// Development mode - set up React Refresh preamble first
 			add_action( 'admin_head', function() {
 				echo '<script type="module">
@@ -168,8 +168,8 @@ class Jwt_Auth_Admin {
 				$this->version,
 				['in_footer' => true]
 			);
-			
-			wp_enqueue_style(
+
+            wp_enqueue_style(
 				$this->plugin_name . '-settings',
 				plugins_url( 'ui/dist/main.css', __FILE__ ),
 				[],
@@ -274,7 +274,7 @@ class Jwt_Auth_Admin {
                 'utm_content'  => $selected_variation['utm_content'],
             ];
 
-            $pro_link_url = add_query_arg($utm_params, $base_pro_url);
+            $pro_link_url = (string) add_query_arg($utm_params, $base_pro_url);
             $pro_link_style = 'style="color: #00a32a; font-weight: 700; text-decoration: none;" onmouseover="this.style.color=\'#008a20\';" onmouseout="this.style.color=\'#00a32a\';"';
 
             $pro_link_text = $selected_variation['text'];

@@ -1,7 +1,35 @@
-.vscode
+# IDE settings (keep project-wide settings, ignore personal ones)
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/*.code-workspace
+.idea/
+stubs
+
+# Development documentation
+DEVELOPMENT.md
+
+# System files
 .DS_Store
+Thumbs.db
+
+# Dependencies
 includes/vendor/bin
 includes/vendor/dealerdirect
 includes/vendor/squizlabs
 includes/vendor/wp-coding-standards
+includes/vendor/composer
+includes/vendor/firebase
+includes/vendor/php-stubs
+includes/vendor/phpcsstandards
 admin/ui/node_modules
+node_modules
+
+# Build outputs
+admin/ui/dist
+.tmp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
