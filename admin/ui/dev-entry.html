@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // Pass WordPress config to the React app
+        if (window.jwtAuthConfig) {
+            window.jwtAuthConfig = window.jwtAuthConfig;
+        }
+    </script>
+</head>
+<body>
+    <div id="jwt-auth-holder"></div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

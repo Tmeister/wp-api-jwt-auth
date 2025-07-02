@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite Dev Server Test</title>
+</head>
+<body>
+    <div id="jwt-auth-holder"></div>
+    
+    <script>
+        // Mock WordPress config for testing
+        window.jwtAuthConfig = {
+            apiUrl: '/wp-json/wp/v2/settings',
+            nonce: 'test-nonce',
+            settings: { share_data: false }
+        };
+    </script>
+    
+    <script type="module" src="http://localhost:5173/src/main.tsx"></script>
+</body>
+</html>

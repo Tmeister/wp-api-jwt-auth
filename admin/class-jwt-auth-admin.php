@@ -119,39 +119,86 @@ class Jwt_Auth_Admin {
         if ($suffix !== 'settings_page_jwt_authentication') {
 			return null;
 		}
-		// get full path to admin/ui/build/index.asset.php
-		$asset_file = plugin_dir_path( __FILE__ ) . 'ui/build/index.asset.php';
 
-		// If the asset file do not exist then just return false
-		if ( ! file_exists( $asset_file ) ) {
-			return null;
+		$is_dev_mode = defined( 'JWT_AUTH_DEV_MODE' ) && JWT_AUTH_DEV_MODE;
+		
+		if ( $is_dev_mode ) {
+			// Development mode - set up React Refresh preamble first
+			add_action( 'admin_head', function() {
+				echo '<script type="module">
+					import RefreshRuntime from "http://localhost:5173/@react-refresh"
+					RefreshRuntime.injectIntoGlobalHook(window)
+					window.$RefreshReg$ = () => {}
+					window.$RefreshSig$ = () => (type) => type
+					window.__vite_plugin_react_preamble_installed__ = true
+				</script>';
+			} );
+
+			// Load Vite client
+			wp_enqueue_script(
+				'vite-client',
+				'http://localhost:5173/@vite/client',
+				[],
+				null,
+				true
+			);
+
+			// Load our main app
+			wp_enqueue_script(
+				$this->plugin_name . '-settings',
+				'http://localhost:5173/src/main.tsx',
+				['vite-client'],
+				null,
+				true
+			);
+
+			// Add type="module" to the scripts
+			add_filter( 'script_loader_tag', function( $tag, $handle ) {
+				if ( in_array( $handle, ['vite-client', $this->plugin_name . '-settings'] ) ) {
+					return str_replace( '<script', '<script type="module"', $tag );
+				}
+				return $tag;
+			}, 10, 2 );
+		} else {
+			// Production mode - load single compiled files
+			wp_enqueue_script(
+				$this->plugin_name . '-settings',
+				plugins_url( 'ui/dist/main.js', __FILE__ ),
+				[],
+				$this->version,
+				['in_footer' => true]
+			);
+			
+			wp_enqueue_style(
+				$this->plugin_name . '-settings',
+				plugins_url( 'ui/dist/main.css', __FILE__ ),
+				[],
+				$this->version
+			);
 		}
 
-		// Get the asset file
-		$asset = require_once $asset_file;
-		// Enqueue the script files based on the asset file
-		wp_enqueue_script(
-			$this->plugin_name . '-settings',
-			plugins_url( 'ui/build/index.js', __FILE__ ),
-			$asset['dependencies'],
-			$asset['version'],
-			[
-				'in_footer' => true,
-			]
-		);
-
-		// Enqueue the style file for the Gutenberg components
-		foreach ( $asset['dependencies'] as $style ) {
-			wp_enqueue_style( $style );
+		// Provide WordPress API configuration to React app
+		if ( $is_dev_mode ) {
+			// For dev mode, we need to add the config manually since we're not using wp_enqueue_script
+			add_action( 'admin_footer', function() {
+				$config = [
+					'apiUrl' => rest_url( 'wp/v2/settings' ),
+					'nonce' => wp_create_nonce( 'wp_rest' ),
+					'settings' => get_option( 'jwt_auth_options', ['share_data' => false] )
+				];
+				echo '<script>window.jwtAuthConfig = ' . wp_json_encode( $config ) . ';</script>';
+			}, 5 ); // Priority 5 to run before the module script
+		} else {
+			wp_localize_script(
+				$this->plugin_name . '-settings',
+				'jwtAuthConfig',
+				[
+					'apiUrl' => rest_url( 'wp/v2/settings' ),
+					'nonce' => wp_create_nonce( 'wp_rest' ),
+					'settings' => get_option( 'jwt_auth_options', ['share_data' => false] )
+				]
+			);
 		}
-
-		// Enqueue the style file
-		wp_enqueue_style(
-			$this->plugin_name . '-settings',
-			plugins_url( 'ui/build/index.css', __FILE__ ),
-			[],
-			$asset['version']
-		);
 	}
 
 	/**

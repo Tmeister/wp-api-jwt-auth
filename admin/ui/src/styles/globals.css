@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --jwt-background: 0 0% 100%;
+  --jwt-foreground: 222.2 84% 4.9%;
+  --jwt-card: 0 0% 100%;
+  --jwt-card-foreground: 222.2 84% 4.9%;
+  --jwt-popover: 0 0% 100%;
+  --jwt-popover-foreground: 222.2 84% 4.9%;
+  --jwt-primary: 221.2 83.2% 53.3%;
+  --jwt-primary-foreground: 210 40% 98%;
+  --jwt-secondary: 210 40% 96%;
+  --jwt-secondary-foreground: 222.2 84% 4.9%;
+  --jwt-muted: 210 40% 96%;
+  --jwt-muted-foreground: 215.4 16.3% 46.9%;
+  --jwt-accent: 210 40% 96%;
+  --jwt-accent-foreground: 222.2 84% 4.9%;
+  --jwt-destructive: 0 84.2% 60.2%;
+  --jwt-destructive-foreground: 210 40% 98%;
+  --jwt-border: 214.3 31.8% 91.4%;
+  --jwt-input: 214.3 31.8% 91.4%;
+  --jwt-ring: 221.2 83.2% 53.3%;
+  --jwt-radius: 0.5rem;
+}
+
+/* WordPress admin compatibility */
+#jwt-auth-holder {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  line-height: 1.4;
+}
+
+/* Override WordPress admin styles where needed */
+#jwt-auth-holder * {
+  box-sizing: border-box;
+}
+
+/* Ensure our styles take precedence in WordPress admin */
+.jwt-card {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
