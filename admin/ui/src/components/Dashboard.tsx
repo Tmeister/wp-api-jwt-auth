@@ -1,17 +1,17 @@
-import { useState, useMemo, useEffect } from "react"
-import { Topbar } from "./dashboard/topbar"
-import { OverviewPage } from "./dashboard/overview-page"
-import { GoProPage } from "./dashboard/go-pro-page"
-import { wordpressAPI, type ConfigurationStatus } from "@/lib/wordpress-api"
+import { useState, useMemo, useEffect } from 'react'
+import { Topbar } from './dashboard/topbar'
+import { OverviewPage } from './dashboard/overview-page'
+import { GoProPage } from './dashboard/go-pro-page'
+import { wordpressAPI, type ConfigurationStatus } from '@/lib/wordpress-api'
 
 // --- TYPES ---
 
-type Page = "overview" | "go-pro"
+type Page = 'overview' | 'go-pro'
 
 // --- MAIN DASHBOARD COMPONENT ---
 
 export default function Dashboard() {
-  const [activePage, setActivePage] = useState<Page>("overview")
+  const [activePage, setActivePage] = useState<Page>('overview')
   const [shareData, setShareData] = useState(false)
   const [configStatus, setConfigStatus] = useState<ConfigurationStatus | null>(null)
 
@@ -22,7 +22,7 @@ export default function Dashboard() {
         // Load both settings and configuration status in parallel
         const [settings, status] = await Promise.all([
           wordpressAPI.getSettings(),
-          wordpressAPI.getConfigurationStatus()
+          wordpressAPI.getConfigurationStatus(),
         ])
 
         setShareData(settings.share_data)
@@ -63,9 +63,9 @@ export default function Dashboard() {
 
   const renderPage = () => {
     switch (activePage) {
-      case "overview":
+      case 'overview':
         return <OverviewPage {...pageProps} />
-      case "go-pro":
+      case 'go-pro':
         return <GoProPage discount={discount} />
       default:
         return <OverviewPage {...pageProps} />
@@ -75,7 +75,9 @@ export default function Dashboard() {
   return (
     <div className="jwt-flex jwt-flex-col jwt-min-h-screen jwt-bg-gray-50">
       <Topbar activePage={activePage} setActivePage={setActivePage} discount={discount} />
-      <main className="jwt-flex-1 jwt-p-4 sm:jwt-p-6 lg:jwt-p-8 jwt-container jwt-mx-auto">{renderPage()}</main>
+      <main className="jwt-flex-1 jwt-p-4 sm:jwt-p-6 lg:jwt-p-8 jwt-container jwt-mx-auto">
+        {renderPage()}
+      </main>
     </div>
   )
 }

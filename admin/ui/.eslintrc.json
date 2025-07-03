@@ -1,9 +1,10 @@
 {
   "extends": [
     "eslint:recommended",
-    "@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -13,18 +14,20 @@
       "jsx": true
     }
   },
-  "plugins": ["react-refresh", "@typescript-eslint"],
+  "plugins": ["react-refresh", "@typescript-eslint", "prettier"],
   "rules": {
-    "react-refresh/only-export-components": [
-      "warn",
-      { "allowConstantExport": true }
-    ],
+    "react-refresh/only-export-components": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^React$" }
-    ]
+    ],
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-console": "off",
+    "no-debugger": "error",
+    "react/no-unescaped-entities": "off"
   },
   "settings": {
     "react": {

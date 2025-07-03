@@ -1,5 +1,5 @@
-import type React from "react"
-import { CheckCircle, AlertTriangle, XCircle } from "lucide-react"
+import type React from 'react'
+import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react'
 
 interface StatusItemProps {
   label: string

@@ -131,14 +131,16 @@ export class WordPressAPI {
 
   getSiteProfile(): SiteProfile {
     // Get site profile from window object (passed from PHP)
-    return window.jwtAuthConfig?.siteProfile || {
-      phpVersion: 'Unknown',
-      wordpressVersion: 'Unknown',
-      isProCompatible: false,
-      isWooCommerceDetected: false,
-      pluginCount: 0,
-      signingAlgorithm: 'HS256',
-    }
+    return (
+      window.jwtAuthConfig?.siteProfile || {
+        phpVersion: 'Unknown',
+        wordpressVersion: 'Unknown',
+        isProCompatible: false,
+        isWooCommerceDetected: false,
+        pluginCount: 0,
+        signingAlgorithm: 'HS256',
+      }
+    )
   }
 
   async getConfigurationStatus(): Promise<ConfigurationStatus> {
@@ -192,7 +194,7 @@ export class WordPressAPI {
           analytics: false,
           admin_ui: false,
           multiple_algorithms: false,
-        }
+        },
       }
     }
   }

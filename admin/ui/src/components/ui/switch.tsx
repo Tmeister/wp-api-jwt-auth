@@ -1,8 +1,7 @@
-import React from "react"
-import { cn } from "@/lib/utils"
+import React from 'react'
+import { cn } from '@/lib/utils'
 
-export interface SwitchProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface SwitchProps extends React.InputHTMLAttributes<HTMLInputElement> {
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
 }

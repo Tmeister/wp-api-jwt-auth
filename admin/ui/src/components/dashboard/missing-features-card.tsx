@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { FeatureComparison } from "@/components/ui/feature-comparison"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { FeatureComparison } from '@/components/ui/feature-comparison'
 
 export const MissingFeaturesCard = () => (
   <Card className="jwt-bg-white jwt-rounded-xl jwt-shadow-sm">

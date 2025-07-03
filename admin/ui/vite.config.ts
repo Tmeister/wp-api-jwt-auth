@@ -14,25 +14,25 @@ export default defineConfig({
     assetsDir: '',
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'src/main.tsx')
+        main: path.resolve(__dirname, 'src/main.tsx'),
       },
       output: {
         entryFileNames: 'main.js',
         chunkFileNames: 'main.js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
             return 'main.css'
           }
           return '[name][extname]'
-        }
-      }
+        },
+      },
     },
     // Ensure single file output
     cssCodeSplit: false,
-    minify: true
+    minify: true,
   },
   css: {
-    postcss: './postcss.config.js'
+    postcss: './postcss.config.js',
   },
   server: {
     host: 'localhost',
@@ -42,6 +42,6 @@ export default defineConfig({
       port: 5173,
     },
     // Allow loading from WordPress admin
-    origin: 'http://localhost:5173'
-  }
+    origin: 'http://localhost:5173',
+  },
 })
