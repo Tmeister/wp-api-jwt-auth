@@ -1,53 +1,61 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  prefix: 'jwt-',
+    darkMode: ['class'],
+    prefix: 'jwt-',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        border: "hsl(var(--jwt-border))",
-        input: "hsl(var(--jwt-input))",
-        ring: "hsl(var(--jwt-ring))",
-        background: "hsl(var(--jwt-background))",
-        foreground: "hsl(var(--jwt-foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--jwt-primary))",
-          foreground: "hsl(var(--jwt-primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--jwt-secondary))",
-          foreground: "hsl(var(--jwt-secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--jwt-destructive))",
-          foreground: "hsl(var(--jwt-destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--jwt-muted))",
-          foreground: "hsl(var(--jwt-muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--jwt-accent))",
-          foreground: "hsl(var(--jwt-accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--jwt-popover))",
-          foreground: "hsl(var(--jwt-popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--jwt-card))",
-          foreground: "hsl(var(--jwt-card-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--jwt-radius)",
-        md: "calc(var(--jwt-radius) - 2px)",
-        sm: "calc(var(--jwt-radius) - 4px)",
-      },
-    },
+  	extend: {
+  		colors: {
+  			border: 'hsl(var(--border))',
+  			input: 'hsl(var(--input))',
+  			ring: 'hsl(var(--ring))',
+  			background: 'hsl(var(--background))',
+  			foreground: 'hsl(var(--foreground))',
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
+  			secondary: {
+  				DEFAULT: 'hsl(var(--secondary))',
+  				foreground: 'hsl(var(--secondary-foreground))'
+  			},
+  			destructive: {
+  				DEFAULT: 'hsl(var(--destructive))',
+  				foreground: 'hsl(var(--destructive-foreground))'
+  			},
+  			muted: {
+  				DEFAULT: 'hsl(var(--muted))',
+  				foreground: 'hsl(var(--muted-foreground))'
+  			},
+  			accent: {
+  				DEFAULT: 'hsl(var(--accent))',
+  				foreground: 'hsl(var(--accent-foreground))'
+  			},
+  			popover: {
+  				DEFAULT: 'hsl(var(--popover))',
+  				foreground: 'hsl(var(--popover-foreground))'
+  			},
+  			card: {
+  				DEFAULT: 'hsl(var(--card))',
+  				foreground: 'hsl(var(--card-foreground))'
+  			},
+  			chart: {
+  				'1': 'hsl(var(--chart-1))',
+  				'2': 'hsl(var(--chart-2))',
+  				'3': 'hsl(var(--chart-3))',
+  				'4': 'hsl(var(--chart-4))',
+  				'5': 'hsl(var(--chart-5))'
+  			}
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		}
+  	}
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }

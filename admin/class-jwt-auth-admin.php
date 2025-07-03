@@ -40,12 +40,221 @@ class Jwt_Auth_Admin {
 		$this->version     = $version;
 	}
 
-	/**
-	 * Register a new settings page under Settings main menu
-	 * .
-	 * @return void
-	 * @since 1.3.4
-	 */
+    /**
+     * Register admin REST API endpoints.
+     *
+     * @return void
+     * @since 1.3.4
+     */
+    public function register_admin_rest_routes()
+    {
+        $namespace = 'jwt-auth/v1';
+
+        register_rest_route($namespace, 'admin/settings', [
+            'methods'             => ['GET', 'POST'],
+            'callback'            => [$this, 'handle_settings'],
+            'permission_callback' => [$this, 'settings_permission_check'],
+        ]);
+
+        register_rest_route($namespace, 'admin/status', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'get_configuration_status'],
+            'permission_callback' => [$this, 'settings_permission_check'],
+        ]);
+    }
+
+    /**
+     * Check permissions for settings endpoint.
+     *
+     * @return bool
+     */
+    public function settings_permission_check()
+    {
+        return current_user_can('manage_options');
+    }
+
+    /**
+     * Handle settings GET and POST requests.
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_settings(WP_REST_Request $request)
+    {
+        if ($request->get_method() === 'GET') {
+            $settings = get_option('jwt_auth_options', [
+                'share_data' => false,
+            ]);
+
+            return new WP_REST_Response([
+                'jwt_auth_options' => $settings
+            ], 200);
+        }
+
+        if ($request->get_method() === 'POST') {
+            $settings = $request->get_param('jwt_auth_options');
+
+            if (! $settings || ! is_array($settings)) {
+                return new WP_Error(
+                    'jwt_auth_invalid_settings',
+                    'Invalid settings data provided.',
+                    ['status' => 400]
+                );
+            }
+
+            // Sanitize and validate settings
+            $sanitized_settings = [];
+
+            if (isset($settings['share_data'])) {
+                $sanitized_settings['share_data'] = (bool) $settings['share_data'];
+            }
+
+
+            if (isset($settings['survey_data']) && is_array($settings['survey_data'])) {
+                $survey_data = [];
+                if (isset($settings['survey_data']['building_what'])) {
+                    $survey_data['building_what'] = sanitize_text_field($settings['survey_data']['building_what']);
+                }
+                if (isset($settings['survey_data']['biggest_challenge'])) {
+                    $survey_data['biggest_challenge'] = sanitize_textarea_field($settings['survey_data']['biggest_challenge']);
+                }
+                if (isset($settings['survey_data']['email'])) {
+                    $survey_data['email'] = sanitize_email($settings['survey_data']['email']);
+                }
+                $sanitized_settings['survey_data'] = $survey_data;
+            }
+
+            // Merge with existing settings
+            $existing_settings = get_option('jwt_auth_options', []);
+            $updated_settings = array_merge($existing_settings, $sanitized_settings);
+
+            $success = update_option('jwt_auth_options', $updated_settings);
+
+            if (! $success) {
+                return new WP_Error(
+                    'jwt_auth_settings_update_failed',
+                    'Failed to update settings.',
+                    ['status' => 500]
+                );
+            }
+
+            return new WP_REST_Response([
+                'jwt_auth_options' => $updated_settings
+            ], 200);
+        }
+
+        return new WP_Error(
+            'jwt_auth_method_not_allowed',
+            'Method not allowed.',
+            ['status' => 405]
+        );
+    }
+
+    /**
+     * Get real configuration status for the dashboard.
+     *
+     * @return WP_REST_Response
+     */
+    public function get_configuration_status()
+    {
+        $secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : false;
+        $cors_enabled = defined('JWT_AUTH_CORS_ENABLE') ? JWT_AUTH_CORS_ENABLE : false;
+        $dev_mode = defined('JWT_AUTH_DEV_MODE') ? JWT_AUTH_DEV_MODE : false;
+
+        // Check if JWT secret key is configured
+        $secret_key_configured = !empty($secret_key);
+
+        // Get algorithm (default HS256)
+        $algorithm = apply_filters('jwt_auth_algorithm', 'HS256');
+
+        // Check if .htaccess is properly configured by testing authorization header
+        $htaccess_configured = $this->check_htaccess_config();
+
+        // Get active plugins count
+        $active_plugins = get_option('active_plugins', []);
+        $plugin_count = count($active_plugins);
+
+        // Check for WooCommerce
+        $woocommerce_detected = class_exists('WooCommerce');
+
+        // Check PHP version compatibility
+        $php_version = PHP_VERSION;
+        $php_compatible = version_compare($php_version, '7.4', '>=');
+        $pro_compatible = version_compare($php_version, '7.4', '>=');
+
+        // WordPress version
+        $wp_version = get_bloginfo('version');
+
+        // Configuration method detection
+        $config_method = $secret_key_configured ? 'wp-config.php' : 'Not configured';
+
+        // Token management status
+        $token_management = 'Manual only (Pro: Database managed)';
+
+        // Active tokens - we can't easily count this in free version
+        $active_tokens = 'Unknown (Pro: Real-time monitoring)';
+
+        $status = [
+            'configuration' => [
+                'method' => $config_method,
+                'secret_key_configured' => $secret_key_configured,
+                'cors_enabled' => $cors_enabled,
+                'dev_mode' => $dev_mode,
+                'htaccess_configured' => $htaccess_configured,
+            ],
+            'system' => [
+                'php_version' => $php_version,
+                'php_compatible' => $php_compatible,
+                'pro_compatible' => $pro_compatible,
+                'wordpress_version' => $wp_version,
+                'plugin_count' => $plugin_count,
+                'woocommerce_detected' => $woocommerce_detected,
+            ],
+            'jwt' => [
+                'signing_algorithm' => $algorithm,
+                'supported_algorithms' => ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512'],
+                'token_management' => $token_management,
+                'active_tokens' => $active_tokens,
+                'token_refresh' => 'Disabled (Pro feature)',
+            ],
+            'features' => [
+                'token_revocation' => false,
+                'token_refresh' => false,
+                'analytics' => false,
+                'admin_ui' => false,
+                'multiple_algorithms' => false,
+            ]
+        ];
+
+        return new WP_REST_Response($status, 200);
+    }
+
+    /**
+     * Check if .htaccess is properly configured for JWT Authorization header.
+     *
+     * @return bool
+     */
+    private function check_htaccess_config()
+    {
+        // This is a simplified check - in a real scenario, we'd need to test the actual header
+        // For now, we'll check if the server software supports .htaccess
+        $server_software = $_SERVER['SERVER_SOFTWARE'] ?? '';
+
+        // If it's Apache, assume .htaccess might be working (basic check)
+        if (strpos(strtolower($server_software), 'apache') !== false) {
+            return true;
+        }
+
+        // For other servers, we can't easily determine this without testing
+        return false;
+    }
+
+    /**
+     * Register a new settings page under Settings main menu
+     * .
+     * @return void
+     * @since 1.3.4
+     */
 	public function register_menu_page() {
 		add_submenu_page(
 			'options-general.php',
@@ -182,9 +391,17 @@ class Jwt_Auth_Admin {
 			// For dev mode, we need to add the config manually since we're not using wp_enqueue_script
 			add_action( 'admin_footer', function() {
 				$config = [
-					'apiUrl' => rest_url( 'wp/v2/settings' ),
+                    'apiUrl' => rest_url('jwt-auth/v1/admin/settings'),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
-					'settings' => get_option( 'jwt_auth_options', ['share_data' => false] )
+                    'settings' => get_option('jwt_auth_options', ['share_data' => false]),
+                    'siteProfile' => [
+                        'phpVersion' => PHP_VERSION,
+                        'wordpressVersion' => get_bloginfo('version'),
+                        'isProCompatible' => version_compare(PHP_VERSION, '7.4', '>='),
+                        'isWooCommerceDetected' => class_exists('WooCommerce'),
+                        'pluginCount' => count(get_option('active_plugins', [])),
+                        'signingAlgorithm' => 'HS256'
+                    ]
 				];
 				echo '<script>window.jwtAuthConfig = ' . wp_json_encode( $config ) . ';</script>';
 			}, 5 ); // Priority 5 to run before the module script
@@ -193,9 +410,17 @@ class Jwt_Auth_Admin {
 				$this->plugin_name . '-settings',
 				'jwtAuthConfig',
 				[
-					'apiUrl' => rest_url( 'wp/v2/settings' ),
+                    'apiUrl' => rest_url('jwt-auth/v1/admin/settings'),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
-					'settings' => get_option( 'jwt_auth_options', ['share_data' => false] )
+                    'settings' => get_option('jwt_auth_options', ['share_data' => false]),
+                    'siteProfile' => [
+                        'phpVersion' => PHP_VERSION,
+                        'wordpressVersion' => get_bloginfo('version'),
+                        'isProCompatible' => version_compare(PHP_VERSION, '7.4', '>='),
+                        'isWooCommerceDetected' => class_exists('WooCommerce'),
+                        'pluginCount' => count(get_option('active_plugins', [])),
+                        'signingAlgorithm' => 'HS256'
+                    ]
 				]
 			);
 		}
@@ -221,6 +446,20 @@ class Jwt_Auth_Admin {
 							'type'    => 'boolean',
 							'default' => false,
 						],
+                        'survey_data' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'building_what' => [
+                                    'type' => 'string',
+                                ],
+                                'biggest_challenge' => [
+                                    'type' => 'string',
+                                ],
+                                'email' => [
+                                    'type' => 'string',
+                                ],
+                            ],
+                        ],
 					],
 				],
 			]
