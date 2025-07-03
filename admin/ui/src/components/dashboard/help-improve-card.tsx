@@ -9,7 +9,7 @@ interface HelpImproveCardProps {
 export const HelpImproveCard = ({ shareData, setShareData }: HelpImproveCardProps) => (
   <CTACard
     title="Help Improve the Plugin"
-    description="Enable anonymous sharing for a 10% discount."
+    description="Enable anonymous sharing for a 15% discount."
     content="Share usage data (PHP/WordPress version, active plugins count - no personal data) to help us build better features."
     actionLabel="Enable Anonymous Sharing"
     actionElement={

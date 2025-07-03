@@ -164,18 +164,12 @@ class Jwt_Auth_Admin {
         // Check if JWT secret key is configured
         $secret_key_configured = !empty($secret_key);
 
-        // Get algorithm (default HS256)
-        $algorithm = apply_filters('jwt_auth_algorithm', 'HS256');
-
         // Check if .htaccess is properly configured by testing authorization header
         $htaccess_configured = $this->check_htaccess_config();
 
         // Get active plugins count
         $active_plugins = get_option('active_plugins', []);
         $plugin_count = count($active_plugins);
-
-        // Check for WooCommerce
-        $woocommerce_detected = class_exists('WooCommerce');
 
         // Check PHP version compatibility
         $php_version = PHP_VERSION;
@@ -185,14 +179,18 @@ class Jwt_Auth_Admin {
         // WordPress version
         $wp_version = get_bloginfo('version');
 
+        // MySQL version
+        global $wpdb;
+        $mysql_version = $wpdb->get_var("SELECT VERSION()") ?: 'Unknown';
+
+        // PHP Memory Limit
+        $memory_limit = ini_get('memory_limit');
+
+        // PHP Post Max Size
+        $post_max_size = ini_get('post_max_size');
+
         // Configuration method detection
         $config_method = $secret_key_configured ? 'wp-config.php' : 'Not configured';
-
-        // Token management status
-        $token_management = 'Manual only (Pro: Database managed)';
-
-        // Active tokens - we can't easily count this in free version
-        $active_tokens = 'Unknown (Pro: Real-time monitoring)';
 
         $status = [
             'configuration' => [
@@ -207,16 +205,12 @@ class Jwt_Auth_Admin {
                 'php_compatible' => $php_compatible,
                 'pro_compatible' => $pro_compatible,
                 'wordpress_version' => $wp_version,
+                'mysql_version' => $mysql_version,
+                'php_memory_limit' => $memory_limit,
+                'post_max_size' => $post_max_size,
                 'plugin_count' => $plugin_count,
-                'woocommerce_detected' => $woocommerce_detected,
             ],
-            'jwt' => [
-                'signing_algorithm' => $algorithm,
-                'supported_algorithms' => ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512'],
-                'token_management' => $token_management,
-                'active_tokens' => $active_tokens,
-                'token_refresh' => 'Disabled (Pro feature)',
-            ],
+            'jwt' => [],
             'features' => [
                 'token_revocation' => false,
                 'token_refresh' => false,

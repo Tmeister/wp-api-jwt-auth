@@ -114,3 +114,7 @@
     @apply jwt-bg-background jwt-text-foreground;
   }
 }
+
+.settings_page_jwt_authentication #wpcontent {
+  padding-left: 0 !important;
+}

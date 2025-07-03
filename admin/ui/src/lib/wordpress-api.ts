@@ -50,16 +50,12 @@ export interface ConfigurationStatus {
     php_compatible: boolean
     pro_compatible: boolean
     wordpress_version: string
+    mysql_version: string
+    php_memory_limit: string
+    post_max_size: string
     plugin_count: number
-    woocommerce_detected: boolean
   }
-  jwt: {
-    signing_algorithm: string
-    supported_algorithms: string[]
-    token_management: string
-    active_tokens: string
-    token_refresh: string
-  }
+  jwt: Record<string, never>
   features: {
     token_revocation: boolean
     token_refresh: boolean
@@ -178,16 +174,12 @@ export class WordPressAPI {
           php_compatible: siteProfile.isProCompatible,
           pro_compatible: siteProfile.isProCompatible,
           wordpress_version: siteProfile.wordpressVersion || 'Unknown',
+          mysql_version: 'Unknown',
+          php_memory_limit: 'Unknown',
+          post_max_size: 'Unknown',
           plugin_count: siteProfile.pluginCount,
-          woocommerce_detected: siteProfile.isWooCommerceDetected,
         },
-        jwt: {
-          signing_algorithm: siteProfile.signingAlgorithm,
-          supported_algorithms: ['HS256'],
-          token_management: 'Manual only',
-          active_tokens: 'Unknown - enable monitoring',
-          token_refresh: 'Disabled (Pro feature)',
-        },
+        jwt: {},
         features: {
           token_revocation: false,
           token_refresh: false,
