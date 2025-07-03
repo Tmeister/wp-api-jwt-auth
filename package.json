@@ -1,0 +1,18 @@
+{
+  "name": "wp-api-jwt-auth",
+  "version": "1.0.0",
+  "description": "WordPress plugin that provides JWT authentication for WP REST API",
+  "private": true,
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tmeister/wp-api-jwt-auth.git"
+  },
+  "author": "Enrique Chavez",
+  "license": "GPL-2.0-or-later"
+}

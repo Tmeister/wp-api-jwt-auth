@@ -1,0 +1,3 @@
+#!/bin/sh
+# Run admin UI linting before commit
+cd admin/ui && npm run lint:fix
