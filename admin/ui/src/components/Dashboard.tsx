@@ -13,7 +13,6 @@ import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   Select,
   SelectContent,
@@ -21,7 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CheckCircle, Loader2, Copy, Send, ChevronDown, X, AlertTriangle } from 'lucide-react'
+import { CheckCircle, Loader2, Copy, Send, X, AlertTriangle } from 'lucide-react'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Topbar } from './dashboard/topbar'
 import { SurveyPage } from './survey/SurveyPage'
 import { wordpressAPI, type ConfigurationStatus } from '@/lib/wordpress-api'
@@ -243,18 +244,45 @@ const HelpImprove = () => {
   )
 }
 
-const CodeSnippetDisplay = ({ code }: { code: string }) => {
+const CodeSnippetDisplay = ({ code, language }: { code: string; language: string }) => {
   const [copied, setCopied] = useState(false)
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  // Map language names to syntax highlighter language codes
+  const getLanguageCode = (lang: string) => {
+    switch (lang.toLowerCase()) {
+      case 'curl':
+        return 'bash'
+      case 'javascript':
+        return 'javascript'
+      case 'python':
+        return 'python'
+      case 'php':
+        return 'php'
+      default:
+        return 'text'
+    }
+  }
+
   return (
     <div className="jwt-relative">
-      <pre className="jwt-bg-slate-800 jwt-text-white jwt-p-4 jwt-rounded-lg jwt-text-sm jwt-overflow-x-auto">
-        <code>{code}</code>
-      </pre>
+      <SyntaxHighlighter
+        language={getLanguageCode(language)}
+        style={oneDark}
+        customStyle={{
+          margin: 0,
+          borderRadius: '0.5rem',
+          fontSize: '0.875rem',
+          padding: '1rem',
+        }}
+        className="jwt-text-sm"
+      >
+        {code}
+      </SyntaxHighlighter>
       <Button
         size="icon"
         variant="ghost"
@@ -273,48 +301,127 @@ const CodeSnippetDisplay = ({ code }: { code: string }) => {
 
 const EndpointTester = () => {
   const [endpoint, setEndpoint] = useState('/jwt-auth/v1/token')
-  const [domain, setDomain] = useState('jwt.test')
   const [username, setUsername] = useState('testuser')
   const [password, setPassword] = useState('password')
   const [token, setToken] = useState('your-jwt-token')
   const [isLoading, setIsLoading] = useState(false)
-  const [response, setResponse] = useState<object | null>(null)
+  const [responseCopied, setResponseCopied] = useState(false)
+  const [tokenAutoFilled, setTokenAutoFilled] = useState(false)
+  const [response, setResponse] = useState<{
+    error?: string
+    details?: Record<string, unknown>
+    [key: string]: unknown
+  } | null>(null)
+
+  // Get WordPress site URL from config
+  const siteUrl = window.jwtAuthConfig?.siteUrl || 'https://yoursite.com'
 
   const getCodeSnippets = (endpointPath: string) => {
-    const fullUrl = `https://${domain}/wp-json${endpointPath}`
-    const body =
-      endpointPath === '/jwt-auth/v1/token'
-        ? `{ "username": "${username}", "password": "${password}" }`
-        : `{ "token": "${token}" }`
+    const fullUrl = `${siteUrl}/wp-json${endpointPath}`
 
-    return {
-      cURL: `curl -X POST ${fullUrl} \\
+    if (endpointPath === '/jwt-auth/v1/token') {
+      const body = `{ "username": "${username}", "password": "${password}" }`
+
+      return {
+        cURL: `curl -X POST ${fullUrl} \\
 -H 'Content-Type: application/json' \\
 -d '${body}'`,
-      JavaScript: `const options = {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(${body})\n};\n\nfetch('${fullUrl}', options)\n  .then(response => response.json())\n  .then(response => console.log(response))\n  .catch(err => console.error(err));`,
-      Python: `import requests\nimport json\n\nurl = "${fullUrl}"\npayload = json.dumps(${body.replace(/"/g, `"`).replace(/: "/g, `: "`).replace(/", "/g, `", "`)})\nheaders = {\n  'Content-Type': 'application/json'\n}\n\nresponse = requests.request("POST", url, headers=headers, data=payload)\n\nprint(response.text)`,
+        JavaScript: `const options = {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(${body})\n};\n\nfetch('${fullUrl}', options)\n  .then(response => response.json())\n  .then(response => console.log(response))\n  .catch(err => console.error(err));`,
+        Python: `import requests\nimport json\n\nurl = "${fullUrl}"\npayload = json.dumps(${body.replace(/"/g, `"`).replace(/: "/g, `: "`).replace(/", "/g, `", "`)})\nheaders = {\n  'Content-Type': 'application/json'\n}\n\nresponse = requests.request("POST", url, headers=headers, data=payload)\n\nprint(response.text)`,
+        PHP: `<?php\n\n$url = '${fullUrl}';\n$data = ${body};\n\n$options = array(\n    'http' => array(\n        'header' => "Content-type: application/json\\r\\n",\n        'method' => 'POST',\n        'content' => $data\n    )\n);\n\n$context = stream_context_create($options);\n$result = file_get_contents($url, false, $context);\n\nif ($result === FALSE) {\n    die('Error occurred');\n}\n\necho $result;`,
+      }
+    } else {
+      // For validation endpoint, use Authorization header
+      return {
+        cURL: `curl -X POST ${fullUrl} \\
+-H 'Content-Type: application/json' \\
+-H 'Authorization: Bearer ${token}' \\
+-d '{}'`,
+        JavaScript: `const options = {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer ${token}'\n  },\n  body: JSON.stringify({})\n};\n\nfetch('${fullUrl}', options)\n  .then(response => response.json())\n  .then(response => console.log(response))\n  .catch(err => console.error(err));`,
+        Python: `import requests\nimport json\n\nurl = "${fullUrl}"\nheaders = {\n  'Content-Type': 'application/json',\n  'Authorization': 'Bearer ${token}'\n}\n\nresponse = requests.request("POST", url, headers=headers, data=json.dumps({}))\n\nprint(response.text)`,
+        PHP: `<?php\n\n$url = '${fullUrl}';\n\n$options = array(\n    'http' => array(\n        'header' => "Content-type: application/json\\r\\n" .\n                   "Authorization: Bearer ${token}\\r\\n",\n        'method' => 'POST',\n        'content' => '{}'\n    )\n);\n\n$context = stream_context_create($options);\n$result = file_get_contents($url, false, $context);\n\nif ($result === FALSE) {\n    die('Error occurred');\n}\n\necho $result;`,
+      }
     }
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     setIsLoading(true)
     setResponse(null)
-    setTimeout(() => {
-      if (endpoint === '/jwt-auth/v1/token') {
-        setResponse({
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          user_email: 'testuser@jwt.test',
-          user_nicename: 'testuser',
-          user_display_name: 'Test User',
-        })
-      } else {
-        setResponse({
-          code: 'jwt_auth_valid_token',
-          data: { status: 200 },
-        })
+
+    try {
+      const fullUrl = `${siteUrl}/wp-json${endpoint}`
+
+      // Prepare request headers and body based on endpoint
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
       }
+      let requestBody: object = {}
+
+      if (endpoint === '/jwt-auth/v1/token') {
+        if (!username.trim() || !password.trim()) {
+          setResponse({
+            error: 'Username and password are required for token generation',
+          })
+          setIsLoading(false)
+          return
+        }
+        requestBody = {
+          username: username.trim(),
+          password: password.trim(),
+        }
+      } else if (endpoint === '/jwt-auth/v1/token/validate') {
+        if (!token.trim()) {
+          setResponse({
+            error: 'Token is required for validation',
+          })
+          setIsLoading(false)
+          return
+        }
+        // For validation endpoint, send token in Authorization header
+        headers['Authorization'] = `Bearer ${token.trim()}`
+        requestBody = {}
+      }
+
+      // Make the actual API request
+      const response = await fetch(fullUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      })
+
+      // Handle response
+      if (response.ok) {
+        const data = await response.json()
+        setResponse(data)
+
+        // Auto-fill token for validation if this was a successful token request
+        if (endpoint === '/jwt-auth/v1/token' && data.token) {
+          setToken(data.token)
+          setTokenAutoFilled(true)
+          // Hide the notice after 5 seconds
+          setTimeout(() => setTokenAutoFilled(false), 5000)
+        }
+      } else {
+        // Try to get error message from response
+        try {
+          const errorData = await response.json()
+          setResponse({
+            error: `HTTP ${response.status}: ${errorData.message || response.statusText}`,
+            details: errorData,
+          })
+        } catch {
+          setResponse({
+            error: `HTTP ${response.status}: ${response.statusText}`,
+          })
+        }
+      }
+    } catch (error) {
+      setResponse({
+        error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      })
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const snippets = getCodeSnippets(endpoint)
@@ -330,20 +437,22 @@ const EndpointTester = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="jwt-p-6 jwt-pt-0">
-        <div className="jwt-flex jwt-items-center jwt-border jwt-rounded-lg jwt-p-1 jwt-bg-slate-50">
-          <Select defaultValue="/jwt-auth/v1/token" onValueChange={setEndpoint}>
-            <SelectTrigger className="jwt-w-[200px] jwt-bg-white jwt-border-r">
-              <SelectValue placeholder="Select an endpoint" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="/jwt-auth/v1/token">POST /token</SelectItem>
-              <SelectItem value="/jwt-auth/v1/validate">POST /validate</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="jwt-flex-1 jwt-px-3 jwt-text-sm jwt-text-slate-600 jwt-font-mono">
-            /jwt-auth/v1{endpoint.split('/jwt-auth/v1')[1]}
+        <div className="jwt-flex jwt-items-center jwt-gap-3 jwt-border jwt-rounded-lg jwt-p-3 jwt-bg-slate-50">
+          <div className="jwt-flex jwt-items-center jwt-gap-2">
+            <Select defaultValue="/jwt-auth/v1/token" onValueChange={setEndpoint}>
+              <SelectTrigger className="jwt-w-[180px] jwt-bg-white">
+                <SelectValue placeholder="Select endpoint" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="/jwt-auth/v1/token">POST /token</SelectItem>
+                <SelectItem value="/jwt-auth/v1/token/validate">POST /token/validate</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Button onClick={handleSend} disabled={isLoading}>
+          <div className="jwt-flex-1 jwt-text-sm jwt-text-slate-600 jwt-font-mono jwt-bg-white jwt-px-3 jwt-py-2 jwt-rounded jwt-border jwt-overflow-hidden">
+            {endpoint}
+          </div>
+          <Button onClick={handleSend} disabled={isLoading} className="jwt-shrink-0">
             {isLoading ? (
               <Loader2 className="jwt-mr-2 jwt-h-4 jwt-w-4 jwt-animate-spin" />
             ) : (
@@ -355,31 +464,29 @@ const EndpointTester = () => {
 
         <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-8 jwt-mt-8">
           <div className="jwt-space-y-6">
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="jwt-flex jwt-items-center jwt-justify-between jwt-w-full jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">
-                Server <ChevronDown className="jwt-h-4 jwt-w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="jwt-pt-0">
+            <div>
+              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">Server</h3>
+              <div>
                 <Label
                   htmlFor="domain"
                   className="jwt-text-sm jwt-font-medium jwt-text-slate-600 jwt-mb-2 jwt-block"
                 >
-                  your-domain
+                  WordPress URL
                 </Label>
                 <Input
                   id="domain"
-                  value={domain}
-                  onChange={e => setDomain(e.target.value)}
-                  className="jwt-mt-2"
+                  value={siteUrl}
+                  disabled
+                  className="jwt-bg-slate-50 jwt-text-slate-500 disabled:jwt-text-slate-700 disabled:jwt-opacity-100"
                 />
-              </CollapsibleContent>
-            </Collapsible>
+              </div>
+            </div>
 
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="jwt-flex jwt-items-center jwt-justify-between jwt-w-full jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">
-                Body <ChevronDown className="jwt-h-4 jwt-w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="jwt-pt-0 jwt-space-y-4">
+            <div>
+              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">
+                Request Body
+              </h3>
+              <div className="jwt-space-y-4">
                 {endpoint === '/jwt-auth/v1/token' ? (
                   <>
                     <div>
@@ -427,28 +534,54 @@ const EndpointTester = () => {
                         required
                       </span>
                     </Label>
-                    <Input id="token" value={token} onChange={e => setToken(e.target.value)} />
+                    {tokenAutoFilled && (
+                      <div className="jwt-border-l-4 jwt-border-blue-400 jwt-bg-blue-50 jwt-p-3 jwt-mb-3">
+                        <div className="jwt-flex">
+                          <div className="jwt-shrink-0">
+                            <CheckCircle className="jwt-h-4 jwt-w-4 jwt-text-blue-400" />
+                          </div>
+                          <div className="jwt-ml-2">
+                            <p className="jwt-text-xs jwt-text-blue-700">
+                              <span className="jwt-font-medium">Token Auto-filled:</span> The JWT
+                              token from your successful request has been automatically added below.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <Input
+                      id="token"
+                      value={token}
+                      onChange={e => {
+                        setToken(e.target.value)
+                        setTokenAutoFilled(false) // Hide notice when user manually edits
+                      }}
+                    />
                   </div>
                 )}
-              </CollapsibleContent>
-            </Collapsible>
+              </div>
+            </div>
           </div>
 
           <div className="jwt-space-y-6">
-            <Tabs defaultValue="JavaScript">
+            <Tabs defaultValue="cURL">
               <TabsList>
                 <TabsTrigger value="cURL">cURL</TabsTrigger>
+                <TabsTrigger value="PHP">PHP</TabsTrigger>
                 <TabsTrigger value="JavaScript">JavaScript</TabsTrigger>
                 <TabsTrigger value="Python">Python</TabsTrigger>
               </TabsList>
               <TabsContent value="cURL">
-                <CodeSnippetDisplay code={snippets.cURL} />
+                <CodeSnippetDisplay code={snippets.cURL} language="curl" />
               </TabsContent>
               <TabsContent value="JavaScript">
-                <CodeSnippetDisplay code={snippets.JavaScript} />
+                <CodeSnippetDisplay code={snippets.JavaScript} language="javascript" />
               </TabsContent>
               <TabsContent value="Python">
-                <CodeSnippetDisplay code={snippets.Python} />
+                <CodeSnippetDisplay code={snippets.Python} language="python" />
+              </TabsContent>
+              <TabsContent value="PHP">
+                <CodeSnippetDisplay code={snippets.PHP} language="php" />
               </TabsContent>
             </Tabs>
 
@@ -456,13 +589,112 @@ const EndpointTester = () => {
               <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">
                 Response
               </h3>
-              <div className="jwt-bg-slate-800 jwt-text-white jwt-p-4 jwt-rounded-lg jwt-text-sm jwt-min-h-[150px]">
-                {isLoading && <p className="jwt-text-slate-400">Sending request...</p>}
-                {response && <pre className="jwt-text-sm">{JSON.stringify(response, null, 2)}</pre>}
-                {!isLoading && !response && (
-                  <p className="jwt-text-slate-400">Response will appear here</p>
-                )}
-              </div>
+              {/* Loading State */}
+              {isLoading && (
+                <div className="jwt-border-l-4 jwt-border-blue-400 jwt-bg-blue-50 jwt-p-4 jwt-mb-4">
+                  <div className="jwt-flex">
+                    <div className="jwt-shrink-0">
+                      <Loader2 className="jwt-h-5 jwt-w-5 jwt-animate-spin jwt-text-blue-400" />
+                    </div>
+                    <div className="jwt-ml-3">
+                      <p className="jwt-text-sm jwt-text-blue-700">Sending request...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Success/Error Alert */}
+              {response && (
+                <div className="jwt-mb-4">
+                  {response.error ? (
+                    <div className="jwt-border-l-4 jwt-border-red-400 jwt-bg-red-50 jwt-p-4">
+                      <div className="jwt-flex">
+                        <div className="jwt-shrink-0">
+                          <X className="jwt-h-5 jwt-w-5 jwt-text-red-400" />
+                        </div>
+                        <div className="jwt-ml-3">
+                          <p className="jwt-text-sm jwt-text-red-700">
+                            <span className="jwt-font-medium">Request Failed:</span>{' '}
+                            {String(response.error)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="jwt-border-l-4 jwt-border-green-400 jwt-bg-green-50 jwt-p-4">
+                      <div className="jwt-flex">
+                        <div className="jwt-shrink-0">
+                          <CheckCircle className="jwt-h-5 jwt-w-5 jwt-text-green-400" />
+                        </div>
+                        <div className="jwt-ml-3">
+                          <p className="jwt-text-sm jwt-text-green-700">
+                            <span className="jwt-font-medium">Request Successful:</span> The API
+                            request completed successfully
+                            {endpoint === '/jwt-auth/v1/token' &&
+                              ' and the token is ready to be used on the validate endpoint'}
+                            .
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* Response Content Box */}
+              {response && (
+                <div>
+                  <div className="jwt-mb-2">
+                    <span className="jwt-text-xs jwt-font-medium jwt-text-slate-500 jwt-uppercase jwt-tracking-wider">
+                      Response Body
+                    </span>
+                  </div>
+                  <div className="jwt-relative">
+                    <div className="jwt-overflow-hidden jwt-rounded-lg jwt-border">
+                      <SyntaxHighlighter
+                        language="json"
+                        style={oneDark}
+                        customStyle={{
+                          margin: 0,
+                          fontSize: '0.875rem',
+                          padding: '1rem',
+                        }}
+                      >
+                        {JSON.stringify(response, null, 2)}
+                      </SyntaxHighlighter>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="jwt-absolute jwt-top-3 jwt-right-3 jwt-h-8 jwt-w-8"
+                      onClick={() => {
+                        const text = JSON.stringify(response, null, 2)
+                        navigator.clipboard.writeText(text)
+                        setResponseCopied(true)
+                        setTimeout(() => setResponseCopied(false), 2000)
+                      }}
+                    >
+                      {responseCopied ? (
+                        <CheckCircle className="jwt-h-4 jwt-w-4 jwt-text-emerald-400" />
+                      ) : (
+                        <Copy className="jwt-h-4 jwt-w-4 jwt-text-slate-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {/* Empty State */}
+              {!isLoading && !response && (
+                <div className="jwt-border-2 jwt-border-dashed jwt-border-slate-200 jwt-rounded-lg jwt-p-8 jwt-text-center">
+                  <div className="jwt-w-12 jwt-h-12 jwt-bg-slate-100 jwt-rounded-full jwt-flex jwt-items-center jwt-justify-center jwt-mx-auto jwt-mb-3">
+                    <Send className="jwt-h-5 jwt-w-5 jwt-text-slate-400" />
+                  </div>
+                  <p className="jwt-text-slate-600 jwt-text-sm jwt-font-medium jwt-mb-1">
+                    Ready to test your API
+                  </p>
+                  <p className="jwt-text-slate-500 jwt-text-xs">
+                    Click the "Send" button above to make a request
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

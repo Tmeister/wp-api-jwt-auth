@@ -4,6 +4,7 @@ declare global {
     jwtAuthConfig: {
       apiUrl: string
       nonce: string
+      siteUrl: string
       settings: {
         share_data: boolean
       }

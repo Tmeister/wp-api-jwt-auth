@@ -403,6 +403,7 @@ class Jwt_Auth_Admin
                     $config = array(
                         'apiUrl'      => rest_url('jwt-auth/v1/admin/settings'),
                         'nonce'       => wp_create_nonce('wp_rest'),
+                        'siteUrl'     => get_bloginfo('url'),
                         'settings'    => get_option('jwt_auth_options', array('share_data' => false)),
                         'siteProfile' => array(
                             'phpVersion'            => PHP_VERSION,
@@ -424,6 +425,7 @@ class Jwt_Auth_Admin
                 array(
                     'apiUrl'      => rest_url('jwt-auth/v1/admin/settings'),
                     'nonce'       => wp_create_nonce('wp_rest'),
+                    'siteUrl'     => get_bloginfo('url'),
                     'settings'    => get_option('jwt_auth_options', array('share_data' => false)),
                     'siteProfile' => array(
                         'phpVersion'            => PHP_VERSION,
