@@ -1,14 +1,18 @@
 import { CTACard } from '@/components/ui/cta-card'
 import { Button } from '@/components/ui/button'
 
-export const SurveyCard = () => (
+interface SurveyCardProps {
+  onNavigateToSurvey: () => void
+}
+
+export const SurveyCard = ({ onNavigateToSurvey }: SurveyCardProps) => (
   <CTACard
     title="Quick Survey"
-    description="Help us understand your needs better (2 minutes)"
-    content="Take our quick survey to help us build features you actually need. Your feedback directly influences our roadmap."
-    actionLabel="Takes 2 minutes • Anonymous"
+    description="Help us understand your needs better and get 15% off JWT Auth Pro"
+    content="Take our quick survey to help us build features you actually need. Your feedback directly influences our roadmap and you'll get an instant 15% discount code."
+    actionLabel="Takes 2 minutes • Get 15% Off"
     actionElement={
-      <Button size="sm" onClick={() => window.open('https://forms.gle/your-survey-link', '_blank')}>
+      <Button size="sm" onClick={onNavigateToSurvey}>
         Take Survey
       </Button>
     }

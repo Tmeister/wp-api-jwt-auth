@@ -6,8 +6,8 @@
  * @author     Enrique Chavez <noone@tmeister.net>
  * @since      1.3.4
  */
-class Jwt_Auth_Cron {
-	public static string $remote_api_url = 'https://track.wpjwt.com';
+class Jwt_Auth_Cron
+{
 
 	/**
 	 * If the user agrees to share data, then we will send some data.
@@ -46,12 +46,17 @@ class Jwt_Auth_Cron {
 		// Wrap the request in a try/catch to avoid fatal errors
 		// and set the timeout to 5 seconds to avoid long delays
 		try {
-			$api_url = self::$remote_api_url . '/api/collect';
-			wp_remote_post( $api_url . '/' . $site_url_hash, [
-				'body'    => $data,
-				'timeout' => 5,
+            $api_url = Jwt_Auth::REMOTE_API_URL . '/api/collect';
+            $response = wp_remote_post($api_url . '/' . $site_url_hash, [
+                'body'      => $data,
+                'timeout'   => 5,
+                // TODO: remove this once we have a valid SSL certificate
+                'sslverify' => false,
 			] );
-		} catch ( Exception $e ) {
+
+            error_log('Jwt_Auth_Cron::collect response');
+            error_log(print_r($response, true));
+        } catch (Exception $e) {
 			error_log( 'Error adding site to remote database' );
 			error_log( $e->getMessage() );
 		}
@@ -71,9 +76,11 @@ class Jwt_Auth_Cron {
 		// Wrap the request in a try/catch to avoid fatal errors
 		// and set the timeout to 5 seconds to avoid long delays
 		try {
-			$api_url = self::$remote_api_url . '/api/destroy';
+            $api_url = Jwt_Auth::REMOTE_API_URL . '/api/destroy';
 			wp_remote_post( $api_url . '/' . $site_url_hash, [
-				'timeout' => 5,
+                'timeout'   => 5,
+                // TODO: remove this once we have a valid SSL certificate
+                'sslverify' => false,
 			] );
 		} catch ( Exception $e ) {
 			error_log( 'Error removing site from remote database' );

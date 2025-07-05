@@ -9,9 +9,15 @@ interface OverviewPageProps {
   shareData: boolean
   setShareData: (val: boolean) => void
   configStatus: ConfigurationStatus | null
+  onNavigateToSurvey: () => void
 }
 
-export const OverviewPage = ({ shareData, setShareData, configStatus }: OverviewPageProps) => (
+export const OverviewPage = ({
+  shareData,
+  setShareData,
+  configStatus,
+  onNavigateToSurvey,
+}: OverviewPageProps) => (
   <div className="jwt-space-y-8">
     <PageHeader
       title="Dashboard Overview"
@@ -19,7 +25,7 @@ export const OverviewPage = ({ shareData, setShareData, configStatus }: Overview
     />
     <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-6">
       <HelpImproveCard shareData={shareData} setShareData={setShareData} />
-      <SurveyCard />
+      <SurveyCard onNavigateToSurvey={onNavigateToSurvey} />
     </div>
     <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-6">
       <ConfigurationStatusCard configStatus={configStatus} />

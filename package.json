@@ -14,5 +14,10 @@
     "url": "git+https://github.com/Tmeister/wp-api-jwt-auth.git"
   },
   "author": "Enrique Chavez",
-  "license": "GPL-2.0-or-later"
+  "license": "GPL-2.0-or-later",
+  "dependencies": {
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-tabs": "^1.1.12"
+  }
 }

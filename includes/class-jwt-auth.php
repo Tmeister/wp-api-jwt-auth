@@ -24,14 +24,23 @@
  * @author     Enrique Chavez <noone@tmeister.net>
  */
 class Jwt_Auth {
-	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
-	 *
-	 * @since    1.0.0
-	 *
-	 * @var Jwt_Auth_Loader Maintains and registers all hooks for the plugin.
-	 */
+    /**
+     * Remote API URL for tracking and data collection.
+     *
+     * @since    1.3.7
+     *
+     * @var string The remote API URL.
+     */
+    const REMOTE_API_URL = 'https://track.wpjwt.com';
+
+    /**
+     * The loader that's responsible for maintaining and registering all hooks that power
+     * the plugin.
+     *
+     * @since    1.0.0
+     *
+     * @var Jwt_Auth_Loader Maintains and registers all hooks for the plugin.
+     */
 	protected Jwt_Auth_Loader $loader;
 
 	/**
