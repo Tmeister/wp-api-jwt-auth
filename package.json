@@ -7,7 +7,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "husky": "^9.1.7"
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "husky": "^9.1.7",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "ts-jest": "^29.4.0"
   },
   "repository": {
     "type": "git",

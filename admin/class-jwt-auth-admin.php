@@ -101,6 +101,16 @@ class Jwt_Auth_Admin
                 'permission_callback' => array($this, 'settings_permission_check'),
             )
         );
+
+        register_rest_route(
+            $namespace,
+            'admin/survey/dismissal',
+            array(
+                'methods'             => array('GET', 'POST'),
+                'callback'            => array($this, 'handle_survey_dismissal'),
+                'permission_callback' => array($this, 'settings_permission_check'),
+            )
+        );
     }
 
     /**
@@ -620,6 +630,91 @@ class Jwt_Auth_Admin
                 'completedAt' => $completed_at,
             ),
             200
+        );
+    }
+
+    /**
+     * Handle survey floating card dismissal tracking.
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_survey_dismissal(WP_REST_Request $request)
+    {
+        $user_id = get_current_user_id();
+
+        if ($request->get_method() === 'GET') {
+            // Get dismissal data
+            $dismissal_data = get_user_meta($user_id, 'jwt_auth_survey_dismissal', true);
+            
+            if (!$dismissal_data) {
+                $dismissal_data = array(
+                    'count' => 0,
+                    'lastDismissedAt' => null,
+                    'hideUntil' => null
+                );
+            }
+
+            // Check if we should show the card
+            $now = time();
+            $shouldShow = true;
+            
+            if ($dismissal_data['count'] >= 4) {
+                $shouldShow = false;
+            } elseif ($dismissal_data['hideUntil'] && $now < $dismissal_data['hideUntil']) {
+                $shouldShow = false;
+            }
+
+            return new WP_REST_Response(
+                array(
+                    'dismissalCount' => $dismissal_data['count'],
+                    'lastDismissedAt' => $dismissal_data['lastDismissedAt'],
+                    'shouldShow' => $shouldShow,
+                ),
+                200
+            );
+        }
+
+        if ($request->get_method() === 'POST') {
+            // Update dismissal data
+            $dismissal_data = get_user_meta($user_id, 'jwt_auth_survey_dismissal', true) ?: array(
+                'count' => 0,
+                'lastDismissedAt' => null,
+                'hideUntil' => null
+            );
+
+            $dismissal_data['count']++;
+            $dismissal_data['lastDismissedAt'] = current_time('mysql');
+            
+            // Hide for 1 week if not already at max dismissals
+            if ($dismissal_data['count'] < 4) {
+                $dismissal_data['hideUntil'] = time() + (7 * DAY_IN_SECONDS);
+            }
+
+            $success = update_user_meta($user_id, 'jwt_auth_survey_dismissal', $dismissal_data);
+
+            if (!$success) {
+                return new WP_Error(
+                    'jwt_auth_dismissal_update_failed',
+                    'Failed to update dismissal data.',
+                    array('status' => 500)
+                );
+            }
+
+            return new WP_REST_Response(
+                array(
+                    'success' => true,
+                    'dismissalCount' => $dismissal_data['count'],
+                    'shouldShow' => $dismissal_data['count'] < 4,
+                ),
+                200
+            );
+        }
+
+        return new WP_Error(
+            'jwt_auth_method_not_allowed',
+            'Method not allowed.',
+            array('status' => 405)
         );
     }
 
