@@ -464,9 +464,11 @@ const EndpointTester = () => {
 
         <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-8 jwt-mt-8">
           <div className="jwt-space-y-6">
-            <div>
-              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">Server</h3>
-              <div>
+            <div className="jwt-border jwt-border-slate-200 jwt-px-5 jwt-py-3 jwt-rounded-lg jwt-pb-5">
+              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4 jwt-border-b jwt-border-slate-200 jwt-py-2">
+                Server
+              </h3>
+              <div className="jwt-mt-5">
                 <Label
                   htmlFor="domain"
                   className="jwt-text-sm jwt-font-medium jwt-text-slate-600 jwt-mb-2 jwt-block"
@@ -482,11 +484,11 @@ const EndpointTester = () => {
               </div>
             </div>
 
-            <div>
-              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4">
+            <div className="jwt-border jwt-border-slate-200 jwt-px-5 jwt-py-3 jwt-rounded-lg jwt-pb-5">
+              <h3 className="jwt-text-sm jwt-font-semibold jwt-text-slate-700 jwt-mb-4 jwt-border-b jwt-border-slate-200 jwt-py-2">
                 Request Body
               </h3>
-              <div className="jwt-space-y-4">
+              <div className="jwt-space-y-4 jwt-mt-5">
                 {endpoint === '/jwt-auth/v1/token' ? (
                   <>
                     <div>
