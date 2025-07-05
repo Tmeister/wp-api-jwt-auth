@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Rocket, FileText, BarChart3 } from 'lucide-react'
+import { Rocket, BarChart3 } from 'lucide-react'
 
 interface TopbarProps {
   discount: number
