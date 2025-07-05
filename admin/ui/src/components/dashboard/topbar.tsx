@@ -2,13 +2,12 @@ import { Button } from '@/components/ui/button'
 import { Rocket, BarChart3 } from 'lucide-react'
 
 interface TopbarProps {
-  discount: number
   currentPage: 'overview' | 'survey'
   onPageChange: (page: 'overview' | 'survey') => void
 }
 
-export const Topbar = ({ discount, currentPage, onPageChange }: TopbarProps) => {
-  const proUrl = `https://jwtauth.pro?utm_source=wp-admin&utm_medium=topbar&utm_campaign=upgrade&utm_content=discount-${discount}`
+export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
+  const proUrl = `https://jwtauth.pro?utm_source=wp-admin&utm_medium=topbar&utm_campaign=upgrade`
 
   return (
     <header className="jwt-sticky jwt-top-8 jwt-z-20 jwt-bg-white jwt-border-b">
