@@ -11,7 +11,7 @@ interface CodeSnippetDisplayProps {
 
 export const CodeSnippetDisplay = ({ code, language }: CodeSnippetDisplayProps) => {
   const [copied, setCopied] = useState(false)
-  
+
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
     setCopied(true)
