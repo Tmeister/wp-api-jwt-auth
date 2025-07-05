@@ -9,7 +9,6 @@ interface SuccessFlowProps {
 }
 
 export const SuccessFlow = ({ discountCode, hasEmail, onReset }: SuccessFlowProps) => {
-
   const proUrl = `https://jwtauth.pro?utm_source=wp-admin&utm_medium=survey&utm_campaign=upgrade&utm_content=discount-${discountCode}`
 
   return (
@@ -51,7 +50,6 @@ export const SuccessFlow = ({ discountCode, hasEmail, onReset }: SuccessFlowProp
             </div>
           </div>
         )}
-
 
         {/* Pro Features Highlight */}
         <div className="jwt-border jwt-border-gray-200 jwt-rounded-lg jwt-p-6 jwt-bg-gray-50">

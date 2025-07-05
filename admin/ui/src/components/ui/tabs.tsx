@@ -1,7 +1,7 @@
-import * as React from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
+import * as React from 'react'
+import * as TabsPrimitive from '@radix-ui/react-tabs'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 const Tabs = TabsPrimitive.Root
 
@@ -12,7 +12,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "jwt-inline-flex jwt-h-10 jwt-items-center jwt-justify-center jwt-rounded-md jwt-bg-slate-100 jwt-p-1 jwt-text-slate-500",
+      'jwt-inline-flex jwt-h-10 jwt-items-center jwt-justify-center jwt-rounded-md jwt-bg-slate-100 jwt-p-1 jwt-text-slate-500',
       className
     )}
     {...props}
@@ -27,7 +27,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "jwt-inline-flex jwt-items-center jwt-justify-center jwt-whitespace-nowrap jwt-rounded-sm jwt-px-3 jwt-py-1.5 jwt-text-sm jwt-font-medium jwt-ring-offset-white jwt-transition-all focus-visible:jwt-outline-none focus-visible:jwt-ring-2 focus-visible:jwt-ring-slate-950 focus-visible:jwt-ring-offset-2 disabled:jwt-pointer-events-none disabled:jwt-opacity-50 data-[state=active]:jwt-bg-white data-[state=active]:jwt-text-slate-950 data-[state=active]:jwt-shadow-sm",
+      'jwt-inline-flex jwt-items-center jwt-justify-center jwt-whitespace-nowrap jwt-rounded-sm jwt-px-3 jwt-py-1.5 jwt-text-sm jwt-font-medium jwt-ring-offset-white jwt-transition-all focus-visible:jwt-outline-none focus-visible:jwt-ring-2 focus-visible:jwt-ring-slate-950 focus-visible:jwt-ring-offset-2 disabled:jwt-pointer-events-none disabled:jwt-opacity-50 data-[state=active]:jwt-bg-white data-[state=active]:jwt-text-slate-950 data-[state=active]:jwt-shadow-sm',
       className
     )}
     {...props}
@@ -42,7 +42,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "jwt-mt-2 jwt-ring-offset-white focus-visible:jwt-outline-none focus-visible:jwt-ring-2 focus-visible:jwt-ring-slate-950 focus-visible:jwt-ring-offset-2",
+      'jwt-mt-2 jwt-ring-offset-white focus-visible:jwt-outline-none focus-visible:jwt-ring-2 focus-visible:jwt-ring-slate-950 focus-visible:jwt-ring-offset-2',
       className
     )}
     {...props}
