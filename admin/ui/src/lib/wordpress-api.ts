@@ -284,6 +284,57 @@ export class WordPressAPI {
       return false
     }
   }
+
+  async getSurveyDismissalStatus(): Promise<{
+    dismissalCount: number
+    lastDismissedAt: string | null
+    shouldShow: boolean
+  }> {
+    try {
+      const dismissalUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/dismissal')
+      const response = await fetch(dismissalUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': this.nonce,
+        },
+        credentials: 'same-origin',
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Error getting survey dismissal status:', error)
+      return { dismissalCount: 0, lastDismissedAt: null, shouldShow: true }
+    }
+  }
+
+  async updateSurveyDismissal(): Promise<boolean> {
+    try {
+      const dismissalUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/dismissal')
+      const response = await fetch(dismissalUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': this.nonce,
+        },
+        credentials: 'same-origin',
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error updating survey dismissal:', error)
+      return false
+    }
+  }
 }
 
 export const wordpressAPI = new WordPressAPI()

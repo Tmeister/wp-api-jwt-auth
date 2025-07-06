@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ConsentFlow } from './ConsentFlow'
 import { SurveyForm } from './SurveyForm'
 import { SuccessFlow } from './SuccessFlow'
+import { wordpressAPI } from '@/lib/wordpress-api'
 
 export type SurveyStep = 'consent' | 'questions' | 'success'
 
@@ -29,6 +30,27 @@ export const SurveyPage = ({ onBackToDashboard }: SurveyPageProps) => {
     purchaseInterest: '',
   })
   const [discountCode, setDiscountCode] = useState<string>('')
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true)
+
+  // Check if survey is already completed on mount
+  useEffect(() => {
+    async function checkSurveyStatus() {
+      try {
+        const status = await wordpressAPI.getSurveyStatus()
+        if (status.completed) {
+          // If survey is already completed, show the success page
+          setDiscountCode('SURVEY15')
+          setCurrentStep('success')
+        }
+      } catch (error) {
+        console.error('Failed to check survey status:', error)
+      } finally {
+        setIsCheckingStatus(false)
+      }
+    }
+
+    checkSurveyStatus()
+  }, [])
 
   const handleConsentAccept = () => {
     setCurrentStep('questions')
@@ -76,6 +98,14 @@ export const SurveyPage = ({ onBackToDashboard }: SurveyPageProps) => {
       default:
         return null
     }
+  }
+
+  if (isCheckingStatus) {
+    return (
+      <div className="jwt-flex jwt-items-center jwt-justify-center jwt-min-h-[400px]">
+        <div className="jwt-text-slate-600">Loading...</div>
+      </div>
+    )
   }
 
   return <div className="jwt-space-y-8">{renderStep()}</div>

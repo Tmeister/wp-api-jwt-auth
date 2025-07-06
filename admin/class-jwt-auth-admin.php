@@ -659,7 +659,7 @@ class Jwt_Auth_Admin
             $now = time();
             $shouldShow = true;
             
-            if ($dismissal_data['count'] >= 4) {
+            if ($dismissal_data['count'] >= 3) {
                 $shouldShow = false;
             } elseif ($dismissal_data['hideUntil'] && $now < $dismissal_data['hideUntil']) {
                 $shouldShow = false;
@@ -686,9 +686,9 @@ class Jwt_Auth_Admin
             $dismissal_data['count']++;
             $dismissal_data['lastDismissedAt'] = current_time('mysql');
             
-            // Hide for 1 week if not already at max dismissals
-            if ($dismissal_data['count'] < 4) {
-                $dismissal_data['hideUntil'] = time() + (7 * DAY_IN_SECONDS);
+            // Hide for 14 days if not already at max dismissals
+            if ($dismissal_data['count'] < 3) {
+                $dismissal_data['hideUntil'] = time() + (14 * DAY_IN_SECONDS);
             }
 
             $success = update_user_meta($user_id, 'jwt_auth_survey_dismissal', $dismissal_data);

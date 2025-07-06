@@ -13,7 +13,9 @@ export default function Dashboard() {
   const [shareData, setShareData] = useState(false)
   const [configStatus, setConfigStatus] = useState<ConfigurationStatus | null>(null)
   const [isSurveyCtaVisible, setIsSurveyCtaVisible] = useState(false)
-  const [isUserDismissed, setIsUserDismissed] = useState(false)
+  const [shouldShowSurveyCta, setShouldShowSurveyCta] = useState(false)
+  const [surveyCompleted, setSurveyCompleted] = useState(false)
+  const [isLoadingDismissal, setIsLoadingDismissal] = useState(false)
 
   // Initialize page based on URL hash or default to overview
   const getInitialPage = (): 'overview' | 'survey' => {
@@ -32,14 +34,18 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Load both settings and configuration status in parallel
-        const [settings, status] = await Promise.all([
+        // Load settings, configuration status, survey status, and dismissal status in parallel
+        const [settings, status, surveyStatus, dismissalStatus] = await Promise.all([
           wordpressAPI.getSettings(),
           wordpressAPI.getConfigurationStatus(),
+          wordpressAPI.getSurveyStatus(),
+          wordpressAPI.getSurveyDismissalStatus(),
         ])
 
         setShareData(settings.share_data)
         setConfigStatus(status)
+        setSurveyCompleted(surveyStatus.completed)
+        setShouldShowSurveyCta(dismissalStatus.shouldShow && !surveyStatus.completed)
       } catch (error) {
         console.error('Failed to load data:', error)
       }
@@ -71,8 +77,8 @@ export default function Dashboard() {
       const scrollTop = window.scrollY
       const documentHeight = document.documentElement.scrollHeight - window.innerHeight
       const scrollPercent = (scrollTop / documentHeight) * 100
-      // Don't show if user manually dismissed it or if on survey page
-      if (isUserDismissed || currentPage === 'survey') return
+      // Don't show if user shouldn't see it, already completed survey, or if on survey page
+      if (!shouldShowSurveyCta || surveyCompleted || currentPage === 'survey') return
 
       // Show/hide survey CTA based on scroll position
       if (scrollPercent >= 50 && !isSurveyCtaVisible) {
@@ -84,7 +90,7 @@ export default function Dashboard() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [isSurveyCtaVisible, isUserDismissed, currentPage])
+  }, [isSurveyCtaVisible, shouldShowSurveyCta, surveyCompleted, currentPage])
 
   // Handle page navigation with URL updates
   const handlePageChange = (page: 'overview' | 'survey') => {
@@ -125,10 +131,15 @@ export default function Dashboard() {
         {renderPage()}
       </main>
       <FloatingSurveyCTA
-        isVisible={isSurveyCtaVisible && currentPage !== 'survey'}
-        onClose={() => {
+        isVisible={isSurveyCtaVisible && currentPage !== 'survey' && !isLoadingDismissal}
+        onClose={async () => {
+          setIsLoadingDismissal(true)
           setIsSurveyCtaVisible(false)
-          setIsUserDismissed(true)
+          const success = await wordpressAPI.updateSurveyDismissal()
+          if (success) {
+            setShouldShowSurveyCta(false)
+          }
+          setIsLoadingDismissal(false)
         }}
         onTakeSurvey={() => handlePageChange('survey')}
       />

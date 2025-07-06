@@ -3,6 +3,7 @@
 .vscode/tasks.json
 .vscode/*.code-workspace
 .idea/
+.claude/
 stubs
 
 # Development documentation
