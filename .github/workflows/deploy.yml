@@ -1,4 +1,24 @@
 name: Deploy to WordPress.org
+
+# TODO: IMPORTANT - BUILD PROCESS IMPROVEMENTS NEEDED
+#
+# CURRENT ISSUES:
+# - includes/vendor/ directory is committed to git (should be built during deployment)
+# - admin/ui/dist/ directory is committed to git (should be built during deployment)
+# - Development dependencies are included in releases (should be excluded)
+# - Source files are included in releases (should be built and excluded)
+#
+# REQUIRED IMPROVEMENTS:
+# 1. Remove includes/vendor/ and admin/ui/dist/ from git tracking
+# 2. Add build steps to this workflow before deployment
+# 3. Create/update .distignore file for proper WordPress.org exclusions
+#
+# BUILD STEPS NEEDED:
+# - composer install --no-dev --optimize-autoloader
+# - npm ci (install Node.js dependencies)
+# - npm run build (build frontend assets)
+# - Ensure .distignore excludes: node_modules/, tests/, .github/, and all the development and configuration files (e.g. .wp-env.json, phpunit.xml.dist, etc.)
+
 on:
   push:
     tags:
@@ -12,6 +32,49 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y subversion
     - name: WordPress Plugin Deploy
       uses: actions/checkout@master
+
+    # TODO: ADD BUILD STEPS HERE BEFORE DEPLOYMENT
+    #
+    # Example build steps needed:
+    #
+    # - name: Setup PHP
+    #   uses: shivammathur/setup-php@v2
+    #   with:
+    #     php-version: '8.1'
+    #
+    # - name: Install PHP dependencies
+    #   run: composer install --no-dev --optimize-autoloader
+    #
+    # - name: Setup Node.js
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: '18'
+    #     cache: 'npm'
+    #
+    # - name: Install Node.js dependencies
+    #   run: npm ci
+    #
+    # - name: Build frontend assets
+    #   run: npm run build
+    #
+    # TODO: CREATE .distignore FILE
+    # Should exclude:
+    # - node_modules/
+    # - admin/ui/src/
+    # - tests/
+    # - scripts/
+    # - .github/
+    # - .git/
+    # - .gitignore
+    # - package.json
+    # - package-lock.json
+    # - composer.json (dev dependencies)
+    # - vite.config.ts
+    # - tsconfig.json
+    # - tailwind.config.js
+    # - .wp-env.json
+    # - phpunit.xml.dist
+
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@stable
       env:

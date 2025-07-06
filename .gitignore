@@ -7,20 +7,14 @@ stubs
 
 # Development documentation
 DEVELOPMENT.md
+.phpunit.result.cache
 
 # System files
 .DS_Store
 Thumbs.db
 
 # Dependencies
-includes/vendor/bin
-includes/vendor/dealerdirect
-includes/vendor/squizlabs
-includes/vendor/wp-coding-standards
-includes/vendor/composer
-includes/vendor/firebase
-includes/vendor/php-stubs
-includes/vendor/phpcsstandards
+includes/vendor/
 admin/ui/node_modules
 node_modules
 

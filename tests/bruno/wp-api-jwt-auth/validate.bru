@@ -1,0 +1,33 @@
+meta {
+  name: Validate JWT Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseURL}}/jwt-auth/v1/token/validate
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Token validation successful", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response contains validation data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('code');
+    expect(data.code).to.equal('jwt_auth_valid_token');
+  });
+
+  test("Response contains token data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('data');
+    expect(data.data).to.have.property('status');
+  });
+}

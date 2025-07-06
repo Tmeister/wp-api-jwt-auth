@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    backupGlobals="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- wp-env environment uses WordPress test suite built into container -->
+        <env name="WORDPRESS_TABLE_PREFIX" value="wp_"/>
+        <!-- JWT Auth specific test constants -->
+        <env name="JWT_AUTH_SECRET_KEY" value="your-development-secret-key-for-testing-purposes-only"/>
+        <env name="JWT_AUTH_CORS_ENABLE" value="true"/>
+    </php>
+</phpunit>

@@ -1,0 +1,27 @@
+meta {
+  name: Get User Info
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL}}/wp/v2/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("User info retrieval successful", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response contains user data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data).to.have.property('name');
+  });
+}

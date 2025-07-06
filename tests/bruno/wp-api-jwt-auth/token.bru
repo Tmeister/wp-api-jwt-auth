@@ -1,0 +1,51 @@
+meta {
+  name: Generate JWT Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL}}/jwt-auth/v1/token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{username}}",
+    "password": "{{password}}"
+  }
+}
+
+tests {
+  test("Token generation successful", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response contains token", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('token');
+    expect(data.token).to.be.a('string');
+    expect(data.token.length).to.be.above(100);
+  });
+
+  test("Response contains user data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('user_email');
+    expect(data).to.have.property('user_nicename');
+    expect(data).to.have.property('user_display_name');
+  });
+
+  test("Token format is valid JWT", function() {
+    const data = res.getBody();
+    const tokenParts = data.token.split('.');
+    expect(tokenParts).to.have.lengthOf(3);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const data = res.getBody();
+    bru.setEnvVar("token", data.token);
+  }
+}
