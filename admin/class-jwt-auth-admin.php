@@ -368,7 +368,7 @@ class Jwt_Auth_Admin
             // Load our main app
             wp_enqueue_script(
                 $this->plugin_name . '-settings',
-                'http://localhost:5173/src/main.tsx',
+                'http://localhost:5173/admin/ui/src/main.tsx',
                 array('vite-client'),
                 null,
                 true

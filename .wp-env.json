@@ -1,0 +1,9 @@
+{
+  "phpVersion": "8.1",
+  "plugins": ["."],
+  "config": {
+    "JWT_AUTH_SECRET_KEY": "your-development-secret-key",
+    "JWT_AUTH_CORS_ENABLE": true,
+    "JWT_AUTH_DEV_MODE": true
+  }
+}

@@ -3,8 +3,8 @@ export default {
     darkMode: ['class'],
     prefix: 'jwt-',
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./admin/ui/index.html",
+    "./admin/ui/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
   	extend: {

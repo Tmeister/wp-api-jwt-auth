@@ -7,15 +7,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './admin/ui/src'),
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: 'admin/ui/dist',
     assetsDir: '',
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'src/main.tsx'),
+        main: path.resolve(__dirname, 'admin/ui/src/main.tsx'),
       },
       output: {
         entryFileNames: 'main.js',
@@ -48,7 +48,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./admin/ui/src/test/setup.ts'],
     css: true,
   },
 })
