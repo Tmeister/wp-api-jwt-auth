@@ -32,26 +32,36 @@ export default function Dashboard() {
 
   // Load settings from WordPress on mount
   useEffect(() => {
+    let isCancelled = false
+
     async function loadData() {
       try {
-        // Load settings, configuration status, survey status, and dismissal status in parallel
-        const [settings, status, surveyStatus, dismissalStatus] = await Promise.all([
-          wordpressAPI.getSettings(),
-          wordpressAPI.getConfigurationStatus(),
-          wordpressAPI.getSurveyStatus(),
-          wordpressAPI.getSurveyDismissalStatus(),
-        ])
+        // Load all dashboard data in a single API call
+        const dashboardData = await wordpressAPI.getDashboardData()
 
-        setShareData(settings.share_data)
-        setConfigStatus(status)
-        setSurveyCompleted(surveyStatus.completed)
-        setShouldShowSurveyCta(dismissalStatus.shouldShow && !surveyStatus.completed)
+        // Only update state if component is still mounted
+        if (!isCancelled) {
+          setShareData(dashboardData.settings.share_data ?? false)
+          setConfigStatus(dashboardData.jwtStatus)
+          setSurveyCompleted(dashboardData.surveyStatus.completed ?? false)
+          setShouldShowSurveyCta(
+            (dashboardData.surveyDismissal.shouldShow ?? false) &&
+              !(dashboardData.surveyStatus.completed ?? false)
+          )
+        }
       } catch (error) {
-        console.error('Failed to load data:', error)
+        if (!isCancelled) {
+          console.error('Failed to load dashboard data:', error)
+        }
       }
     }
 
     loadData()
+
+    // Cleanup function to cancel the effect if component unmounts
+    return () => {
+      isCancelled = true
+    }
   }, [])
 
   // Listen for hash changes to support back/forward navigation
@@ -107,7 +117,12 @@ export default function Dashboard() {
   const renderPage = () => {
     switch (currentPage) {
       case 'survey':
-        return <SurveyPage onBackToDashboard={() => handlePageChange('overview')} />
+        return (
+          <SurveyPage
+            onBackToDashboard={() => handlePageChange('overview')}
+            surveyCompleted={surveyCompleted}
+          />
+        )
       case 'overview':
       default:
         return (

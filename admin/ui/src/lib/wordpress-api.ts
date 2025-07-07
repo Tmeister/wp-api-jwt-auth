@@ -81,6 +81,17 @@ export interface ConfigurationStatus {
   }
 }
 
+export interface DashboardData {
+  settings: JwtAuthOptions
+  jwtStatus: ConfigurationStatus
+  surveyStatus: { completed: boolean; completedAt?: string }
+  surveyDismissal: {
+    dismissalCount: number
+    lastDismissedAt: string | null
+    shouldShow: boolean
+  }
+}
+
 // WordPress REST API client for JWT Auth settings
 export class WordPressAPI {
   private apiUrl: string
@@ -89,30 +100,6 @@ export class WordPressAPI {
   constructor() {
     this.apiUrl = window.jwtAuthConfig?.apiUrl || '/wp-json/jwt-auth/v1/admin/settings'
     this.nonce = window.jwtAuthConfig?.nonce || ''
-  }
-
-  async getSettings(): Promise<JwtAuthOptions> {
-    try {
-      const response = await fetch(this.apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': this.nonce,
-        },
-        credentials: 'same-origin',
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      return data.jwt_auth_options || { share_data: false }
-    } catch (error) {
-      console.error('Error fetching settings:', error)
-      // Return default settings from window object if API fails
-      return window.jwtAuthConfig?.settings || { share_data: false }
-    }
   }
 
   async updateSettings(settings: JwtAuthOptions): Promise<JwtAuthOptions> {
@@ -155,56 +142,6 @@ export class WordPressAPI {
     )
   }
 
-  async getConfigurationStatus(): Promise<ConfigurationStatus> {
-    try {
-      const statusUrl = this.apiUrl.replace('/admin/settings', '/admin/status')
-      const response = await fetch(statusUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': this.nonce,
-        },
-        credentials: 'same-origin',
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      return data
-    } catch (error) {
-      console.error('Error fetching configuration status:', error)
-      // Return fallback data based on site profile
-      const siteProfile = this.getSiteProfile()
-      return {
-        configuration: {
-          method: 'Manual (via wp-config.php)',
-          secret_key_configured: true,
-          cors_enabled: false,
-          dev_mode: false,
-        },
-        system: {
-          php_version: siteProfile.phpVersion,
-          php_compatible: siteProfile.isProCompatible,
-          pro_compatible: siteProfile.isProCompatible,
-          wordpress_version: siteProfile.wordpressVersion || 'Unknown',
-          mysql_version: 'Unknown',
-          php_memory_limit: 'Unknown',
-          post_max_size: 'Unknown',
-        },
-        jwt: {},
-        features: {
-          token_revocation: false,
-          token_refresh: false,
-          analytics: false,
-          admin_ui: false,
-          multiple_algorithms: false,
-        },
-      }
-    }
-  }
-
   async submitSurvey(
     surveyData: SurveySubmissionData
   ): Promise<{ success: boolean; message?: string }> {
@@ -237,30 +174,6 @@ export class WordPressAPI {
     }
   }
 
-  async getSurveyStatus(): Promise<{ completed: boolean; completedAt?: string }> {
-    try {
-      const surveyUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/status')
-      const response = await fetch(surveyUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': this.nonce,
-        },
-        credentials: 'same-origin',
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      return data
-    } catch (error) {
-      console.error('Error getting survey status:', error)
-      return { completed: false }
-    }
-  }
-
   async markSurveyCompleted(): Promise<boolean> {
     try {
       const surveyUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/complete')
@@ -285,34 +198,6 @@ export class WordPressAPI {
     }
   }
 
-  async getSurveyDismissalStatus(): Promise<{
-    dismissalCount: number
-    lastDismissedAt: string | null
-    shouldShow: boolean
-  }> {
-    try {
-      const dismissalUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/dismissal')
-      const response = await fetch(dismissalUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': this.nonce,
-        },
-        credentials: 'same-origin',
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      return data
-    } catch (error) {
-      console.error('Error getting survey dismissal status:', error)
-      return { dismissalCount: 0, lastDismissedAt: null, shouldShow: true }
-    }
-  }
-
   async updateSurveyDismissal(): Promise<boolean> {
     try {
       const dismissalUrl = this.apiUrl.replace('/admin/settings', '/admin/survey/dismissal')
@@ -333,6 +218,60 @@ export class WordPressAPI {
     } catch (error) {
       console.error('Error updating survey dismissal:', error)
       return false
+    }
+  }
+
+  async getDashboardData(): Promise<DashboardData> {
+    try {
+      const dashboardUrl = this.apiUrl.replace('/admin/settings', '/admin/dashboard')
+      const response = await fetch(dashboardUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': this.nonce,
+        },
+        credentials: 'same-origin',
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+      // Return fallback data structure
+      return {
+        settings: { share_data: false },
+        jwtStatus: {
+          configuration: {
+            method: 'Manual (via wp-config.php)',
+            secret_key_configured: false,
+            cors_enabled: false,
+            dev_mode: false,
+          },
+          system: {
+            php_version: 'Unknown',
+            php_compatible: false,
+            pro_compatible: false,
+            wordpress_version: 'Unknown',
+            mysql_version: 'Unknown',
+            php_memory_limit: 'Unknown',
+            post_max_size: 'Unknown',
+          },
+          jwt: {},
+          features: {
+            token_revocation: false,
+            token_refresh: false,
+            analytics: false,
+            admin_ui: true,
+            multiple_algorithms: false,
+          },
+        },
+        surveyStatus: { completed: false },
+        surveyDismissal: { dismissalCount: 0, lastDismissedAt: null, shouldShow: true },
+      }
     }
   }
 }

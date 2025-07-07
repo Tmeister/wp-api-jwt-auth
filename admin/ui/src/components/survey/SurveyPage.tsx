@@ -19,9 +19,10 @@ export interface SurveyData {
 
 interface SurveyPageProps {
   onBackToDashboard?: () => void
+  surveyCompleted: boolean
 }
 
-export const SurveyPage = ({ onBackToDashboard }: SurveyPageProps) => {
+export const SurveyPage = ({ onBackToDashboard, surveyCompleted }: SurveyPageProps) => {
   const [currentStep, setCurrentStep] = useState<SurveyStep>('consent')
   const [surveyData, setSurveyData] = useState<SurveyData>({
     useCase: '',
@@ -30,27 +31,15 @@ export const SurveyPage = ({ onBackToDashboard }: SurveyPageProps) => {
     purchaseInterest: '',
   })
   const [discountCode, setDiscountCode] = useState<string>('')
-  const [isCheckingStatus, setIsCheckingStatus] = useState(true)
 
-  // Check if survey is already completed on mount
+  // Set initial step based on survey completion status from props
   useEffect(() => {
-    async function checkSurveyStatus() {
-      try {
-        const status = await wordpressAPI.getSurveyStatus()
-        if (status.completed) {
-          // If survey is already completed, show the success page
-          setDiscountCode('SURVEY15')
-          setCurrentStep('success')
-        }
-      } catch (error) {
-        console.error('Failed to check survey status:', error)
-      } finally {
-        setIsCheckingStatus(false)
-      }
+    if (surveyCompleted) {
+      // If survey is already completed, show the success page
+      setDiscountCode('SURVEY15')
+      setCurrentStep('success')
     }
-
-    checkSurveyStatus()
-  }, [])
+  }, [surveyCompleted])
 
   const handleConsentAccept = () => {
     setCurrentStep('questions')
@@ -100,13 +89,6 @@ export const SurveyPage = ({ onBackToDashboard }: SurveyPageProps) => {
     }
   }
 
-  if (isCheckingStatus) {
-    return (
-      <div className="jwt-flex jwt-items-center jwt-justify-center jwt-min-h-[400px]">
-        <div className="jwt-text-slate-600">Loading...</div>
-      </div>
-    )
-  }
 
   return <div className="jwt-space-y-8">{renderStep()}</div>
 }

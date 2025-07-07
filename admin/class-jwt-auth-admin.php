@@ -111,6 +111,16 @@ class Jwt_Auth_Admin
                 'permission_callback' => array($this, 'settings_permission_check'),
             )
         );
+
+        register_rest_route(
+            $namespace,
+            'admin/dashboard',
+            array(
+                'methods'             => 'GET',
+                'callback'            => array($this, 'get_dashboard_data'),
+                'permission_callback' => array($this, 'settings_permission_check'),
+            )
+        );
     }
 
     /**
@@ -171,7 +181,8 @@ class Jwt_Auth_Admin
 
             $success = update_option('jwt_auth_options', $updated_settings);
 
-            if (! $success) {
+            // update_option returns false if the value hasn't changed, so we need to check differently
+            if ($success === false && get_option('jwt_auth_options') !== $updated_settings) {
                 return new WP_Error(
                     'jwt_auth_settings_update_failed',
                     'Failed to update settings.',
@@ -646,7 +657,7 @@ class Jwt_Auth_Admin
         if ($request->get_method() === 'GET') {
             // Get dismissal data
             $dismissal_data = get_user_meta($user_id, 'jwt_auth_survey_dismissal', true);
-            
+
             if (!$dismissal_data) {
                 $dismissal_data = array(
                     'count' => 0,
@@ -658,7 +669,7 @@ class Jwt_Auth_Admin
             // Check if we should show the card
             $now = time();
             $shouldShow = true;
-            
+
             if ($dismissal_data['count'] >= 3) {
                 $shouldShow = false;
             } elseif ($dismissal_data['hideUntil'] && $now < $dismissal_data['hideUntil']) {
@@ -685,7 +696,7 @@ class Jwt_Auth_Admin
 
             $dismissal_data['count']++;
             $dismissal_data['lastDismissedAt'] = current_time('mysql');
-            
+
             // Hide for 14 days if not already at max dismissals
             if ($dismissal_data['count'] < 3) {
                 $dismissal_data['hideUntil'] = time() + (14 * DAY_IN_SECONDS);
@@ -741,5 +752,73 @@ class Jwt_Auth_Admin
                 'body'     => wp_json_encode($survey_data),
             )
         );
+    }
+
+    /**
+     * Get consolidated dashboard data.
+     *
+     * @param WP_REST_Request $request The REST request object.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function get_dashboard_data($request)
+    {
+        try {
+            // Get settings data
+            $settings_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/settings');
+            $settings_response = $this->handle_settings($settings_request);
+
+            if (is_wp_error($settings_response)) {
+                return $settings_response;
+            }
+
+            $settings_data = $settings_response->get_data();
+
+            // Get configuration status
+            $status_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/status');
+            $status_response = $this->get_configuration_status($status_request);
+
+            if (is_wp_error($status_response)) {
+                return $status_response;
+            }
+
+            $status_data = $status_response->get_data();
+
+            // Get survey status
+            $survey_status_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/survey/status');
+            $survey_status_response = $this->get_survey_status($survey_status_request);
+
+            if (is_wp_error($survey_status_response)) {
+                return $survey_status_response;
+            }
+
+            $survey_status_data = $survey_status_response->get_data();
+
+            // Get survey dismissal status
+            $dismissal_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/survey/dismissal');
+            $dismissal_response = $this->handle_survey_dismissal($dismissal_request);
+
+            if (is_wp_error($dismissal_response)) {
+                return $dismissal_response;
+            }
+
+            $dismissal_data = $dismissal_response->get_data();
+
+            // Return consolidated data
+            return new WP_REST_Response(
+                array(
+                    'settings' => $settings_data['jwt_auth_options'],
+                    'jwtStatus' => $status_data,
+                    'surveyStatus' => $survey_status_data,
+                    'surveyDismissal' => $dismissal_data,
+                ),
+                200
+            );
+        } catch (Exception $e) {
+            return new WP_Error(
+                'jwt_auth_dashboard_error',
+                'Failed to retrieve dashboard data: ' . $e->getMessage(),
+                array('status' => 500)
+            );
+        }
     }
 }
