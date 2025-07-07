@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { ConsentFlow } from './ConsentFlow'
 import { SurveyForm } from './SurveyForm'
 import { SuccessFlow } from './SuccessFlow'
-import { wordpressAPI } from '@/lib/wordpress-api'
 
 export type SurveyStep = 'consent' | 'questions' | 'success'
 
@@ -88,7 +87,6 @@ export const SurveyPage = ({ onBackToDashboard, surveyCompleted }: SurveyPagePro
         return null
     }
   }
-
 
   return <div className="jwt-space-y-8">{renderStep()}</div>
 }
