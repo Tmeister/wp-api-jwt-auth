@@ -44,6 +44,8 @@ jobs:
       with:
           tag_name: test-${{ github.run_number }}
           name: JWT Auth Test Release #${{ github.run_number }}
+          files: |
+            wp-api-jwt-auth.zip
           draft: true
           prerelease: true
           generate_release_notes: true
