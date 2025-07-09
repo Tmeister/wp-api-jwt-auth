@@ -1,9 +1,97 @@
+# Directories
 /.wordpress-org
 /.git
 /.github
+/.husky
 /node_modules
+/admin/ui/node_modules
+/tests
+/scripts
+/.vscode
+/.idea
+/stubs
 
+# Hidden files
 .distignore
 .gitignore
+.gitattributes
+.editorconfig
+.eslintrc
+.eslintignore
+.prettierrc
+.prettierignore
+.phpunit.result.cache
+.actrc
+.secrets
+.env
+.DS_Store
+
+# Development files
 CLAUDE.md
+CLAUDE.local.md
 .claude
+DEVELOPMENT.md
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+
+# Configuration files
+composer.json
+composer.lock
+package.json
+package-lock.json
+phpunit.xml
+phpunit.xml.dist
+phpcs.xml
+phpcs.xml.dist
+.wp-env.json
+vite.config.ts
+tsconfig.json
+tsconfig.node.json
+tailwind.config.js
+postcss.config.js
+vitest.config.ts
+
+# Build tools
+Gruntfile.js
+gulpfile.js
+webpack.config.js
+
+# Testing
+/tests
+phpunit.xml
+phpunit.xml.dist
+
+# Documentation
+/docs
+*.md
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+.tmp
+
+# Archives
+*.zip
+*.tar
+*.gz
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
+
+# PHP files that shouldn't be in frontend dist
+admin/ui/dist/class-jwt-auth-public.php
+admin/ui/dist/index.php

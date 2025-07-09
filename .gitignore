@@ -28,3 +28,8 @@ admin/ui/dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Act (GitHub Actions local testing)
+.actrc
+.secrets
+.env

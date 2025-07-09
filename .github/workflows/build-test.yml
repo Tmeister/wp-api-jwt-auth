@@ -1,13 +1,13 @@
-name: Deploy to WordPress.org
+name: Deploy Test Release
 
 on:
   push:
-    tags:
-    - "*"
+    branches:
+    - build-test
 
 jobs:
-  tag:
-    name: New tag
+  build-and-test:
+    name: Build and Test Release
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -39,12 +39,11 @@ jobs:
         chmod +x scripts/run-tests.sh
         ./scripts/run-tests.sh
 
-    - name: Install Subversion and rsync
-      run: sudo apt-get update && sudo apt-get install -y subversion rsync
-
-    - name: WordPress Plugin Deploy
-      uses: 10up/action-wordpress-plugin-deploy@stable
-      env:
-        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-        SLUG: jwt-authentication-for-wp-rest-api
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+          tag_name: test-${{ github.run_number }}
+          name: JWT Auth Test Release #${{ github.run_number }}
+          draft: false
+          prerelease: true
+          generate_release_notes: true

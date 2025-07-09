@@ -8,8 +8,8 @@ jobs:
     name: Push to trunk
     runs-on: ubuntu-latest
     steps:
-    - name: Install Subversion
-      run: sudo apt-get update && sudo apt-get install -y subversion
+    - name: Install Subversion and rsync
+      run: sudo apt-get update && sudo apt-get install -y subversion rsync
     - name: Checkout code
       uses: actions/checkout@master
     - name: WordPress.org plugin asset/readme update
