@@ -99,6 +99,30 @@ setup_wordpress_env() {
 
     print_header "Setting up WordPress Environment"
 
+    # Install npm dependencies in host environment (needed for build and wp-env)
+    print_info "Installing npm dependencies..."
+    if [[ ! -d "node_modules" ]] || [[ "package.json" -nt "node_modules" ]]; then
+        # Remove lock file and node_modules to fix potential issues
+        rm -rf package-lock.json node_modules
+        npm install --legacy-peer-deps
+    else
+        print_success "npm dependencies are up to date"
+    fi
+
+    print_info "Building the project..."
+    npm run build
+
+    # Install Bruno CLI if needed for API tests
+    if [[ "$RUN_API" == true ]]; then
+        print_info "Checking Bruno CLI installation..."
+        if ! command -v bru &> /dev/null; then
+            print_info "Installing Bruno CLI..."
+            npm install -g @usebruno/cli
+        else
+            print_success "Bruno CLI is already installed"
+        fi
+    fi
+
     print_info "Starting WordPress environment with wp-env..."
     if ! npx @wordpress/env start; then
         print_error "Failed to start WordPress environment"
@@ -120,10 +144,21 @@ setup_wordpress_env() {
         sleep 5
     done
 
+    # List all plugins before activation
+    print_info "Listing all available plugins:"
+    npx @wordpress/env run cli wp plugin list --format=table || true
+
     # Install and activate the plugin
-    print_info "Installing and activating jwt-authentication-for-wp-rest-api plugin..."
-    if ! npx @wordpress/env run cli wp plugin activate jwt-authentication-for-wp-rest-api 2>/dev/null; then
-        print_error "Failed to activate jwt-authentication-for-wp-rest-api plugin"
+    print_info "Installing and activating wp-api-jwt-auth plugin..."
+    if ! npx @wordpress/env run cli wp plugin activate wp-api-jwt-auth 2>/dev/null; then
+        print_error "Failed to activate wp-api-jwt-auth plugin"
+        exit 1
+    fi
+
+    # Install composer dependencies inside the container
+    print_info "Installing composer dependencies inside wp-env container..."
+    if ! npx @wordpress/env run cli bash -c "cd wp-content/plugins/wp-api-jwt-auth && composer install --no-interaction --prefer-dist"; then
+        print_error "Failed to install composer dependencies"
         exit 1
     fi
 
@@ -181,6 +216,41 @@ EOF" || true
     print_info "Checking REST API availability:"
     npx @wordpress/env run cli wp eval "echo 'REST API enabled: ' . (rest_get_server() ? 'Yes' : 'No') . PHP_EOL;" || true
 
+    # List all registered REST routes to debug
+    print_info "Listing JWT Auth REST routes:"
+    npx @wordpress/env run cli wp eval "
+        \$server = rest_get_server();
+        \$routes = \$server->get_routes();
+        foreach (\$routes as \$route => \$endpoints) {
+            if (strpos(\$route, 'jwt-auth') !== false) {
+                echo \$route . PHP_EOL;
+            }
+        }
+    " || true
+
+    # Create test user if it doesn't exist
+    print_info "Ensuring test user exists..."
+    npx @wordpress/env run cli wp user create admin admin@example.com --user_pass=password --role=administrator 2>/dev/null || true
+
+    # Give the server a moment to fully initialize
+    print_info "Waiting for server to stabilize..."
+    sleep 5
+
+    # Final check - try to authenticate with the API
+    print_info "Testing authentication endpoint with credentials..."
+    response=$(curl -s -X POST http://localhost:8888/wp-json/jwt-auth/v1/token \
+        -H "Content-Type: application/json" \
+        -d '{"username":"admin","password":"password"}' \
+        -w "\nHTTP_CODE:%{http_code}")
+
+    http_code=$(echo "$response" | grep "HTTP_CODE:" | cut -d: -f2)
+    if [ "$http_code" = "200" ]; then
+        print_success "Authentication endpoint is working correctly"
+    else
+        print_warning "Authentication endpoint returned status: $http_code"
+        echo "Response: $(echo "$response" | grep -v "HTTP_CODE:")"
+    fi
+
     print_success "Plugin setup completed"
 }
 
@@ -192,15 +262,9 @@ run_php_tests() {
 
     print_header "Running PHP Unit Tests"
 
-    # Check if composer dependencies are installed
-    if [[ ! -d "includes/vendor" ]]; then
-        print_info "Installing PHP dependencies..."
-        composer install --no-interaction --prefer-dist
-    fi
-
-    # Run PHPUnit tests using wp-env's tests-cli container
+    # Run PHPUnit tests using wp-env's cli container
     print_info "Running PHPUnit tests in wp-env container..."
-    if npx @wordpress/env run tests-cli --env-cwd="wp-content/plugins/$(basename "$(pwd)")" ./includes/vendor/bin/phpunit; then
+    if npx @wordpress/env run cli bash -c "cd wp-content/plugins/wp-api-jwt-auth && includes/vendor/bin/phpunit --testdox"; then
         print_success "PHP Unit Tests passed"
         PHP_TESTS_PASSED=true
     else
@@ -216,12 +280,6 @@ run_frontend_tests() {
     fi
 
     print_header "Running Frontend Tests"
-
-    # Check if node_modules exists
-    if [[ ! -d "node_modules" ]]; then
-        print_info "Installing Node.js dependencies..."
-        npm install
-    fi
 
     # Run frontend tests
     if npm run test; then
@@ -239,28 +297,42 @@ run_api_tests() {
         return
     fi
 
-    print_header "Running API Tests with Bruno"
+    print_header "Running API Tests (Bruno)"
 
-    # Check if Bruno CLI is available
-    if ! command -v bru &> /dev/null; then
-        print_info "Installing Bruno CLI..."
-        npm install -g @usebruno/cli
+    # Add a delay after PHP tests to ensure server is ready
+    print_info "Waiting for server to be ready after PHP tests..."
+    sleep 5
+
+    print_info "Executing REST API tests..."
+
+    # Debug: Verify wp-env is still running
+    print_info "Verifying WordPress environment is still running..."
+    if ! curl -f -s http://localhost:8888 > /dev/null; then
+        print_error "WordPress environment is not accessible!"
+        print_info "Restarting WordPress environment..."
+        npx @wordpress/env start
+        sleep 10
     fi
 
-    # Run Bruno API tests
-    cd tests/bruno/wp-api-jwt-auth
-    if bru run . --env local --output results.json; then
-        print_success "API Tests passed"
+    # Test the endpoint one more time before Bruno
+    print_info "Testing endpoint before Bruno:"
+    response=$(curl -s -X POST http://localhost:8888/wp-json/jwt-auth/v1/token \
+        -H "Content-Type: application/json" \
+        -d '{"username":"admin","password":"password"}' \
+        -w "\nHTTP_CODE:%{http_code}")
+
+    http_code=$(echo "$response" | grep "HTTP_CODE:" | cut -d: -f2)
+    echo "Response status: $http_code"
+    echo "$response" | grep -v "HTTP_CODE:" | head -n 5
+
+    # Run Bruno tests
+    print_info "Running Bruno tests..."
+    if (cd tests/bruno/wp-api-jwt-auth && bru run --env local); then
         API_TESTS_PASSED=true
-        cd - > /dev/null
+        print_success "API tests passed"
     else
-        print_error "API Tests failed"
-        API_TESTS_PASSED=false
-        cd - > /dev/null
+        print_error "API tests failed"
     fi
-
-    # Clean up results file (from the Bruno collection directory)
-    rm -f tests/bruno/wp-api-jwt-auth/results.json
 }
 
 # Print final results
@@ -321,9 +393,8 @@ main() {
     print_header "WP API JWT Auth - Test Runner"
 
     setup_wordpress_env
-    run_php_tests
-    # run_frontend_tests
     run_api_tests
+    run_php_tests
     print_results
 }
 
