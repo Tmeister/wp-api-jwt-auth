@@ -105,16 +105,83 @@ setup_wordpress_env() {
         exit 1
     fi
 
+    # Wait for WordPress to be fully ready
     print_info "Waiting for WordPress to be ready..."
-    sleep 10
+    for i in {1..24}; do
+        if npx @wordpress/env run cli wp core is-installed 2>/dev/null; then
+            print_success "WordPress is ready!"
+            break
+        fi
+        if [ $i -eq 24 ]; then
+            print_error "WordPress failed to be ready in time (2 minutes)"
+            exit 1
+        fi
+        print_info "Attempt $i/24: WordPress not ready yet, waiting 5 seconds..."
+        sleep 5
+    done
 
-    # Verify WordPress is accessible
-    if curl -f -s http://localhost:8888 > /dev/null; then
-        print_success "WordPress environment is ready"
-    else
-        print_error "WordPress environment is not accessible"
+    # Install and activate the plugin
+    print_info "Installing and activating jwt-authentication-for-wp-rest-api plugin..."
+    if ! npx @wordpress/env run cli wp plugin activate jwt-authentication-for-wp-rest-api 2>/dev/null; then
+        print_error "Failed to activate jwt-authentication-for-wp-rest-api plugin"
         exit 1
     fi
+
+    # Set up required constants for testing
+    print_info "Setting up required constants..."
+    npx @wordpress/env run cli wp config set JWT_AUTH_SECRET_KEY "your-top-secret-key" --type=constant || true
+    npx @wordpress/env run cli wp config set DOING_TESTS true --raw --type=constant || true
+
+    # Set permalinks to postname for REST API to work
+    print_info "Setting up permalinks..."
+    npx @wordpress/env run cli wp rewrite structure "/%postname%/" || true
+    npx @wordpress/env run cli wp rewrite flush || true
+
+    # Configure .htaccess to handle Authorization headers for JWT authentication
+    print_info "Configuring .htaccess to handle Authorization headers..."
+    npx @wordpress/env run cli bash -c "cat > /var/www/html/.htaccess << 'EOF'
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+
+# Forward Authorization header to PHP
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+# Standard WordPress rewrite rules
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+EOF" || true
+
+    # Debug: Test REST API endpoints
+    print_info "Testing REST API endpoints..."
+
+    # Test with pretty permalinks
+    print_info "Testing pretty permalink: http://localhost:8888/wp-json/jwt-auth/v1/token"
+    if curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8888/wp-json/jwt-auth/v1/token | grep -q "400\|401\|403"; then
+        print_success "Pretty permalink endpoint is accessible (auth required)"
+    else
+        print_warning "Pretty permalink endpoint returned unexpected status"
+    fi
+
+    # Test with index.php
+    print_info "Testing index.php URL: http://localhost:8888/index.php?rest_route=/jwt-auth/v1/token"
+    if curl -s -o /dev/null -w "%{http_code}" -X POST "http://localhost:8888/index.php?rest_route=/jwt-auth/v1/token" | grep -q "400\|401\|403"; then
+        print_success "Index.php endpoint is accessible (auth required)"
+    else
+        print_warning "Index.php endpoint returned unexpected status"
+    fi
+
+    # List active plugins for debugging
+    print_info "Active plugins:"
+    npx @wordpress/env run cli wp plugin list --status=active --format=table || true
+
+    # Check if REST API is enabled
+    print_info "Checking REST API availability:"
+    npx @wordpress/env run cli wp eval "echo 'REST API enabled: ' . (rest_get_server() ? 'Yes' : 'No') . PHP_EOL;" || true
+
+    print_success "Plugin setup completed"
 }
 
 # Run PHP Unit Tests
