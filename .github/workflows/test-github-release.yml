@@ -3,7 +3,8 @@ name: Deploy Test Release
 on:
   push:
     branches:
-    - build-test
+    - test-release
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   build-and-test:
