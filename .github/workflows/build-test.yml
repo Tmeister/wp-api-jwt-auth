@@ -39,6 +39,11 @@ jobs:
         chmod +x scripts/run-tests.sh
         ./scripts/run-tests.sh
 
+    - name: Generate zip file
+      run: |
+        chmod +x scripts/create-release.sh
+        ./scripts/create-release.sh
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
