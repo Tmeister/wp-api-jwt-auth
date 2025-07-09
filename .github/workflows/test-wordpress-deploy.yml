@@ -3,7 +3,7 @@ name: Test WordPress.org Deploy (Dry Run)
 on:
   push:
     branches:
-    - test-wp-deploy
+    - build-test
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
