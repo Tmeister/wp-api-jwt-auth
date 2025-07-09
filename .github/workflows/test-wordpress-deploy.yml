@@ -55,6 +55,8 @@ jobs:
         dry-run: true
         generate-zip: true
       env:
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         SLUG: jwt-authentication-for-wp-rest-api
         # Note: SVN credentials not needed for dry-run
 
