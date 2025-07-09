@@ -51,6 +51,8 @@ tsconfig.node.json
 tailwind.config.js
 postcss.config.js
 vitest.config.ts
+components.json
+eslint.config.js
 
 # Build tools
 Gruntfile.js
