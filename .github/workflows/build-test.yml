@@ -39,6 +39,11 @@ jobs:
         chmod +x scripts/run-tests.sh
         ./scripts/run-tests.sh
 
+    - name: Reinstall production dependencies
+      run: |
+        echo "Reinstalling production-only composer dependencies just in case..."
+        composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
     - name: Generate zip file
       run: |
         chmod +x scripts/create-release.sh

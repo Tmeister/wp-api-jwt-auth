@@ -88,28 +88,8 @@ RSYNC_EXCLUDES="$RSYNC_EXCLUDES --exclude=.git --exclude=.DS_Store --exclude=*.z
 # Copy files using rsync with excludes
 rsync -av --progress $RSYNC_EXCLUDES "$PLUGIN_ROOT/" "$DEST_DIR/"
 
-# Install production composer dependencies if composer.json exists and vendor is not excluded
-if [ -f "$DEST_DIR/composer.json" ] && [ ! -d "$DEST_DIR/includes/vendor" ]; then
-    print_info "Installing production Composer dependencies..."
-    cd "$DEST_DIR"
-    composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
-    cd - > /dev/null
-else
-    print_info "Vendor directory already exists or composer.json not found, skipping composer install"
-fi
-
-# Build frontend assets if needed
-if [ -f "$DEST_DIR/package.json" ] && [ ! -d "$DEST_DIR/admin/ui/dist" ]; then
-    print_info "Building frontend assets..."
-    cd "$DEST_DIR"
-    npm install --production=false
-    npm run build
-    # Remove node_modules after build
-    rm -rf node_modules
-    cd - > /dev/null
-else
-    print_info "Frontend dist already exists or package.json not found, skipping build"
-fi
+# Note: Dependencies should be installed before running this script
+# This script only packages the existing files
 
 # Create the zip file
 print_info "Creating zip archive..."
