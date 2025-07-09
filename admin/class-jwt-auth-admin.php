@@ -121,6 +121,26 @@ class Jwt_Auth_Admin
                 'permission_callback' => array($this, 'settings_permission_check'),
             )
         );
+
+        register_rest_route(
+            $namespace,
+            'admin/notices/dismiss',
+            array(
+                'methods'             => 'POST',
+                'callback'            => array($this, 'handle_notice_dismissal'),
+                'permission_callback' => array($this, 'settings_permission_check'),
+                'args'                => array(
+                    'notice_id' => array(
+                        'required'    => true,
+                        'type'        => 'string',
+                        'description' => 'The ID of the notice to dismiss',
+                        'validate_callback' => function ($param) {
+                            return is_string($param) && !empty($param);
+                        },
+                    ),
+                ),
+            )
+        );
     }
 
     /**
@@ -300,35 +320,214 @@ class Jwt_Auth_Admin
         );
     }
 
+
     /**
-     * Shows an admin notice on the admin dashboard to notify the new settings page.
-     * This is only shown once and the message is dismissed.
+     * Admin notices system storage.
+     *
+     * @var array
+     * @since 1.3.8
+     */
+    private $admin_notices = array();
+
+    /**
+     * Register a new admin notice to be displayed.
+     *
+     * @param string $id Unique notice identifier
+     * @param string $message Notice message
+     * @param string $type Notice type (success, error, warning, info)
+     * @param string $cta_text Call to action button text (optional)
+     * @param string $cta_link Call to action button link (optional)
+     * @param bool $dismissible Whether the notice is dismissible
+     * @return void
+     * @since 1.3.8
+     */
+    public function register_admin_notice($id, $message, $type = 'info', $cta_text = '', $cta_link = '', $dismissible = true)
+    {
+        $this->admin_notices[$id] = array(
+            'id'          => $id,
+            'message'     => $message,
+            'type'        => $type,
+            'cta_text'    => $cta_text,
+            'cta_link'    => $cta_link,
+            'dismissible' => $dismissible,
+        );
+    }
+
+    /**
+     * Display all admin notices (registers and displays them).
      *
      * @return void
-     * @since 1.3.4
+     * @since 1.3.8
      */
-    public function display_admin_notice()
+    public function display_all_notices()
     {
-        if (! get_option('jwt_auth_pro_notice_01')) {
-?>
-            <div class="notice notice-info is-dismissible">
-                <p>
-                    <?php
-                    esc_html_e(
-                        'Exciting News! 🚀 Level Up Your API Authentication: JWT Authentication Pro is now available! Experience advanced features and seamless integration for your REST API.',
-                        'jwt-auth'
-                    );
-                    ?>
-                    <a href="https://jwtauth.pro?utm_source=wp-admin&utm_medium=notice&utm_campaign=pro-upgrade-notice" target="_blank"
+        // First register all notices
+        $this->register_system_notices();
+
+        // Check if we have notices to display
+        $has_notices = false;
+        foreach ($this->admin_notices as $notice) {
+            if ($this->should_display_notice($notice['id'])) {
+                $this->render_admin_notice($notice);
+                $has_notices = true;
+            }
+        }
+
+        // Only enqueue dismissal script if we have notices
+        if ($has_notices) {
+            $this->enqueue_notice_dismissal_script();
+        }
+    }
+
+    /**
+     * Register system notices (configuration, welcome, etc.).
+     *
+     * @return void
+     * @since 1.3.8
+     */
+    private function register_system_notices()
+    {
+        // Welcome notice for new installations - show until dismissed or CTA clicked
+        $this->register_admin_notice(
+            'jwt_auth_welcome',
+            __('JWT Authentication installed successfully! Configure your settings to enable REST API authentication.', 'jwt-auth'),
+            'success',
+            __('Configure JWT Authentication →', 'jwt-auth'),
+            admin_url('options-general.php?page=jwt_authentication')
+        );
+    }
+
+    /**
+     * Check if a notice should be displayed.
+     *
+     * @param string $notice_id
+     * @return bool
+     * @since 1.3.8
+     */
+    private function should_display_notice($notice_id)
+    {
+        // Check if user has appropriate permissions
+        if (! current_user_can('manage_options')) {
+            return false;
+        }
+
+        // Check if notice has been dismissed
+        $dismissed_notices = get_option('jwt_auth_dismissed_notices', array());
+        if (in_array($notice_id, $dismissed_notices, true)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Render a single admin notice.
+     *
+     * @param array $notice Notice configuration
+     * @return void
+     * @since 1.3.8
+     */
+    private function render_admin_notice($notice)
+    {
+        $notice_class = 'notice notice-' . esc_attr($notice['type']);
+        if ($notice['dismissible']) {
+            $notice_class .= ' is-dismissible';
+        }
+        ?>
+        <div class="<?php echo esc_attr($notice_class); ?>" data-notice-id="<?php echo esc_attr($notice['id']); ?>">
+            <p>
+                <?php echo wp_kses_post($notice['message']); ?>
+                <?php if (! empty($notice['cta_text']) && ! empty($notice['cta_link'])) : ?>
+                    <a href="<?php echo esc_url($notice['cta_link']); ?>"
                         class="button button-primary"
                         style="margin-left: 10px;">
-                        <?php esc_html_e('Upgrade to PRO Now', 'jwt-auth'); ?>
+                        <?php echo esc_html($notice['cta_text']); ?>
                     </a>
-                </p>
-            </div>
-        <?php
-            update_option('jwt_auth_pro_notice_01', true);
+                <?php endif; ?>
+            </p>
+        </div>
+    <?php
+    }
+
+
+    /**
+     * Dismiss a notice permanently.
+     *
+     * @param string $notice_id
+     * @return bool
+     * @since 1.3.8
+     */
+    public function dismiss_notice($notice_id)
+    {
+        $dismissed_notices = get_option('jwt_auth_dismissed_notices', array());
+
+        if (! in_array($notice_id, $dismissed_notices, true)) {
+            $dismissed_notices[] = $notice_id;
+            return update_option('jwt_auth_dismissed_notices', $dismissed_notices);
         }
+
+        return true;
+    }
+
+
+    /**
+     * Display a generic success notice.
+     *
+     * @param string $id Notice ID
+     * @param string $message Notice message
+     * @param string $cta_text CTA button text
+     * @param string $cta_link CTA button link
+     * @return void
+     * @since 1.3.8
+     */
+    public function display_success_notice($id, $message, $cta_text = '', $cta_link = '')
+    {
+        $this->register_admin_notice($id, $message, 'success', $cta_text, $cta_link);
+    }
+
+    /**
+     * Display a generic info notice.
+     *
+     * @param string $id Notice ID
+     * @param string $message Notice message
+     * @param string $cta_text CTA button text
+     * @param string $cta_link CTA button link
+     * @return void
+     * @since 1.3.8
+     */
+    public function display_info_notice($id, $message, $cta_text = '', $cta_link = '')
+    {
+        $this->register_admin_notice($id, $message, 'info', $cta_text, $cta_link);
+    }
+
+    /**
+     * Display a generic warning notice.
+     *
+     * @param string $id Notice ID
+     * @param string $message Notice message
+     * @param string $cta_text CTA button text
+     * @param string $cta_link CTA button link
+     * @return void
+     * @since 1.3.8
+     */
+    public function display_warning_notice($id, $message, $cta_text = '', $cta_link = '')
+    {
+        $this->register_admin_notice($id, $message, 'warning', $cta_text, $cta_link);
+    }
+
+    /**
+     * Display a generic error notice.
+     *
+     * @param string $id Notice ID
+     * @param string $message Notice message
+     * @param string $cta_text CTA button text
+     * @param string $cta_link CTA button link
+     * @return void
+     * @since 1.3.8
+     */
+    public function display_error_notice($id, $message, $cta_text = '', $cta_link = '')
+    {
+        $this->register_admin_notice($id, $message, 'error', $cta_text, $cta_link);
     }
 
     /**
@@ -462,6 +661,83 @@ class Jwt_Auth_Admin
     }
 
     /**
+     * Enqueue notice dismissal JavaScript.
+     *
+     * @return void
+     * @since 1.3.8
+     */
+    private function enqueue_notice_dismissal_script()
+    {
+        if (! is_admin()) {
+            return;
+        }
+
+        $script = "
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to dismiss a notice via AJAX
+            function dismissNotice(noticeId, callback) {
+                if (!noticeId) {
+                    if (callback) callback();
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('notice_id', noticeId);
+
+                fetch('" . rest_url('jwt-auth/v1/admin/notices/dismiss') . "', {
+                    method: 'POST',
+                    headers: {
+                        'X-WP-Nonce': '" . wp_create_nonce('wp_rest') . "'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('JWT Auth: Notice dismissed successfully', data);
+                    if (callback) callback();
+                })
+                .catch(error => {
+                    console.error('JWT Auth: Failed to dismiss notice', error);
+                    if (callback) callback();
+                });
+            }
+
+            // Handle dismiss button (X) clicks - only for JWT Auth notices
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.notice[data-notice-id^=\"jwt_auth_\"] .notice-dismiss')) {
+                    const notice = e.target.closest('.notice[data-notice-id^=\"jwt_auth_\"]');
+                    const noticeId = notice ? notice.dataset.noticeId : null;
+                    dismissNotice(noticeId, function() {
+                        // Reload page to let backend handle notice visibility
+                        window.location.reload();
+                    });
+                }
+            });
+
+            // Handle CTA button clicks - only for JWT Auth notices
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.notice[data-notice-id^=\"jwt_auth_\"] .button')) {
+                    const notice = e.target.closest('.notice[data-notice-id^=\"jwt_auth_\"]');
+                    const noticeId = notice ? notice.dataset.noticeId : null;
+                    const href = e.target.getAttribute('href');
+
+                    if (noticeId && href) {
+                        e.preventDefault();
+
+                        // Dismiss notice first, then navigate
+                        dismissNotice(noticeId, function() {
+                            window.location.href = href;
+                        });
+                    }
+                }
+            });
+        });
+        ";
+
+        wp_add_inline_script('wp-util', $script);
+    }
+
+    /**
      * Register the plugin settings.
      *
      * @return void
@@ -501,7 +777,7 @@ class Jwt_Auth_Admin
      */
     public function render_admin_page()
     {
-        ?>
+    ?>
         <div id="jwt-auth-holder"></div>
 <?php
     }
@@ -762,6 +1038,9 @@ class Jwt_Auth_Admin
      */
     public function get_dashboard_data($request)
     {
+        // $request parameter is required for REST API compatibility but not used in this method
+        unset($request);
+
         try {
             // Get settings data
             $settings_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/settings');
@@ -774,8 +1053,7 @@ class Jwt_Auth_Admin
             $settings_data = $settings_response->get_data();
 
             // Get configuration status
-            $status_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/status');
-            $status_response = $this->get_configuration_status($status_request);
+            $status_response = $this->get_configuration_status();
 
             if (is_wp_error($status_response)) {
                 return $status_response;
@@ -784,8 +1062,7 @@ class Jwt_Auth_Admin
             $status_data = $status_response->get_data();
 
             // Get survey status
-            $survey_status_request = new WP_REST_Request('GET', '/jwt-auth/v1/admin/survey/status');
-            $survey_status_response = $this->get_survey_status($survey_status_request);
+            $survey_status_response = $this->get_survey_status();
 
             if (is_wp_error($survey_status_response)) {
                 return $survey_status_response;
@@ -820,5 +1097,46 @@ class Jwt_Auth_Admin
                 array('status' => 500)
             );
         }
+    }
+
+    /**
+     * Handle admin notice dismissal via REST API.
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     * @since 1.3.8
+     */
+    public function handle_notice_dismissal(WP_REST_Request $request)
+    {
+        $notice_id = $request->get_param('notice_id');
+
+        if (empty($notice_id)) {
+            return new WP_Error(
+                'jwt_auth_missing_notice_id',
+                'Notice ID is required.',
+                array('status' => 400)
+            );
+        }
+
+        $notice_id = sanitize_text_field($notice_id);
+
+        $success = $this->dismiss_notice($notice_id);
+
+        if (!$success) {
+            return new WP_Error(
+                'jwt_auth_notice_dismissal_failed',
+                'Failed to dismiss notice.',
+                array('status' => 500)
+            );
+        }
+
+        return new WP_REST_Response(
+            array(
+                'success'   => true,
+                'notice_id' => $notice_id,
+                'message'   => 'Notice dismissed successfully.',
+            ),
+            200
+        );
     }
 }

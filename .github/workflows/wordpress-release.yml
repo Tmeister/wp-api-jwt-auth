@@ -39,6 +39,11 @@ jobs:
         chmod +x scripts/run-tests.sh
         ./scripts/run-tests.sh
 
+    - name: Reinstall production dependencies
+      run: |
+        echo "Reinstalling production-only composer dependencies..."
+        composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
     - name: Install Subversion and rsync
       run: sudo apt-get update && sudo apt-get install -y subversion rsync
 
