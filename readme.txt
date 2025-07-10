@@ -2,7 +2,7 @@
 
 Contributors: tmeister
 Donate link: https://github.com/sponsors/Tmeister
-Tags: wp-json, jwt, json web authentication, wp-api, login, rest api, authentication
+Tags: oauth, jwt, json web authentication, wp-api, rest api
 Requires at least: 4.2
 Tested up to: 6.8.1
 Requires PHP: 7.4.0
@@ -29,38 +29,6 @@ JSON Web Tokens are an open, industry standard method for representing claims se
 For users requiring more advanced capabilities such as multiple signing algorithms (RS256, ES256), token refresh/revocation, UI-based configuration, or priority support, consider checking out **[JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_link_soft)**.
 
 **Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
-
-== JWT Authentication PRO ==
-
-Elevate your WordPress security and integration capabilities with **JWT Authentication PRO**. Building upon the solid foundation of the free version, the PRO version offers advanced features, enhanced security options, and a streamlined user experience:
-
-*   **Easy Configuration UI:** Manage all settings directly from the WordPress admin area.
-*   **Token Refresh Endpoint:** Allow users to refresh expired tokens seamlessly without requiring re-login.
-*   **Token Revocation Endpoint:** Immediately invalidate specific tokens for enhanced security control.
-*   **Customizable Token Payload:** Add custom claims to your JWT payload to suit your specific application needs.
-*   **Granular CORS Control:** Define allowed origins and headers with more precision directly in the settings.
-*   **Rate Limiting:** Protect your endpoints from abuse with configurable rate limits.
-*   **Audit Logs:** Keep track of token generation, validation, and errors.
-*   **Priority Support:** Get faster, dedicated support directly from the developer.
-
-**[Upgrade to JWT Authentication PRO Today!](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=pro_section_cta)**
-
-### Free vs. PRO Comparison
-
-Here's a quick look at the key differences:
-
-*   **Basic JWT Authentication:** Included (Free), Included (PRO)
-*   **Token Generation:** Included (Free), Included (PRO)
-*   **Token Validation:** Included (Free), Included (PRO)
-*   **Token Refresh Mechanism:** Not Included (Free), Included (PRO)
-*   **Token Revocation:** Not Included (Free), Included (PRO)
-*   **Token Management Dashboard:** Not Included (Free), Included (PRO)
-*   **Analytics & Monitoring:** Not Included (Free), Included (PRO)
-*   **Geo-IP Identification:** Not Included (Free), Included (PRO)
-*   **Rate Limiting:** Not Included (Free), Included (PRO)
-*   **Detailed Documentation:** Basic (Free), Comprehensive (PRO)
-*   **Developer Tools:** Not Included (Free), Included (PRO)
-*   **Premium Support:** Community via GitHub (Free), Priority Direct Support (PRO)
 
 ### REQUIREMENTS
 
@@ -387,9 +355,37 @@ $token = JWT::decode(
 );
 `
 
-## Testing
+== JWT Authentication PRO ==
 
-I've created a small app to test the basic functionality of the plugin. You can get the app and read all the details in the [JWT-Client Repo](https://github.com/Tmeister/jwt-client).
+Elevate your WordPress security and integration capabilities with **JWT Authentication PRO**. Building upon the solid foundation of the free version, the PRO version offers advanced features, enhanced security options, and a streamlined user experience:
+
+*   **Easy Configuration UI:** Manage all settings directly from the WordPress admin area.
+*   **Token Refresh Endpoint:** Allow users to refresh expired tokens seamlessly without requiring re-login.
+*   **Token Revocation Endpoint:** Immediately invalidate specific tokens for enhanced security control.
+*   **Customizable Token Payload:** Add custom claims to your JWT payload to suit your specific application needs.
+*   **Granular CORS Control:** Define allowed origins and headers with more precision directly in the settings.
+*   **Rate Limiting:** Protect your endpoints from abuse with configurable rate limits.
+*   **Audit Logs:** Keep track of token generation, validation, and errors.
+*   **Priority Support:** Get faster, dedicated support directly from the developer.
+
+**[Upgrade to JWT Authentication PRO Today!](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=pro_section_cta)**
+
+### Free vs. PRO Comparison
+
+Here's a quick look at the key differences:
+
+*   **Basic JWT Authentication:** Included (Free), Included (PRO)
+*   **Token Generation:** Included (Free), Included (PRO)
+*   **Token Validation:** Included (Free), Included (PRO)
+*   **Token Refresh Mechanism:** Not Included (Free), Included (PRO)
+*   **Token Revocation:** Not Included (Free), Included (PRO)
+*   **Token Management Dashboard:** Not Included (Free), Included (PRO)
+*   **Analytics & Monitoring:** Not Included (Free), Included (PRO)
+*   **Geo-IP Identification:** Not Included (Free), Included (PRO)
+*   **Rate Limiting:** Not Included (Free), Included (PRO)
+*   **Detailed Documentation:** Basic (Free), Comprehensive (PRO)
+*   **Developer Tools:** Not Included (Free), Included (PRO)
+*   **Premium Support:** Community via GitHub (Free), Priority Direct Support (PRO)
 
 ## Installation
 
@@ -428,6 +424,15 @@ Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/s
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
+= 1.4.0 =
+* Feature: Live API Explorer - Interactive tool to test JWT endpoints directly from admin dashboard with real API calls
+* Feature: Enhanced Configuration Dashboard - Real-time monitoring of system health and setup requirements
+* Feature: Modern Admin Interface - Complete redesign with React-based components for improved usability
+* Performance: Optimized dashboard loading by consolidating API calls into single endpoint
+* Performance: Faster configuration checks with streamlined status validation
+* Enhancement: Improved visual design with better text clarity and professional styling
+* Enhancement: Modular interface with organized dashboard sections for easier navigation
+
 = 1.3.8 =
 * Fix upsell notice bug, now it is show only one time
 
