@@ -23,7 +23,7 @@ export const ConsentFlow = ({ onAccept }: ConsentFlowProps) => {
           </h2>
           <p className="jwt-text-gray-600 jwt-leading-relaxed">
             Your feedback helps us build features that matter. This quick survey takes 2 minutes and
-            you'll get a 15% discount on JWT Auth Pro.
+            you'll get 15% off any JWT Auth PRO subscription.
           </p>
         </div>
 

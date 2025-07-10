@@ -24,8 +24,8 @@ export const SuccessFlow = ({ discountCode, hasEmail, onReset }: SuccessFlowProp
           <p className="jwt-text-gray-600 jwt-leading-relaxed">
             Your responses help us build better features.{' '}
             {hasEmail
-              ? 'Check your email for your 15% discount code and implementation guide.'
-              : 'Consider sharing your email next time to receive your discount code and implementation guide.'}
+              ? 'Check your email for your 15% discount code for JWT Auth PRO.'
+              : 'Consider sharing your email next time to receive 15% off JWT Auth PRO.'}
           </p>
         </div>
 
@@ -35,10 +35,10 @@ export const SuccessFlow = ({ discountCode, hasEmail, onReset }: SuccessFlowProp
             <div className="jwt-text-center jwt-space-y-4">
               <div className="jwt-space-y-2">
                 <p className="jwt-text-lg jwt-font-medium jwt-text-gray-700">
-                  Your 15% discount code has been sent to your email
+                  Your 15% discount code for JWT Auth PRO has been sent
                 </p>
                 <p className="jwt-text-sm jwt-text-gray-600">
-                  Check your inbox (and spam folder) for your personalized discount code
+                  Valid on any JWT Auth PRO subscription plan - check your inbox (and spam folder)
                 </p>
               </div>
               <Button asChild className="jwt-w-full jwt-max-w-xs">

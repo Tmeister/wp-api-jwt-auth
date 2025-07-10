@@ -357,11 +357,11 @@ export const SurveyForm = ({ initialData, onSubmit, onBack }: SurveyFormProps) =
       <div className="jwt-space-y-6">
         <div>
           <h2 className="jwt-text-xl jwt-font-semibold jwt-text-gray-900 jwt-mb-2">
-            Get your implementation guide and discount code (Optional)
+            Get 15% off JWT Auth PRO (Optional)
           </h2>
           <p className="jwt-text-gray-600">
-            Leave your email to receive a personalized implementation guide and your 15% discount
-            code
+            Enter your email to receive your discount code instantly. We'll also send you helpful
+            JWT guides and tips as we create them.
           </p>
         </div>
         <div className="jwt-space-y-4">
@@ -384,7 +384,7 @@ export const SurveyForm = ({ initialData, onSubmit, onBack }: SurveyFormProps) =
                 className="jwt-mt-0.5 jwt-h-4 jwt-w-4 jwt-text-blue-600 jwt-focus:ring-blue-500 jwt-border-gray-300 jwt-rounded jwt-flex-shrink-0"
               />
               <Label htmlFor="emailConsent" className="jwt-text-sm jwt-text-blue-900">
-                Send me JWT implementation guide and 15% discount code
+                Send me the 15% discount code for JWT Auth PRO and helpful JWT guides
               </Label>
             </div>
           )}
