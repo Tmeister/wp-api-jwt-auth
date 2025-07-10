@@ -42,7 +42,12 @@ export const SuccessFlow = ({ discountCode, hasEmail, onReset }: SuccessFlowProp
                 </p>
               </div>
               <Button asChild className="jwt-w-full jwt-max-w-xs">
-                <a href={proUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={proUrl}
+                  className="jwt-text-white hover:jwt-text-white"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Upgrade to JWT Auth Pro
                   <ExternalLink className="jwt-h-4 jwt-w-4 jwt-ml-2" />
                 </a>

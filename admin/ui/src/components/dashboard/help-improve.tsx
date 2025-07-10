@@ -21,18 +21,15 @@ export const HelpImprove = ({ shareData, setShareData }: HelpImproveProps) => {
   }
 
   return (
-    <InfoCard
-      title="Help Improve JWT Authentication (Optional)"
-      description="Anonymous Usage Sharing"
-    >
+    <InfoCard title="Help Improve JWT Authentication (Optional)" description="">
       <div className="jwt-flex jwt-items-start jwt-justify-between jwt-gap-4">
         <div className="jwt-flex-1">
           <p className="jwt-text-sm jwt-font-medium jwt-text-slate-700 jwt-mb-2">
             Enable Anonymous Sharing
           </p>
           <p className="jwt-text-sm jwt-text-slate-500">
-            Help us build features you actually need by sharing non-sensitive data like PHP/WP
-            versions and plugin status.
+            Help me build better features for your setup. I only collect technical info (PHP/WP
+            versions, use case) to improve compatibility and prioritize development.
           </p>
         </div>
         <Switch checked={shareData} onCheckedChange={handleToggle} />
