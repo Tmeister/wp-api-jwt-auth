@@ -5,6 +5,7 @@ import { AuthenticationStatusOverview } from './dashboard/authentication-status-
 import { ConfigurationHealthCheck } from './dashboard/configuration-health-check'
 import { SystemEnvironment } from './dashboard/system-environment'
 import { LiveApiExplorer } from './dashboard/live-api-explorer'
+import { SetupConfiguration } from './dashboard/setup-configuration'
 import { HelpImprove } from './dashboard/help-improve'
 import { FloatingSurveyCTA } from './dashboard/floating-survey-cta'
 import { wordpressAPI, type ConfigurationStatus } from '@/lib/wordpress-api'
@@ -124,18 +125,25 @@ export default function Dashboard() {
           />
         )
       case 'overview':
-      default:
+      default: {
+        const isJwtConfigured = configStatus?.configuration?.secret_key_configured ?? false
+
         return (
           <div className="jwt-space-y-8">
             <AuthenticationStatusOverview />
             <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-8">
               <ConfigurationHealthCheck configStatus={configStatus} />
-              <SystemEnvironment configStatus={configStatus} />
+              {isJwtConfigured ? (
+                <SystemEnvironment configStatus={configStatus} />
+              ) : (
+                <SetupConfiguration />
+              )}
             </div>
-            <LiveApiExplorer />
+            {isJwtConfigured && <LiveApiExplorer />}
             <HelpImprove shareData={shareData} setShareData={setShareData} />
           </div>
         )
+      }
     }
   }
 
