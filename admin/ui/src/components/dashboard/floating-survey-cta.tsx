@@ -44,7 +44,7 @@ export const FloatingSurveyCTA = ({ isVisible, onClose, onTakeSurvey }: Floating
         </Button>
         <CardContent className="jwt-p-6">
           <span className="jwt-font-semibold jwt-text-slate-800 jwt-text-base jwt-mb-2 jwt-mt-4 jwt-block">
-            Get 20% Off Pro!
+            Get 15% Off Pro!
           </span>
           <p className="jwt-text-sm jwt-text-slate-600 jwt-mb-4">
             Take our 2-min survey to help us improve and claim your discount.
