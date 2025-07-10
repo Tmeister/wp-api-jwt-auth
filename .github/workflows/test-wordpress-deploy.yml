@@ -45,30 +45,15 @@ jobs:
         echo "Reinstalling production-only composer dependencies..."
         composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
 
-    - name: Install Subversion
-      run: sudo apt-get update && sudo apt-get install -y subversion
-
-    - name: WordPress Plugin Deploy (DRY RUN)
-      id: deploy
-      uses: 10up/action-wordpress-plugin-deploy@stable
+    - name: Build WordPress Plugin Zip
+      uses: 10up/action-wordpress-plugin-build-zip@stable
       with:
-        dry-run: true
-        generate-zip: true
+        retention-days: 1
       env:
-        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         SLUG: jwt-authentication-for-wp-rest-api
-        # Note: SVN credentials not needed for dry-run
 
-    - name: Upload deployment preview
-      uses: actions/upload-artifact@v4
-      with:
-        name: wordpress-deploy-preview-${{ github.run_number }}
-        path: ${{ steps.deploy.outputs.zip-path }}
-        retention-days: 7
-
-    - name: Display deployment info
+    - name: Display build info
       run: |
-        echo "🔍 Dry run completed!"
-        echo "📦 Preview ZIP has been uploaded as an artifact"
-        echo "ℹ️ This was a test run - nothing was pushed to WordPress.org"
+        echo "📦 Plugin ZIP has been built and uploaded as an artifact"
+        echo "🗓️ The artifact will be retained for 1 day"
+        echo "ℹ️ Download the artifact to test the plugin package"
