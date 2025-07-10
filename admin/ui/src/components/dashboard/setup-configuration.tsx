@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Copy, RefreshCw, Key, AlertTriangle, CheckCircle } from 'lucide-react'
 import { InfoCard } from '@/components/ui/info-card'
 import { Button } from '@/components/ui/button'
@@ -8,16 +8,22 @@ import { Label } from '@/components/ui/label'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
+const CONFIG = {
+  KEY_LENGTH: 64,
+  COPY_FEEDBACK_DURATION: 2000,
+  GENERATION_DELAY: 800,
+  CHAR_SET:
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?',
+} as const
+
 // Generate a secure random key similar to WordPress salt generator
 const generateSecureKey = (): string => {
-  const chars =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:,.<>?'
   let result = ''
-  const array = new Uint8Array(64) // 64 character key
+  const array = new Uint8Array(CONFIG.KEY_LENGTH)
   window.crypto.getRandomValues(array)
 
-  for (let i = 0; i < 64; i++) {
-    result += chars[array[i] % chars.length]
+  for (let i = 0; i < CONFIG.KEY_LENGTH; i++) {
+    result += CONFIG.CHAR_SET[array[i] % CONFIG.CHAR_SET.length]
   }
 
   return result
@@ -29,29 +35,29 @@ export const SetupConfiguration = () => {
   const [corsEnabled, setCorsEnabled] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
 
-  const handleGenerateKey = async () => {
+  const handleGenerateKey = useCallback(async () => {
     setIsGenerating(true)
-    await new Promise(resolve => setTimeout(resolve, 800)) // Simulate generation time
+    await new Promise(resolve => setTimeout(resolve, CONFIG.GENERATION_DELAY))
     const newKey = generateSecureKey()
     setGeneratedKey(newKey)
     setIsGenerating(false)
-  }
+  }, [])
 
-  const handleCopy = async (text: string, type: string) => {
+  const handleCopy = useCallback(async (text: string, _type: string) => {
     try {
       await navigator.clipboard.writeText(text)
-      console.log(`${type} copied to clipboard`)
       setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
+      setTimeout(() => setCopySuccess(false), CONFIG.COPY_FEEDBACK_DURATION)
     } catch (err) {
       console.error('Failed to copy:', err)
     }
-  }
+  }, [])
 
-  const secretKeyConfig = `\ndefine('JWT_AUTH_SECRET_KEY', '${generatedKey}');`
-  const corsConfig = corsEnabled ? `define('JWT_AUTH_CORS_ENABLE', true);` : ''
-  const fullConfig = corsEnabled ? `${secretKeyConfig}\n${corsConfig}` : secretKeyConfig
-  const phpConfig = fullConfig
+  const fullConfig = useMemo(() => {
+    return corsEnabled
+      ? `\ndefine('JWT_AUTH_SECRET_KEY', '${generatedKey}');\ndefine('JWT_AUTH_CORS_ENABLE', true);`
+      : `\ndefine('JWT_AUTH_SECRET_KEY', '${generatedKey}');`
+  }, [generatedKey, corsEnabled])
 
   return (
     <InfoCard
@@ -96,7 +102,7 @@ export const SetupConfiguration = () => {
                 },
               }}
             >
-              {phpConfig}
+              {fullConfig}
             </SyntaxHighlighter>
           </div>
 
@@ -114,17 +120,10 @@ export const SetupConfiguration = () => {
               size="sm"
               className="jwt-h-8"
             >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="jwt-h-3 jwt-w-3 jwt-mr-2 jwt-animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="jwt-h-3 jwt-w-3 jwt-mr-2" />
-                  Generate New Key
-                </>
-              )}
+              <RefreshCw
+                className={`jwt-h-3 jwt-w-3 jwt-mr-2 ${isGenerating ? 'jwt-animate-spin' : ''}`}
+              />
+              {isGenerating ? 'Generating...' : 'Generate New Key'}
             </Button>
           </div>
 
