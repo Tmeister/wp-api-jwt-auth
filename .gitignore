@@ -1,7 +1,35 @@
-.vscode
+# IDE settings (keep project-wide settings, ignore personal ones)
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/*.code-workspace
+.idea/
+.claude/
+stubs
+
+# Development documentation
+DEVELOPMENT.md
+.phpunit.result.cache
+
+# System files
 .DS_Store
-includes/vendor/bin
-includes/vendor/dealerdirect
-includes/vendor/squizlabs
-includes/vendor/wp-coding-standards
+Thumbs.db
+
+# Dependencies
+includes/vendor/
 admin/ui/node_modules
+node_modules
+
+# Build outputs
+admin/ui/dist
+.tmp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Act (GitHub Actions local testing)
+.actrc
+.secrets
+.env

@@ -24,11 +24,18 @@
   "require": {
     "php": ">=7.4",
     "composer/installers": "~1.0",
-    "firebase/php-jwt": "^6.3"
+    "firebase/php-jwt": "~6.3.0"
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "*",
     "squizlabs/php_codesniffer": "3.*",
-    "wp-coding-standards/wpcs": "*"
+    "wp-coding-standards/wpcs": "*",
+    "php-stubs/wordpress-stubs": "^6.3",
+    "phpunit/phpunit": "^9.5",
+    "brain/monkey": "^2.6",
+    "mockery/mockery": "^1.5",
+    "wp-phpunit/wp-phpunit": "^6.7",
+    "yoast/phpunit-polyfills": "^3.0",
+    "php-stubs/wordpress-tests-stubs": "^6.6"
   }
 }

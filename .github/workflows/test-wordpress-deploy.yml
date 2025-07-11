@@ -1,0 +1,59 @@
+name: Test WordPress.org Deploy (Dry Run)
+
+on:
+  push:
+    branches:
+    - build-test
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test-wordpress-deploy:
+    name: Test WordPress Deploy (Dry Run)
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        tools: composer
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install PHP dependencies (production only)
+      run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
+    - name: Install Node.js dependencies
+      run: npm ci
+
+    - name: Build frontend assets
+      run: npm run build
+
+    - name: Run tests
+      run: |
+        chmod +x scripts/run-tests.sh
+        ./scripts/run-tests.sh
+
+    - name: Reinstall production dependencies
+      run: |
+        echo "Reinstalling production-only composer dependencies..."
+        composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
+    - name: Build WordPress Plugin Zip
+      uses: 10up/action-wordpress-plugin-build-zip@stable
+      with:
+        retention-days: 1
+      env:
+        SLUG: jwt-authentication-for-wp-rest-api
+
+    - name: Display build info
+      run: |
+        echo "📦 Plugin ZIP has been built and uploaded as an artifact"
+        echo "🗓️ The artifact will be retained for 1 day"
+        echo "ℹ️ Download the artifact to test the plugin package"

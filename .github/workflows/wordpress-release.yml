@@ -1,0 +1,55 @@
+name: Deploy to WordPress.org
+
+on:
+  push:
+    tags:
+    - "*"
+
+jobs:
+  tag:
+    name: New tag
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        tools: composer
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install PHP dependencies (production only)
+      run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
+    - name: Install Node.js dependencies
+      run: npm ci
+
+    - name: Build frontend assets
+      run: npm run build
+
+    - name: Run tests
+      run: |
+        chmod +x scripts/run-tests.sh
+        ./scripts/run-tests.sh
+
+    - name: Reinstall production dependencies
+      run: |
+        echo "Reinstalling production-only composer dependencies..."
+        composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction
+
+    - name: Install Subversion and rsync
+      run: sudo apt-get update && sudo apt-get install -y subversion rsync
+
+    - name: WordPress Plugin Deploy
+      uses: 10up/action-wordpress-plugin-deploy@stable
+      env:
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        SLUG: jwt-authentication-for-wp-rest-api

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Run linting before commit
+npm run lint:fix
