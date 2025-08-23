@@ -8,14 +8,14 @@ interface TopbarProps {
 }
 
 export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
-  const weekNumber = getWeekNumber();
-  const ctaText = getDynamicCTAText('header');
+  const weekNumber = getWeekNumber()
+  const ctaText = getDynamicCTAText('header')
   const proUrl = buildProUrl({
     source: 'dashboard',
     medium: 'header',
     campaign: 'pro-upgrade',
-    content: `cta-week-${(weekNumber % 4) + 1}`
-  });
+    content: `cta-week-${(weekNumber % 4) + 1}`,
+  })
 
   return (
     <header className="jwt-sticky jwt-top-8 jwt-z-20 jwt-bg-white jwt-border-b">
