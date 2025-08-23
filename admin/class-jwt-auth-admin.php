@@ -300,20 +300,20 @@ class Jwt_Auth_Admin
             array($this, 'render_admin_page')
         );
 
-        // Add Upgrade to PRO submenu item
+        // Add Pro Features Overview submenu item
         $base_pro_url = 'https://jwtauth.pro';
         $utm_params   = array(
-            'utm_source'   => 'wpadmin',
+            'utm_source'   => 'wp-menu',
             'utm_medium'   => 'submenu',
-            'utm_campaign' => 'pro-submenu-link',
-            'utm_content'  => 'upgrade-to-pro',
+            'utm_campaign' => 'pro-overview',
+            'utm_content'  => 'menu-link',
         );
         $pro_link_url = (string) add_query_arg($utm_params, $base_pro_url);
 
         add_submenu_page(
             'options-general.php',
-            __('Upgrade to PRO', 'jwt-auth'),
-            '<span style="color: #00a32a; font-weight: 700;">' . __('&nbsp;&nbsp;&nbsp;↳ Upgrade to PRO', 'jwt-auth') . '</span>',
+            __('Pro Features', 'jwt-auth'),
+            '<span style="color: #00a32a; font-weight: 700;">' . __('&nbsp;&nbsp;&nbsp;↳ Pro Features', 'jwt-auth') . '</span>',
             'manage_options',
             esc_url($pro_link_url),
             null // No callback function needed for external link
@@ -795,25 +795,36 @@ class Jwt_Auth_Admin
     {
 
         if ($file === 'jwt-authentication-for-wp-rest-api/jwt-auth.php') {
+            // Weekly rotation for plugin list CTA
+            $week_number = (int) date('W');
+            $week_index = $week_number % 4;
+            
             $cta_variations = array(
                 0 => array(
-                    'text'        => '<b>Get JWT Auth Pro</b>',
-                    'utm_content' => 'get-jwt-auth-pro-cta',
+                    'text'        => '<b>🔐 Add Token Dashboard</b>',
+                    'utm_content' => 'week-1-token-dashboard',
                 ),
                 1 => array(
-                    'text'        => '<b>Unlock Pro Features</b>',
-                    'utm_content' => 'unlock-pro-features-cta',
+                    'text'        => '<b>🔄 Enable Auto-Refresh</b>',
+                    'utm_content' => 'week-2-auto-refresh',
+                ),
+                2 => array(
+                    'text'        => '<b>📊 View API Analytics</b>',
+                    'utm_content' => 'week-3-api-analytics',
+                ),
+                3 => array(
+                    'text'        => '<b>🎯 Manage All Tokens</b>',
+                    'utm_content' => 'week-4-manage-tokens',
                 ),
             );
 
-            $selected_variation_key = rand(0, 1);
-            $selected_variation     = $cta_variations[$selected_variation_key];
+            $selected_variation = $cta_variations[$week_index];
 
             $base_pro_url = 'https://jwtauth.pro';
             $utm_params   = array(
-                'utm_source'   => 'wpadmin',
-                'utm_medium'   => 'plugin-link',
-                'utm_campaign' => 'pro-plugin-action-link',
+                'utm_source'   => 'plugin-list',
+                'utm_medium'   => 'action-link',
+                'utm_campaign' => 'feature-highlight',
                 'utm_content'  => $selected_variation['utm_content'],
             );
 

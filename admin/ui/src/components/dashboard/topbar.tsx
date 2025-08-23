@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Rocket, BarChart3 } from 'lucide-react'
+import { buildProUrl, getDynamicCTAText, getWeekNumber } from '@/lib/utils'
 
 interface TopbarProps {
   currentPage: 'overview' | 'survey'
@@ -7,7 +8,14 @@ interface TopbarProps {
 }
 
 export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
-  const proUrl = `https://jwtauth.pro?utm_source=wp-admin&utm_medium=topbar&utm_campaign=upgrade`
+  const weekNumber = getWeekNumber();
+  const ctaText = getDynamicCTAText('header');
+  const proUrl = buildProUrl({
+    source: 'dashboard',
+    medium: 'header',
+    campaign: 'pro-upgrade',
+    content: `cta-week-${(weekNumber % 4) + 1}`
+  });
 
   return (
     <header className="jwt-sticky jwt-top-8 jwt-z-20 jwt-bg-white jwt-border-b">
@@ -38,7 +46,7 @@ export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
           <div className="jwt-flex jwt-items-center jwt-space-x-4">
             <Button className="jwt-text-white hover:jwt-text-white/90" asChild>
               <a href={proUrl} target="_blank" rel="noopener noreferrer">
-                Upgrade to Pro
+                {ctaText}
               </a>
             </Button>
           </div>
