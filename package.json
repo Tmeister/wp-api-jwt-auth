@@ -1,6 +1,6 @@
 {
   "name": "wp-api-jwt-auth",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "WordPress plugin that provides JWT authentication for WP REST API",
   "private": true,
   "scripts": {

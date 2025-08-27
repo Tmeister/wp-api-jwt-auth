@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Topbar } from './dashboard/topbar'
 import { SurveyPage } from './survey/SurveyPage'
+import { TokenDashboard } from './dashboard/token-dashboard'
 import { AuthenticationStatusOverview } from './dashboard/authentication-status-overview'
 import { ConfigurationHealthCheck } from './dashboard/configuration-health-check'
 import { SystemEnvironment } from './dashboard/system-environment'
@@ -18,18 +19,32 @@ export default function Dashboard() {
   const [surveyCompleted, setSurveyCompleted] = useState(false)
   const [isLoadingDismissal, setIsLoadingDismissal] = useState(false)
 
-  // Initialize page based on URL hash or default to overview
-  const getInitialPage = (): 'overview' | 'survey' => {
+  // Initialize page based on URL hash, data attribute, or default to overview
+  const getInitialPage = (): 'overview' | 'survey' | 'token-dashboard' => {
+    // Check if initial page is set via data attribute (for direct page access)
+    const container = document.getElementById('jwt-auth-holder')
+    const initialPageFromAttribute = container?.getAttribute('data-initial-page')
+
+    if (initialPageFromAttribute === 'token-dashboard') {
+      return 'token-dashboard'
+    }
+
+    // Check URL hash and params for navigation within the app
     const hash = window.location.hash.substring(1)
     const params = new URLSearchParams(window.location.search)
 
     if (hash === 'survey' || params.get('page') === 'survey') {
       return 'survey'
     }
+    if (hash === 'token-dashboard' || params.get('page') === 'token-dashboard') {
+      return 'token-dashboard'
+    }
     return 'overview'
   }
 
-  const [currentPage, setCurrentPage] = useState<'overview' | 'survey'>(getInitialPage)
+  const [currentPage, setCurrentPage] = useState<'overview' | 'survey' | 'token-dashboard'>(
+    getInitialPage
+  )
 
   // Load settings from WordPress on mount
   useEffect(() => {
@@ -71,6 +86,8 @@ export default function Dashboard() {
       const hash = window.location.hash.substring(1)
       if (hash === 'survey' && currentPage !== 'survey') {
         setCurrentPage('survey')
+      } else if (hash === 'token-dashboard' && currentPage !== 'token-dashboard') {
+        setCurrentPage('token-dashboard')
       } else if (hash === 'overview' && currentPage !== 'overview') {
         setCurrentPage('overview')
       } else if (!hash && currentPage !== 'overview') {
@@ -88,8 +105,14 @@ export default function Dashboard() {
       const scrollTop = window.scrollY
       const documentHeight = document.documentElement.scrollHeight - window.innerHeight
       const scrollPercent = (scrollTop / documentHeight) * 100
-      // Don't show if user shouldn't see it, already completed survey, or if on survey page
-      if (!shouldShowSurveyCta || surveyCompleted || currentPage === 'survey') return
+      // Don't show if user shouldn't see it, already completed survey, or if on survey/token-dashboard page
+      if (
+        !shouldShowSurveyCta ||
+        surveyCompleted ||
+        currentPage === 'survey' ||
+        currentPage === 'token-dashboard'
+      )
+        return
 
       // Show/hide survey CTA based on scroll position
       if (scrollPercent >= 50 && !isSurveyCtaVisible) {
@@ -104,12 +127,14 @@ export default function Dashboard() {
   }, [isSurveyCtaVisible, shouldShowSurveyCta, surveyCompleted, currentPage])
 
   // Handle page navigation with URL updates
-  const handlePageChange = (page: 'overview' | 'survey') => {
+  const handlePageChange = (page: 'overview' | 'survey' | 'token-dashboard') => {
     setCurrentPage(page)
 
     // Update URL hash for deep linking
     if (page === 'survey') {
       window.history.pushState(null, '', '#survey')
+    } else if (page === 'token-dashboard') {
+      window.history.pushState(null, '', '#token-dashboard')
     } else {
       window.history.pushState(null, '', '#overview')
     }
@@ -124,6 +149,8 @@ export default function Dashboard() {
             surveyCompleted={surveyCompleted}
           />
         )
+      case 'token-dashboard':
+        return <TokenDashboard onBackToDashboard={() => handlePageChange('overview')} />
       case 'overview':
       default: {
         const isJwtConfigured = configStatus?.configuration?.secret_key_configured ?? false
@@ -154,7 +181,12 @@ export default function Dashboard() {
         {renderPage()}
       </main>
       <FloatingSurveyCTA
-        isVisible={isSurveyCtaVisible && currentPage !== 'survey' && !isLoadingDismissal}
+        isVisible={
+          isSurveyCtaVisible &&
+          currentPage !== 'survey' &&
+          currentPage !== 'token-dashboard' &&
+          !isLoadingDismissal
+        }
         onClose={async () => {
           setIsLoadingDismissal(true)
           setIsSurveyCtaVisible(false)
