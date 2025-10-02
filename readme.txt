@@ -28,7 +28,7 @@ JSON Web Tokens are an open, industry standard method for representing claims se
 
 For users requiring more advanced capabilities such as multiple signing algorithms (RS256, ES256), token refresh/revocation, UI-based configuration, or priority support, consider checking out **[JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_link_soft)**.
 
-**Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
+**Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
 
 ### REQUIREMENTS
 
@@ -418,7 +418,7 @@ The free version requires editing `wp-config.php`. [JWT Authentication PRO](http
 Token refresh and revocation features are available in [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_refresh_revoke_link).
 
 = Where can I get faster support? =
-Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_support_link). For free support, please use the [GitHub issues tracker](https://github.com/Tmeister/wp-api-jwt-auth/issues).
+Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_support_link). For free support, please use the [GitHub issues tracker](https://github.com/Tmeister/wp-api-jwt-auth/issues).
 
 = How secure is JWT authentication? =
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.

@@ -818,7 +818,7 @@ class Jwt_Auth_Admin
                 'utm_content' => 'token-dashboard-primary',
             ];
 
-            $base_pro_url = 'https://jwtauth.pro';
+            $base_pro_url = 'https://jwtauth.pro/upgrade';
             $utm_params = [
                 'utm_source' => 'plugin-list',
                 'utm_medium' => 'action-link',
