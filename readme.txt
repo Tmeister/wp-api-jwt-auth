@@ -6,7 +6,7 @@ Tags: oauth, jwt, json web authentication, wp-api, rest api
 Requires at least: 4.2
 Tested up to: 6.8.1
 Requires PHP: 7.4.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ JSON Web Tokens are an open, industry standard method for representing claims se
 
 For users requiring more advanced capabilities such as multiple signing algorithms (RS256, ES256), token refresh/revocation, UI-based configuration, or priority support, consider checking out **[JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_link_soft)**.
 
-**Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
+**Support and Requests:** Please use [GitHub Issues](https://github.com/Tmeister/wp-api-jwt-auth/issues). For priority support, consider upgrading to [PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=description_support_link).
 
 ### REQUIREMENTS
 
@@ -418,12 +418,22 @@ The free version requires editing `wp-config.php`. [JWT Authentication PRO](http
 Token refresh and revocation features are available in [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_refresh_revoke_link).
 
 = Where can I get faster support? =
-Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/support/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_support_link). For free support, please use the [GitHub issues tracker](https://github.com/Tmeister/wp-api-jwt-auth/issues).
+Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_support_link). For free support, please use the [GitHub issues tracker](https://github.com/Tmeister/wp-api-jwt-auth/issues).
 
 = How secure is JWT authentication? =
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
+= 1.4.1 =
+* Enhancement: Updated lucide-react from 0.294.0 to 0.541.0 - Latest icon library improvements with new icons and performance optimizations
+* Enhancement: Updated tailwind-merge from 2.6.0 to 3.3.1 - Enhanced CSS utility merging capabilities for better styling performance
+* Enhancement: Updated react-syntax-highlighter from 15.6.1 to 15.6.3 - Bug fixes for code display components
+* Development: Updated ESLint to version 9.34.0 - Latest JavaScript linting capabilities
+* Development: Updated TypeScript ESLint to version 8.40.0 - Improved TypeScript code quality checks
+* Development: Updated Vite to version 7.1.3 - Faster build times and improved development experience
+* Development: Updated Vitest to version 3.2.4 - Enhanced testing framework with better coverage reporting
+* Development: Added @usebruno/cli version 2.9.1 - API testing capabilities for development
+
 = 1.4.0 =
 * Feature: Live API Explorer - Interactive tool to test JWT endpoints directly from admin dashboard with real API calls
 * Feature: Enhanced Configuration Dashboard - Real-time monitoring of system health and setup requirements
