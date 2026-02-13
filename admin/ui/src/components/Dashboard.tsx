@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [isSurveyCtaVisible, setIsSurveyCtaVisible] = useState(false)
   const [shouldShowSurveyCta, setShouldShowSurveyCta] = useState(false)
   const [shouldShowUpsell, setShouldShowUpsell] = useState(false)
+  const [tokensCreated, setTokensCreated] = useState(0)
+  const [daysActive, setDaysActive] = useState(0)
   const [hasLoadedDashboardData, setHasLoadedDashboardData] = useState(false)
   const [surveyCompleted, setSurveyCompleted] = useState(false)
   const [isLoadingDismissal, setIsLoadingDismissal] = useState(false)
@@ -63,6 +65,8 @@ export default function Dashboard() {
           setConfigStatus(dashboardData.jwtStatus)
           setSurveyCompleted(dashboardData.surveyStatus.completed ?? false)
           setShouldShowUpsell(dashboardData.upsell?.shouldShowUpsell ?? false)
+          setTokensCreated(dashboardData.upsell?.tokensCreated ?? 0)
+          setDaysActive(dashboardData.upsell?.daysActive ?? 0)
           setShouldShowSurveyCta(
             (dashboardData.upsell?.shouldShowUpsell ?? false) &&
               (dashboardData.surveyDismissal.shouldShow ?? false) &&
@@ -185,7 +189,11 @@ export default function Dashboard() {
             <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-8">
               <ConfigurationHealthCheck configStatus={configStatus} />
               {isJwtConfigured ? (
-                <SystemEnvironment configStatus={configStatus} />
+                <SystemEnvironment
+                  configStatus={configStatus}
+                  tokensCreated={tokensCreated}
+                  daysActive={daysActive}
+                />
               ) : (
                 <SetupConfiguration />
               )}
@@ -204,6 +212,7 @@ export default function Dashboard() {
         currentPage={currentPage}
         onPageChange={handlePageChange}
         shouldShowUpsell={shouldShowUpsell}
+        tokensCreated={tokensCreated}
       />
       <main className="jwt-flex-1 jwt-p-6 sm:jwt-p-8 lg:jwt-p-12 jwt-container jwt-mx-auto">
         {renderPage()}
