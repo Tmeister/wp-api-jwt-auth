@@ -26,6 +26,9 @@ class TestCase extends WP_UnitTestCase
     protected function loadPluginClasses(): void
     {
         $plugin_dir = dirname(dirname(__DIR__));
+
+        // Load plugin bootstrap to register global helper functions used by admin/public classes.
+        require_once $plugin_dir . '/jwt-auth.php';
         
         // Load dependencies
         require_once $plugin_dir . '/includes/vendor/autoload.php';

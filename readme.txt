@@ -4,7 +4,7 @@ Contributors: tmeister
 Donate link: https://github.com/sponsors/Tmeister
 Tags: oauth, jwt, json web authentication, wp-api, rest api
 Requires at least: 4.2
-Tested up to: 6.8.1
+Tested up to: 6.9.1
 Requires PHP: 7.4.0
 Stable tag: 1.4.1
 License: GPLv2 or later

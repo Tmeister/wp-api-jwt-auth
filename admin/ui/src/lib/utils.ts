@@ -16,7 +16,7 @@ export function buildProUrl(params: {
   path?: string
 }): string {
   const baseUrl = 'https://jwtauth.pro'
-  const fullPath = params.path || '/upgrade'
+  const fullPath = params.path || '/'
 
   const queryParams = new URLSearchParams({
     utm_source: params.source,
