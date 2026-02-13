@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
  * Build a Pro URL with consistent UTM parameters
  */
 export function buildProUrl(params: {
-  source: 'dashboard' | 'plugin-list' | 'wp-menu' | 'survey'
+  source: 'dashboard' | 'plugin-list' | 'wp-menu' | 'survey' | 'token-dashboard'
   medium: string
   campaign: string
   content: string

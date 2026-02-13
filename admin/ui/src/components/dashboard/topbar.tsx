@@ -5,9 +5,10 @@ import { buildProUrl, getDynamicCTAText, getWeekNumber } from '@/lib/utils'
 interface TopbarProps {
   currentPage: 'overview' | 'survey' | 'token-dashboard'
   onPageChange: (page: 'overview' | 'survey' | 'token-dashboard') => void
+  shouldShowUpsell: boolean
 }
 
-export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
+export const Topbar = ({ currentPage, onPageChange, shouldShowUpsell }: TopbarProps) => {
   const weekNumber = getWeekNumber()
   const ctaText = getDynamicCTAText('header')
   const proUrl = buildProUrl({
@@ -40,26 +41,30 @@ export const Topbar = ({ currentPage, onPageChange }: TopbarProps) => {
                 <BarChart3 className="jwt-h-4 jwt-w-4" />
                 <span>Overview</span>
               </button>
-              <button
-                onClick={() => onPageChange('token-dashboard')}
-                className={`jwt-flex jwt-items-center jwt-space-x-2 jwt-px-3 jwt-py-2 jwt-rounded-md jwt-text-sm jwt-font-medium jwt-transition-colors ${
-                  currentPage === 'token-dashboard'
-                    ? 'jwt-bg-green-100 jwt-text-green-700'
-                    : 'jwt-text-slate-600 hover:jwt-text-slate-900 hover:jwt-bg-slate-100'
-                }`}
-              >
-                <span className="jwt-text-base">👑</span>
-                <span>Token Dashboard</span>
-              </button>
+              {shouldShowUpsell && (
+                <button
+                  onClick={() => onPageChange('token-dashboard')}
+                  className={`jwt-flex jwt-items-center jwt-space-x-2 jwt-px-3 jwt-py-2 jwt-rounded-md jwt-text-sm jwt-font-medium jwt-transition-colors ${
+                    currentPage === 'token-dashboard'
+                      ? 'jwt-bg-green-100 jwt-text-green-700'
+                      : 'jwt-text-slate-600 hover:jwt-text-slate-900 hover:jwt-bg-slate-100'
+                  }`}
+                >
+                  <span className="jwt-text-base">👑</span>
+                  <span>Token Dashboard</span>
+                </button>
+              )}
             </nav>
           </div>
 
           <div className="jwt-flex jwt-items-center jwt-space-x-4">
-            <Button className="jwt-text-white hover:jwt-text-white/90" asChild>
-              <a href={proUrl} target="_blank" rel="noopener noreferrer">
-                {ctaText}
-              </a>
-            </Button>
+            {shouldShowUpsell && (
+              <Button className="jwt-text-white hover:jwt-text-white/90" asChild>
+                <a href={proUrl} target="_blank" rel="noopener noreferrer">
+                  {ctaText}
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>
