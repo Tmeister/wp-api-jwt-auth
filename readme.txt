@@ -6,7 +6,7 @@ Tags: oauth, jwt, json web authentication, wp-api, rest api
 Requires at least: 4.2
 Tested up to: 6.9.1
 Requires PHP: 7.4.0
-Stable tag: 1.4.1
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -424,6 +424,13 @@ Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/?
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
+= 1.5.0 =
+* Security: Updated dependencies to latest secure versions (deep-copy, php-parser, phpunit)
+* Feature: Smart upgrade prompts that appear based on actual plugin usage rather than immediately after installation
+* Feature: Usage-based notifications showing real token activity in the dashboard for more relevant upgrade recommendations
+* Improvement: Better first-time experience - new users won't see upgrade prompts until they've had a chance to use the plugin
+* Fix: UTM tracking on upgrade links now works correctly to measure campaign effectiveness
+
 = 1.4.1 =
 * Enhancement: Updated lucide-react from 0.294.0 to 0.541.0 - Latest icon library improvements with new icons and performance optimizations
 * Enhancement: Updated tailwind-merge from 2.6.0 to 3.3.1 - Enhanced CSS utility merging capabilities for better styling performance

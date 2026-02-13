@@ -316,6 +316,7 @@ class Jwt_Auth_Admin
     /**
      * Ensure install date tracking exists.
      *
+     * @since 1.5.0
      * @return void
      */
     public function track_install_date()

@@ -15,7 +15,7 @@
  * Plugin Name:       JWT Authentication for WP-API
  * Plugin URI:        https://enriquechavez.co
  * Description:       Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
- * Version:           1.4.1
+ * Version:           1.5.0
  * Author:            Enrique Chavez
  * Author URI:        https://enriquechavez.co
  * License:           GPL-2.0+
@@ -87,6 +87,7 @@ function activate_jwt_auth() {
  * Existing users that upgrade to this version get a backfilled install date
  * to avoid hiding upsells for another week.
  *
+ * @since 1.5.0
  * @return void
  */
 function jwt_auth_track_install_date() {
@@ -104,6 +105,7 @@ function jwt_auth_track_install_date() {
 /**
  * Increment total created JWT tokens counter.
  *
+ * @since 1.5.0
  * @return void
  */
 function jwt_auth_increment_tokens_created() {
@@ -114,6 +116,7 @@ function jwt_auth_increment_tokens_created() {
 /**
  * Determine if upsell CTAs should be shown based on usage.
  *
+ * @since 1.5.0
  * @return bool
  */
 function jwt_auth_should_show_upsell() {
@@ -127,6 +130,7 @@ function jwt_auth_should_show_upsell() {
 /**
  * Get upsell metrics for UI/API usage.
  *
+ * @since 1.5.0
  * @return array<string, int|bool>
  */
 function jwt_auth_get_upsell_metrics() {
