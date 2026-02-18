@@ -16,6 +16,10 @@ export default function Dashboard() {
   const [configStatus, setConfigStatus] = useState<ConfigurationStatus | null>(null)
   const [isSurveyCtaVisible, setIsSurveyCtaVisible] = useState(false)
   const [shouldShowSurveyCta, setShouldShowSurveyCta] = useState(false)
+  const [shouldShowUpsell, setShouldShowUpsell] = useState(false)
+  const [tokensCreated, setTokensCreated] = useState(0)
+  const [daysActive, setDaysActive] = useState(0)
+  const [hasLoadedDashboardData, setHasLoadedDashboardData] = useState(false)
   const [surveyCompleted, setSurveyCompleted] = useState(false)
   const [isLoadingDismissal, setIsLoadingDismissal] = useState(false)
 
@@ -60,14 +64,22 @@ export default function Dashboard() {
           setShareData(dashboardData.settings.share_data ?? false)
           setConfigStatus(dashboardData.jwtStatus)
           setSurveyCompleted(dashboardData.surveyStatus.completed ?? false)
+          setShouldShowUpsell(dashboardData.upsell?.shouldShowUpsell ?? false)
+          setTokensCreated(dashboardData.upsell?.tokensCreated ?? 0)
+          setDaysActive(dashboardData.upsell?.daysActive ?? 0)
           setShouldShowSurveyCta(
-            (dashboardData.surveyDismissal.shouldShow ?? false) &&
+            (dashboardData.upsell?.shouldShowUpsell ?? false) &&
+              (dashboardData.surveyDismissal.shouldShow ?? false) &&
               !(dashboardData.surveyStatus.completed ?? false)
           )
         }
       } catch (error) {
         if (!isCancelled) {
           console.error('Failed to load dashboard data:', error)
+        }
+      } finally {
+        if (!isCancelled) {
+          setHasLoadedDashboardData(true)
         }
       }
     }
@@ -79,6 +91,17 @@ export default function Dashboard() {
       isCancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    if (
+      hasLoadedDashboardData &&
+      !shouldShowUpsell &&
+      (currentPage === 'token-dashboard' || currentPage === 'survey')
+    ) {
+      setCurrentPage('overview')
+      window.history.replaceState(null, '', '#overview')
+    }
+  }, [currentPage, hasLoadedDashboardData, shouldShowUpsell])
 
   // Listen for hash changes to support back/forward navigation
   useEffect(() => {
@@ -150,7 +173,12 @@ export default function Dashboard() {
           />
         )
       case 'token-dashboard':
-        return <TokenDashboard onBackToDashboard={() => handlePageChange('overview')} />
+        return (
+          <TokenDashboard
+            onBackToDashboard={() => handlePageChange('overview')}
+            shouldShowUpsell={shouldShowUpsell}
+          />
+        )
       case 'overview':
       default: {
         const isJwtConfigured = configStatus?.configuration?.secret_key_configured ?? false
@@ -161,7 +189,11 @@ export default function Dashboard() {
             <div className="jwt-grid jwt-grid-cols-1 lg:jwt-grid-cols-2 jwt-gap-8">
               <ConfigurationHealthCheck configStatus={configStatus} />
               {isJwtConfigured ? (
-                <SystemEnvironment configStatus={configStatus} />
+                <SystemEnvironment
+                  configStatus={configStatus}
+                  tokensCreated={tokensCreated}
+                  daysActive={daysActive}
+                />
               ) : (
                 <SetupConfiguration />
               )}
@@ -176,13 +208,19 @@ export default function Dashboard() {
 
   return (
     <div className="jwt-flex jwt-flex-col jwt-min-h-screen jwt-bg-gray-50">
-      <Topbar currentPage={currentPage} onPageChange={handlePageChange} />
+      <Topbar
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        shouldShowUpsell={shouldShowUpsell}
+        tokensCreated={tokensCreated}
+      />
       <main className="jwt-flex-1 jwt-p-6 sm:jwt-p-8 lg:jwt-p-12 jwt-container jwt-mx-auto">
         {renderPage()}
       </main>
       <FloatingSurveyCTA
         isVisible={
           isSurveyCtaVisible &&
+          shouldShowUpsell &&
           currentPage !== 'survey' &&
           currentPage !== 'token-dashboard' &&
           !isLoadingDismissal

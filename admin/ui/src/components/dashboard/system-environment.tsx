@@ -6,9 +6,15 @@ import type { ConfigurationStatus } from '@/lib/wordpress-api'
 
 interface SystemEnvironmentProps {
   configStatus: ConfigurationStatus | null
+  tokensCreated: number
+  daysActive: number
 }
 
-export const SystemEnvironment = ({ configStatus }: SystemEnvironmentProps) => {
+export const SystemEnvironment = ({
+  configStatus,
+  tokensCreated,
+  daysActive,
+}: SystemEnvironmentProps) => {
   if (!configStatus) {
     return (
       <InfoCard title="System Environment Check" description="Loading system information...">
@@ -21,6 +27,8 @@ export const SystemEnvironment = ({ configStatus }: SystemEnvironmentProps) => {
 
   const { system } = configStatus
   const allCompatible = system.php_compatible
+  const trackingPeriodLabel =
+    daysActive <= 0 ? 'since today' : daysActive === 1 ? 'since 1 day' : `since ${daysActive} days`
 
   return (
     <InfoCard
@@ -49,8 +57,10 @@ export const SystemEnvironment = ({ configStatus }: SystemEnvironmentProps) => {
         <span className="jwt-mr-2">{system.mysql_version}</span>
         <Check />
       </StatusRow>
-      <StatusRow label="Post Max Size">
-        <span className="jwt-mr-2">{system.post_max_size}</span>
+      <StatusRow label={<span className="jwt-font-bold jwt-text-slate-800">Tokens Generated</span>}>
+        <span className="jwt-mr-2">
+          <span className="jwt-font-bold">{tokensCreated}</span> {trackingPeriodLabel}
+        </span>
         <Check />
       </StatusRow>
     </InfoCard>

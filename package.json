@@ -1,6 +1,6 @@
 {
   "name": "wp-api-jwt-auth",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "WordPress plugin that provides JWT authentication for WP REST API",
   "private": true,
   "scripts": {
@@ -86,5 +86,9 @@
     "react-syntax-highlighter": "^15.6.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "overrides": {
+    "qs": "6.14.2",
+    "glob": "10.5.0"
   }
 }

@@ -46,6 +46,25 @@ class JwtAuthPublicIntegrationTest extends TestCase {
         $this->assertEquals($user->display_name, $result['user_display_name']);
     }
 
+    public function test_generate_token_increments_tokens_counter() {
+        update_option('jwt_auth_tokens_created', 0);
+
+        $this->createTestUser([
+            'user_login' => 'counteruser',
+            'user_pass' => 'counterpass123'
+        ]);
+
+        $request = new WP_REST_Request('POST');
+        $request->set_param('username', 'counteruser');
+        $request->set_param('password', 'counterpass123');
+
+        $result = $this->public->generate_token($request);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('token', $result);
+        $this->assertSame(1, (int) get_option('jwt_auth_tokens_created', 0));
+    }
+
     public function test_generate_token_with_invalid_credentials() {
         $request = new WP_REST_Request('POST');
         $request->set_param('username', 'nonexistent');

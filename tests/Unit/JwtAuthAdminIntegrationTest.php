@@ -278,6 +278,7 @@ class JwtAuthAdminIntegrationTest extends TestCase {
         $this->assertArrayHasKey('jwtStatus', $data);
         $this->assertArrayHasKey('surveyStatus', $data);
         $this->assertArrayHasKey('surveyDismissal', $data);
+        $this->assertArrayHasKey('upsell', $data);
 
         // Verify settings data structure (should be unwrapped from jwt_auth_options)
         $this->assertArrayHasKey('share_data', $data['settings']);
@@ -296,6 +297,11 @@ class JwtAuthAdminIntegrationTest extends TestCase {
         $this->assertArrayHasKey('dismissalCount', $data['surveyDismissal']);
         $this->assertArrayHasKey('shouldShow', $data['surveyDismissal']);
         $this->assertEquals(1, $data['surveyDismissal']['dismissalCount']);
+
+        // Verify upsell structure
+        $this->assertArrayHasKey('shouldShowUpsell', $data['upsell']);
+        $this->assertArrayHasKey('daysActive', $data['upsell']);
+        $this->assertArrayHasKey('tokensCreated', $data['upsell']);
     }
 
     public function test_get_dashboard_data_with_completed_survey()

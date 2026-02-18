@@ -301,15 +301,27 @@ class Jwt_Auth_Admin
             [$this, 'render_admin_page']
         );
 
-        // Add Token Dashboard submenu item
-        add_submenu_page(
-            'options-general.php',
-            __('Token Dashboard', 'jwt-auth'),
-            __('&nbsp;↳ Token Details 👑', 'jwt-auth'),
-            'manage_options',
-            'jwt_token_dashboard',
-            [$this, 'render_token_dashboard_page']
-        );
+        if (jwt_auth_should_show_upsell()) {
+            add_submenu_page(
+                'options-general.php',
+                __('Token Dashboard', 'jwt-auth'),
+                __('&nbsp;↳ Token Details 👑', 'jwt-auth'),
+                'manage_options',
+                'jwt_token_dashboard',
+                [$this, 'render_token_dashboard_page']
+            );
+        }
+    }
+
+    /**
+     * Ensure install date tracking exists.
+     *
+     * @since 1.5.0
+     * @return void
+     */
+    public function track_install_date()
+    {
+        jwt_auth_track_install_date();
     }
 
     /**
@@ -616,12 +628,14 @@ class Jwt_Auth_Admin
             );
         }
 
+        $upsell_metrics = jwt_auth_get_upsell_metrics();
+
         // Provide WordPress API configuration to React app
         if ($is_dev_mode) {
             // For dev mode, we need to add the config manually since we're not using wp_enqueue_script
             add_action(
                 'admin_footer',
-                function () {
+                function () use ($upsell_metrics) {
                     $config = [
                         'apiUrl' => rest_url('jwt-auth/v1/admin/settings'),
                         'nonce' => wp_create_nonce('wp_rest'),
@@ -634,6 +648,11 @@ class Jwt_Auth_Admin
                             'isWooCommerceDetected' => class_exists('WooCommerce'),
                             'pluginCount' => count(get_option('active_plugins', [])),
                             'signingAlgorithm' => 'HS256',
+                        ],
+                        'upsell' => [
+                            'shouldShowUpsell' => (bool) $upsell_metrics['shouldShowUpsell'],
+                            'daysActive' => (int) $upsell_metrics['daysActive'],
+                            'tokensCreated' => (int) $upsell_metrics['tokensCreated'],
                         ],
                     ];
                     echo '<script>window.jwtAuthConfig = '.wp_json_encode($config).';</script>';
@@ -649,14 +668,19 @@ class Jwt_Auth_Admin
                     'nonce' => wp_create_nonce('wp_rest'),
                     'siteUrl' => get_bloginfo('url'),
                     'settings' => get_option('jwt_auth_options', ['share_data' => false]),
-                    'siteProfile' => [
-                        'phpVersion' => PHP_VERSION,
-                        'wordpressVersion' => get_bloginfo('version'),
-                        'isProCompatible' => version_compare(PHP_VERSION, '7.4', '>='),
-                        'isWooCommerceDetected' => class_exists('WooCommerce'),
-                        'pluginCount' => count(get_option('active_plugins', [])),
-                        'signingAlgorithm' => 'HS256',
-                    ],
+                        'siteProfile' => [
+                            'phpVersion' => PHP_VERSION,
+                            'wordpressVersion' => get_bloginfo('version'),
+                            'isProCompatible' => version_compare(PHP_VERSION, '7.4', '>='),
+                            'isWooCommerceDetected' => class_exists('WooCommerce'),
+                            'pluginCount' => count(get_option('active_plugins', [])),
+                            'signingAlgorithm' => 'HS256',
+                        ],
+                        'upsell' => [
+                            'shouldShowUpsell' => (bool) $upsell_metrics['shouldShowUpsell'],
+                            'daysActive' => (int) $upsell_metrics['daysActive'],
+                            'tokensCreated' => (int) $upsell_metrics['tokensCreated'],
+                        ],
                 ]
             );
         }
@@ -810,28 +834,7 @@ class Jwt_Auth_Admin
      */
     public function add_action_link(array $links, string $file): array
     {
-
-        if ($file === 'jwt-authentication-for-wp-rest-api/jwt-auth.php') {
-            // Fixed CTA for high-traffic plugin list (no rotation)
-            $selected_variation = [
-                'text' => '<b>Add Token Dashboard</b>',
-                'utm_content' => 'token-dashboard-primary',
-            ];
-
-            $base_pro_url = 'https://jwtauth.pro/upgrade';
-            $utm_params = [
-                'utm_source' => 'plugin-list',
-                'utm_medium' => 'action-link',
-                'utm_campaign' => 'feature-highlight',
-                'utm_content' => $selected_variation['utm_content'],
-            ];
-
-            $pro_link_url = (string) add_query_arg($utm_params, $base_pro_url);
-            $pro_link_style = 'style="color: #00a32a; font-weight: 700; text-decoration: none;" onmouseover="this.style.color=\'#008a20\';" onmouseout="this.style.color=\'#00a32a\';"';
-
-            $pro_link_text = $selected_variation['text'];
-            $links[] = '<a href="'.esc_url($pro_link_url).'" target="_blank" '.$pro_link_style.' rel="noopener noreferrer">'.$pro_link_text.'</a>';
-        }
+        unset($file);
 
         return $links;
     }
@@ -1085,6 +1088,7 @@ class Jwt_Auth_Admin
             }
 
             $dismissal_data = $dismissal_response->get_data();
+            $upsell_metrics = jwt_auth_get_upsell_metrics();
 
             // Return consolidated data
             return new WP_REST_Response(
@@ -1093,6 +1097,11 @@ class Jwt_Auth_Admin
                     'jwtStatus' => $status_data,
                     'surveyStatus' => $survey_status_data,
                     'surveyDismissal' => $dismissal_data,
+                    'upsell' => [
+                        'shouldShowUpsell' => (bool) $upsell_metrics['shouldShowUpsell'],
+                        'daysActive' => (int) $upsell_metrics['daysActive'],
+                        'tokensCreated' => (int) $upsell_metrics['tokensCreated'],
+                    ],
                 ],
                 200
             );
