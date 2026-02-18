@@ -196,6 +196,8 @@ class Jwt_Auth_Public {
 			'user_display_name' => $user->data->display_name,
 		];
 
+		jwt_auth_increment_tokens_created();
+
 		/** Let the user modify the data before send it back */
 		return apply_filters( 'jwt_auth_token_before_dispatch', $data, $user );
 	}

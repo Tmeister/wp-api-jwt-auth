@@ -9,14 +9,14 @@ export function cn(...inputs: ClassValue[]) {
  * Build a Pro URL with consistent UTM parameters
  */
 export function buildProUrl(params: {
-  source: 'dashboard' | 'plugin-list' | 'wp-menu' | 'survey'
+  source: 'dashboard' | 'plugin-list' | 'wp-menu' | 'survey' | 'token-dashboard'
   medium: string
   campaign: string
   content: string
   path?: string
 }): string {
   const baseUrl = 'https://jwtauth.pro'
-  const fullPath = params.path || '/upgrade'
+  const fullPath = params.path || '/'
 
   const queryParams = new URLSearchParams({
     utm_source: params.source,
@@ -61,4 +61,40 @@ export function getDynamicCTAText(location: 'header' | 'plugin-list'): string {
   ]
 
   return location === 'header' ? headerCTAs[weekIndex] : pluginListCTAs[weekIndex]
+}
+
+/**
+ * Format token count for compact UI display.
+ */
+export function formatCompactTokenCount(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}M`
+  }
+
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K`
+  }
+
+  return `${count}`
+}
+
+/**
+ * Get rotating CTA copy focused on token analytics value.
+ */
+export function getTokenUsageCta(): { message: string; variant: number } {
+  const weekNumber = getWeekNumber()
+  const variants = [
+    'ready for deeper monitoring',
+    'see top consumers and suspicious spikes',
+    'see token details',
+    'unlock token analytics',
+    'spot unusual token activity',
+  ]
+
+  const variant = weekNumber % variants.length
+
+  return {
+    message: variants[variant],
+    variant: variant + 1,
+  }
 }

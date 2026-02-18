@@ -14,9 +14,17 @@ import { buildProUrl } from '@/lib/utils'
 
 interface TokenDashboardProps {
   onBackToDashboard: () => void
+  shouldShowUpsell: boolean
 }
 
-export const TokenDashboard = ({ onBackToDashboard: _onBackToDashboard }: TokenDashboardProps) => {
+export const TokenDashboard = ({
+  onBackToDashboard: _onBackToDashboard,
+  shouldShowUpsell,
+}: TokenDashboardProps) => {
+  if (!shouldShowUpsell) {
+    return null
+  }
+
   const proUrl = buildProUrl({
     source: 'token-dashboard',
     medium: 'placeholder',

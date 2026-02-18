@@ -1,7 +1,7 @@
 import type React from 'react'
 
 interface StatusRowProps {
-  label: string
+  label: React.ReactNode
   children: React.ReactNode
 }
 

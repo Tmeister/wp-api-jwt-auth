@@ -174,11 +174,11 @@ class Jwt_Auth {
 		$plugin_admin = new Jwt_Auth_Admin( $this->get_plugin_name(), $this->get_version() );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'register_menu_page' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_plugin_assets' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'track_install_date' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_plugin_settings' );
 		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'register_plugin_settings' );
 		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'register_admin_rest_routes' );
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'display_all_notices' );
-		$this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'add_action_link', 10, 2 );
 	}
 
 	/**

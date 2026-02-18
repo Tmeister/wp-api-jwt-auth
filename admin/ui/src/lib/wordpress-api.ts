@@ -16,6 +16,11 @@ declare global {
         pluginCount: number
         signingAlgorithm: string
       }
+      upsell?: {
+        shouldShowUpsell: boolean
+        daysActive: number
+        tokensCreated: number
+      }
     }
   }
 }
@@ -89,6 +94,11 @@ export interface DashboardData {
     dismissalCount: number
     lastDismissedAt: string | null
     shouldShow: boolean
+  }
+  upsell: {
+    shouldShowUpsell: boolean
+    daysActive: number
+    tokensCreated: number
   }
 }
 
@@ -271,6 +281,11 @@ export class WordPressAPI {
         },
         surveyStatus: { completed: false },
         surveyDismissal: { dismissalCount: 0, lastDismissedAt: null, shouldShow: true },
+        upsell: {
+          shouldShowUpsell: false,
+          daysActive: 0,
+          tokensCreated: 0,
+        },
       }
     }
   }
