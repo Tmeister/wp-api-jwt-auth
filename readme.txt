@@ -305,7 +305,7 @@ Default Value:
 
 `
 $token = array(
-    'iss' => get_bloginfo('url'),
+    'iss' => $this->get_iss(),
     'iat' => $issuedAt,
     'nbf' => $notBefore,
     'exp' => $expire,

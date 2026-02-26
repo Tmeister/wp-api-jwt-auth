@@ -157,7 +157,7 @@ class Jwt_Auth_Public {
 		$expire    = apply_filters( 'jwt_auth_expire', $issuedAt + ( DAY_IN_SECONDS * 7 ), $issuedAt );
 
 		$token = [
-			'iss'  => get_bloginfo( 'url' ),
+			'iss'  => $this->get_iss(),
 			'iat'  => $issuedAt,
 			'nbf'  => $notBefore,
 			'exp'  => $expire,
@@ -362,7 +362,7 @@ class Jwt_Auth_Public {
 			$token = JWT::decode( $token, new Key( $secret_key, $algorithm ) );
 
 			/** The Token is decoded now validate the iss */
-			if ( $token->iss !== get_bloginfo( 'url' ) ) {
+			if ( $token->iss !== $this->get_iss() ) {
 				/** The iss do not match, return error */
 				return new WP_Error(
 					'jwt_auth_bad_iss',
@@ -438,5 +438,14 @@ class Jwt_Auth_Public {
 		}
 
 		return $algorithm;
+	}
+
+	/**
+	 * Get the token issuer.
+	 *
+	 * @return string The token issuer (iss).
+	 */
+	public function get_iss() {
+		return apply_filters( 'jwt_auth_iss', get_bloginfo( 'url' ) );
 	}
 }
