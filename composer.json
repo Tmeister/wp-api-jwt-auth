@@ -36,7 +36,7 @@
     "mockery/mockery": "^1.5",
     "wp-phpunit/wp-phpunit": "^6.7",
     "yoast/phpunit-polyfills": "^3.0",
-    "php-stubs/wordpress-tests-stubs": "^6.6",
+    "php-stubs/wordpress-tests-stubs": "^7.1",
     "doctrine/instantiator": ">=2.0 <2.1"
   }
 }
