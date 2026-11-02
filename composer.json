@@ -34,7 +34,7 @@
     "phpunit/phpunit": "^9.6.33",
     "brain/monkey": "^2.6",
     "mockery/mockery": "^1.5",
-    "wp-phpunit/wp-phpunit": "^6.7",
+    "wp-phpunit/wp-phpunit": "^7.1",
     "yoast/phpunit-polyfills": "^3.0",
     "php-stubs/wordpress-tests-stubs": "^6.6",
     "doctrine/instantiator": ">=2.0 <2.1"
