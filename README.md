@@ -2,7 +2,7 @@
 
 A simple plugin to add [JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) Authentication to the WP REST API.
 
-Tested up to WordPress 6.9.1.
+Tested up to WordPress 7.1.
 
 To know more about JSON Web Tokens, please visit [http://jwt.io](http://jwt.io).
 
