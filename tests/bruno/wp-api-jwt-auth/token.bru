@@ -46,6 +46,7 @@ tests {
 script:post-response {
   if (res.getStatus() === 200) {
     const data = res.getBody();
-    bru.setEnvVar("token", data.token);
+    // Runtime var, not env var: @usebruno/cli 4.x writes setEnvVar values back into environments/*.bru.
+    bru.setVar("token", data.token);
   }
 }
