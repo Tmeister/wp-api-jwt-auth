@@ -6,7 +6,7 @@ Tags: oauth, jwt, json web authentication, wp-api, rest api
 Requires at least: 4.2
 Tested up to: 7.1
 Requires PHP: 7.4.0
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -424,6 +424,12 @@ Priority support is included with [JWT Authentication PRO](https://jwtauth.pro/?
 JWT authentication is very secure when implemented correctly. Make sure to use a strong secret key and keep it confidential. [JWT Auth PRO](https://jwtauth.pro/?utm_source=wp_plugin_readme&utm_medium=link&utm_campaign=pro_promotion&utm_content=faq_security_link) offers additional security features like rate limiting and token revocation.
 
 == Changelog ==
+= 1.5.1 =
+* Compatibility: Tested up to WordPress 7.1
+* Enhancement: Updated the bundled composer/installers library from 1.12 to 2.3, with no change to how or where the plugin installs
+* Security: Updated development dependencies (handlebars, brace-expansion, fast-uri, undici, fast-xml-parser) to their latest patched versions
+* Development: Updated Vite to 7.3.7, Vitest to 5.0.5 (JS unit tests now need Node 22.12+), Bruno CLI to 4.3.0, WordPress Coding Standards to 3.4.1, wp-phpunit to 7.1.3, WordPress test stubs to 7.1.0 and Brain Monkey to 2.7.0
+
 = 1.5.0 =
 * Security: Updated dependencies to latest secure versions (deep-copy, php-parser, phpunit)
 * Feature: Smart upgrade prompts that appear based on actual plugin usage rather than immediately after installation
