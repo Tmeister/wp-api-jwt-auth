@@ -5,6 +5,11 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  // Vite >= 7.2 defaults esbuild legalComments to 'none'; keep third-party
+  // @license headers in the shipped bundle as earlier Vite versions did.
+  esbuild: {
+    legalComments: 'inline',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './admin/ui/src'),
