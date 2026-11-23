@@ -30,7 +30,7 @@
     "dealerdirect/phpcodesniffer-composer-installer": "*",
     "squizlabs/php_codesniffer": "3.*",
     "wp-coding-standards/wpcs": "*",
-    "php-stubs/wordpress-stubs": "^6.3",
+    "php-stubs/wordpress-stubs": "^7.1",
     "phpunit/phpunit": "^9.6.33",
     "brain/monkey": "^2.6",
     "mockery/mockery": "^1.5",
