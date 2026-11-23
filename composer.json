@@ -24,7 +24,7 @@
   "require": {
     "php": ">=7.4",
     "composer/installers": "~2.3",
-    "firebase/php-jwt": "~6.3.0"
+    "firebase/php-jwt": "~7.2.2"
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "*",
